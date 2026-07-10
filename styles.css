@@ -1,0 +1,225 @@
+:root {
+  --color-acento: #D85A30;
+  --color-texto-fuerte: #1B2A4A;
+  --color-fondo: #FAF6F0;
+  --color-texto: #3A3A3A;
+  --color-blanco: #FFFFFF;
+
+  --fuente-sistema: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--fuente-sistema);
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  line-height: 1.5;
+}
+
+.wordmark {
+  padding: 1.5rem 1.25rem 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-texto-fuerte);
+  letter-spacing: 0.01em;
+}
+
+.hero {
+  min-height: calc(100vh - 4.5rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1.25rem 3rem;
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.hero__titulo {
+  font-size: 1.9rem;
+  line-height: 1.25;
+  font-weight: 800;
+  color: var(--color-texto-fuerte);
+  margin-bottom: 1rem;
+}
+
+.hero__parrafo {
+  font-size: 1.05rem;
+  color: var(--color-texto);
+  margin-bottom: 2rem;
+  max-width: 32rem;
+}
+
+.hero__cta {
+  display: inline-block;
+  background-color: var(--color-acento);
+  color: var(--color-blanco);
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 0.9rem 1.75rem;
+  border-radius: 0.5rem;
+  transition: opacity 0.15s ease;
+}
+
+.hero__cta:hover,
+.hero__cta:focus-visible {
+  opacity: 0.9;
+}
+
+/* ===== SERVICIOS ===== */
+.servicios {
+  padding: 3rem 1.25rem;
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+.servicios__titulo,
+.casos__titulo,
+.contacto__titulo {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--color-texto-fuerte);
+  margin-bottom: 0.75rem;
+}
+
+.servicios__intro {
+  color: var(--color-texto);
+  max-width: 34rem;
+  margin-bottom: 2rem;
+}
+
+.servicios__grid,
+.casos__grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 1fr;
+}
+
+.servicio-card,
+.caso-card {
+  background-color: var(--color-blanco);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(27, 42, 74, 0.08);
+}
+
+.servicio-card__titulo,
+.caso-card__titulo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-texto-fuerte);
+  margin-bottom: 0.5rem;
+}
+
+.servicio-card__texto,
+.caso-card__texto {
+  color: var(--color-texto);
+  font-size: 0.98rem;
+}
+
+/* ===== CASOS ===== */
+.casos {
+  padding: 1rem 1.25rem 3rem;
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+/* ===== CONTACTO ===== */
+.contacto {
+  padding: 3rem 1.25rem 4rem;
+  max-width: 40rem;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.contacto__texto {
+  color: var(--color-texto);
+  margin-bottom: 1.75rem;
+  max-width: 32rem;
+}
+
+.contacto__canales {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  align-items: flex-start;
+}
+
+.contacto__canal {
+  display: inline-block;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 0.5rem;
+  color: var(--color-texto-fuerte);
+  border: 1.5px solid var(--color-texto-fuerte);
+}
+
+.contacto__canal--principal {
+  background-color: var(--color-acento);
+  color: var(--color-blanco);
+  border-color: var(--color-acento);
+}
+
+.contacto__canal--pendiente {
+  color: var(--color-texto);
+  border-color: rgba(27, 42, 74, 0.25);
+  opacity: 0.6;
+  cursor: default;
+}
+
+.contacto__canal:hover,
+.contacto__canal:focus-visible {
+  opacity: 0.85;
+}
+
+.contacto__canal--pendiente:hover {
+  opacity: 0.6;
+}
+
+@media (min-width: 48rem) {
+  .wordmark {
+    padding: 2rem 3rem 0;
+    font-size: 1.25rem;
+  }
+
+  .hero {
+    padding: 3rem 3rem 5rem;
+  }
+
+  .hero__titulo {
+    font-size: 2.75rem;
+  }
+
+  .hero__parrafo {
+    font-size: 1.15rem;
+  }
+
+  .servicios,
+  .casos {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
+  .contacto {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
+  .servicios__grid,
+  .casos__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
