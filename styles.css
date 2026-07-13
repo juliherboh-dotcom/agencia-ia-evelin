@@ -65,6 +65,7 @@ body {
 }
 
 .wordmark__credencial {
+  display: none;
   font-size: 0.78rem;
   font-weight: 500;
   color: var(--color-acento);
@@ -100,7 +101,6 @@ body {
 }
 
 .hero {
-  min-height: calc(100vh - 4.5rem);
   padding: 2rem 1.25rem 3rem;
   max-width: 72rem;
   margin: 0 auto;
@@ -797,6 +797,10 @@ body {
     font-size: 1.25rem;
   }
 
+  .wordmark__credencial {
+    display: inline;
+  }
+
   .hero {
     padding: 3rem 3rem 5rem;
   }
@@ -840,6 +844,11 @@ body {
   .whatsapp-flotante {
     right: 1.5rem;
     bottom: 1.5rem;
+  }
+
+  .hero {
+    min-height: 100vh;
+    min-height: 100svh;
   }
 
   .hero__contenido {
