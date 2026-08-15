@@ -64,3 +64,68 @@
 - Qué se probaría: comparar en video el proceso de "entrenar" a un agente de IA con documentos del negocio vs. capacitar a una persona nueva, en tiempo y costo.
 - Resultado esperado: mostrar que el agente de IA puede quedar operativo en días, no semanas, para una tarea acotada.
 - Objeción típica: "eso suena a que van a reemplazar a mi gente" → aclarar que el foco es liberar tiempo del dueño/equipo de tareas repetitivas, no despedir personal.
+
+## Semana del 2026-08-15
+
+### 1. Meta Business Agent ya está global en WhatsApp, Instagram y Messenger: más de 1 millón de negocios lo usan
+**Fuente:** https://about.fb.com/news/2026/06/meta-business-agent/
+**Qué es:** El asistente de IA de Meta para negocios (recomienda productos del catálogo, agenda citas, responde 24/7 y deriva a un humano cuando hace falta) ya se activa gratis desde la misma app de WhatsApp Business, en minutos, y hoy supera el millón de negocios activos usándolo en el mundo.
+**Ángulo para Nexo.IA:** Video "Probé el 'agente gratis' que Meta le regala a las pymes vs. el que le armamos nosotros a un cliente — diferencias reales".
+- Contexto del problema: muchos dueños de pyme creen que ya tienen "resuelto" el WhatsApp con IA porque activaron la función gratis de Meta, sin saber qué tan limitada es.
+- Qué se probaría: activar Meta Business Agent en un negocio real y hacerle preguntas típicas (stock, cotización con descuento, seguimiento post-venta) para ver dónde responde bien y dónde se traba.
+- Resultado esperado: mostrar en qué casos la herramienta gratis alcanza y en qué casos (catálogos grandes, reglas de negocio, integración con sistemas propios) hace falta algo a medida.
+- Objeción típica: "para qué te voy a pagar si Meta me lo da gratis" → responder con los límites reales que se vieron en la prueba, no con un argumento genérico.
+
+### 2. La nueva política de IA de WhatsApp ya está 100% vigente: prohibido el chatbot "genérico"
+**Fuente:** https://learn.turn.io/l/en/article/khmn56xu3a-whats-app-s-2026-ai-policy-explained
+**Qué es:** Desde el 15 de enero de 2026 quedó obligatoria para todas las cuentas de WhatsApp Business API la regla de Meta que prohíbe los chatbots de propósito general (tipo "un ChatGPT suelto" conectado al número) y exige que la IA esté acotada a funciones concretas del negocio: cotizar, agendar, dar seguimiento a pedidos, resolver dudas frecuentes.
+**Ángulo para Nexo.IA:** Video "Mito vs realidad: '¿mi bot de WhatsApp puede quedar bloqueado por usar IA?'".
+- Contexto del problema: hay pymes chilenas usando bots "hechos a la rápida" que conectan un número de WhatsApp directo a un chat de IA sin ninguna estructura, sin saber que eso ya no cumple la norma de Meta.
+- Qué se probaría: revisar en vivo un bot mal armado (IA abierta, responde cualquier cosa) versus uno bien armado (funciones acotadas y claras) y explicar la diferencia con la política.
+- Resultado esperado: dejar claro qué sí se puede automatizar en WhatsApp y qué no, evitando que un cliente pierda su cuenta de negocio por una mala implementación.
+- Objeción típica: "yo ya tengo un bot y nunca me pasó nada" → explicar que el riesgo crece con el volumen de mensajes y que la norma ya se aplica a todos, no es "si te toca o no".
+
+### 3. Claude Cowork llega al celular: se puede mandar una tarea desde el escritorio y verla terminada en el teléfono
+**Fuente:** https://claude.com/blog/cowork-web-mobile
+**Qué es:** Desde julio de 2026, Anthropic expandió Claude Cowork (su asistente de IA para trabajo general, no solo programación) a web y a las apps de celular de iOS y Android: la tarea sigue corriendo en la nube aunque cierres el notebook, y se revisa el resultado desde el teléfono.
+**Ángulo para Nexo.IA:** Reel "Le pedí a la IA que me preparara las cotizaciones de la semana antes de cerrar el local — y las revisé desde el celular en la micro".
+- Contexto del problema: el dueño de pyme suele estar fuera del computador la mayor parte del día (en el local, repartiendo, en terreno) y por eso deja tareas de "escritorio" pendientes hasta la noche.
+- Qué se probaría: dejarle una tarea encargada a la IA en la mañana (ordenar cotizaciones, redactar respuestas pendientes) y mostrar cómo se revisa y aprueba desde el celular horas después.
+- Resultado esperado: demostrar que la IA ya no requiere estar sentado frente a un computador para dar valor real en el día a día del negocio.
+- Objeción típica: "yo no tengo tiempo ni de aprender a usar eso" → mostrar que la interacción desde el celular es tan simple como revisar un WhatsApp.
+
+### 4. Zapier deja de ser solo "conectar apps" y se convierte en un centro de trabajo con IA (Tables, Forms y Agentes)
+**Fuente:** https://zapier.com/blog/zapier-agents-guide/
+**Qué es:** Zapier sumó Tables (base de datos simple), Forms (formularios) y Agentes de IA que ejecutan tareas acotadas con revisión humana, todo dentro de la misma plataforma que ya conecta casi 9.000 apps y que hoy procesa más de 593 millones de tareas de IA.
+**Ángulo para Nexo.IA:** Video "Armé el 'cerebro' de una pyme en una sola pantalla: formulario de pedido → tabla de clientes → agente que cotiza".
+- Contexto del problema: muchas pymes tienen la información del negocio repartida en WhatsApp, planillas Excel sueltas y cuadernos, sin que nada esté conectado entre sí.
+- Qué se probaría: armar un flujo simple de punta a punta (un formulario recibe el pedido, se guarda ordenado en una tabla, un agente de IA prepara la cotización) usando una sola herramienta.
+- Resultado esperado: mostrar que centralizar la info del negocio no requiere comprar cinco softwares distintos, sino ordenar lo que ya se usa.
+- Objeción típica: "yo ya tengo mi Excel y me funciona" → mostrar el punto exacto donde el Excel se rompe (dos personas editando a la vez, nadie sabe cuál es la versión final) y cómo el flujo con IA lo evita.
+
+### 5. Shopify convierte a su asistente Sidekick en "co-fundador" y prepara las tiendas para que la IA las recomiende
+**Fuente:** https://www.hypersku.com/blog/shopify-ai-2026/
+**Qué es:** Shopify rehízo su asistente Sidekick (ahora con voz y capacidad de ejecutar tareas, no solo responder) y lanzó "agentic storefronts": funciones para que una tienda controle mejor cómo aparece cuando ChatGPT, Perplexity o Copilot recomiendan productos a un comprador.
+**Ángulo para Nexo.IA:** Video "Le pregunté a ChatGPT qué comprar y me recomendó la tienda de la competencia — así se arregla eso".
+- Contexto del problema: los dueños de tienda online chilena optimizan su sitio para Google, pero nadie está preparando su catálogo para que la IA (ChatGPT, Gemini) lo recomiende cuando alguien le pregunta "dónde compro tal cosa".
+- Qué se probaría: hacerle a ChatGPT o Perplexity una pregunta de compra real de un rubro (ej. "dónde comprar zapatillas running en Santiago") y ver qué tiendas aparecen y por qué.
+- Resultado esperado: mostrar en vivo si el negocio del cliente aparece o no, y qué ajustes simples (descripciones claras, FAQ, información estructurada) mejoran esa visibilidad.
+- Objeción típica: "yo le hago SEO para Google, con eso basta" → explicar que la forma en que la IA "lee" un catálogo es distinta y hoy casi nadie la está optimizando, lo que es una ventaja para el que llegue primero.
+
+### 6. Los "recepcionistas de IA" por teléfono se vuelven una categoría masiva para pymes
+**Fuente:** https://captureclient.com/blog/ai-voice-agents-small-business-2026-guide
+**Qué es:** Proliferan herramientas de agentes de voz con IA (Dapta, Retell, Trillet, entre otras) que contestan el teléfono del negocio 24/7, agendan y derivan llamadas, con planes desde ~30 USD al mes frente al costo de una recepcionista de tiempo completo.
+**Ángulo para Nexo.IA:** Experimento en video "Dejé que la IA contestara el teléfono de un negocio real por una semana — esto pasó con las llamadas perdidas".
+- Contexto del problema: pymes con local físico (clínicas dentales, talleres, peluquerías) pierden clientes todos los días porque nadie alcanza a contestar el teléfono mientras atienden a otra persona.
+- Qué se probaría: instalar un agente de voz con IA en el número de un negocio real durante una semana y contar cuántas llamadas se habrían perdido sin él.
+- Resultado esperado: un número concreto de llamadas/citas rescatadas en la semana, traducido a plata (valor promedio de un cliente para ese negocio).
+- Objeción típica: "mis clientes se van a dar cuenta de que es un robot y no les va a gustar" → mostrar el audio real de la llamada y dejar que la audiencia juzgue qué tan natural suena.
+
+### 7. Estudio Entel Digital + CENIA: entre el 70% y 80% de las empresas chilenas (incluidas pymes) ya usa IA
+**Fuente:** https://cyberix.cl/blog/inteligencia-artificial/tendencias-ia-chile-2026-comercio-agentico/
+**Qué es:** El estudio de adopción de IA de Entel Digital junto al CENIA muestra que entre el 70% y 80% de las pymes y grandes empresas en Chile ya incorporó IA a sus operaciones, con los mayores retornos en atención al cliente por WhatsApp/correo, cotizaciones, seguimiento comercial en CRM, agenda y cobranza automática.
+**Ángulo para Nexo.IA:** Video "El estudio dice que 8 de cada 10 empresas chilenas ya usa IA — ¿tú en cuál de las dos estás?".
+- Contexto del problema: muchos dueños de pyme en Chile todavía creen que la IA es "cosa de empresas grandes o de gringos", sin saber que el dato local ya muestra adopción masiva.
+- Qué se probaría: mostrar en pantalla el estudio y contrastarlo con una encuesta rápida a la audiencia ("¿tú ya usas IA en tu negocio?") para exponer la brecha entre percepción y realidad en Chile.
+- Resultado esperado: usar el dato local (no una estadística "de otro país") para bajar la resistencia inicial y posicionar a Nexo.IA como el que conoce el contexto chileno específico.
+- Objeción típica: "esa estadística debe estar inflada / es de empresas grandes disfrazadas de pyme" → matizar mostrando los casos de uso concretos del estudio (WhatsApp, cobranza, agenda), que son tareas de cualquier tamaño de negocio.
