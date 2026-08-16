@@ -19,6 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="auth.css">
 </head>
 <body>
 
@@ -32,6 +33,7 @@
     <!-- Badge de identidad abstracto: iniciales, no foto ni avatar realista. -->
     <span class="wordmark__avatar" aria-hidden="true">EH</span>
     <span class="wordmark__credencial">Evelin Hernández — Ingeniera Comercial</span>
+    <div class="wordmark__auth" data-auth-nav></div>
   </div>
 
   <a class="whatsapp-flotante" href="https://wa.me/56950556987" target="_blank" rel="noopener" aria-label="Escribir a Nexo.IA por WhatsApp">
@@ -265,6 +267,9 @@
   </section>
   <!-- ===== FIN CONTACTO ===== -->
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="supabase-config.js"></script>
+  <script src="auth.js"></script>
   <script>
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 

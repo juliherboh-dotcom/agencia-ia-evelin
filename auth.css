@@ -1,0 +1,205 @@
+/* Estilos de autenticación (login / registro) y enlace de cuenta en el encabezado. */
+
+.wordmark__auth {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.wordmark__auth-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--color-acento);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.wordmark__auth-link:hover,
+.wordmark__auth-link:focus-visible {
+  text-decoration: underline;
+}
+
+.wordmark__auth-correo {
+  color: var(--color-texto);
+  font-weight: 500;
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-pagina {
+  min-height: calc(100vh - 6rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem 4rem;
+}
+
+.auth-tarjeta {
+  width: 100%;
+  max-width: 26rem;
+  background-color: var(--color-blanco);
+  border-radius: 1.25rem;
+  padding: 2.25rem 1.75rem;
+  box-shadow: 0 1.25rem 3rem rgba(27, 42, 74, 0.1);
+}
+
+.auth-tarjeta__eyebrow {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-acento);
+  margin-bottom: 0.5rem;
+}
+
+.auth-tarjeta__titulo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-texto-fuerte);
+  margin-bottom: 0.4rem;
+}
+
+.auth-tarjeta__subtitulo {
+  font-size: 0.92rem;
+  color: var(--color-texto);
+  margin-bottom: 1.75rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.auth-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.auth-campo label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-texto-fuerte);
+}
+
+.auth-campo input {
+  font: inherit;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.65rem;
+  border: 1.5px solid rgba(27, 42, 74, 0.15);
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  transition: border-color 0.15s ease;
+}
+
+.auth-campo input:focus-visible {
+  outline: none;
+  border-color: var(--color-acento);
+}
+
+.auth-boton {
+  font: inherit;
+  font-weight: 700;
+  padding: 0.85rem 1rem;
+  border-radius: 0.65rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.auth-boton--primario {
+  background-color: var(--color-acento);
+  color: var(--color-blanco);
+}
+
+.auth-boton--primario:hover,
+.auth-boton--primario:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 0.75rem 1.5rem rgba(216, 90, 48, 0.28);
+}
+
+.auth-boton--primario:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.auth-boton--google {
+  background-color: var(--color-blanco);
+  color: var(--color-texto-fuerte);
+  border: 1.5px solid rgba(27, 42, 74, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.auth-boton--google:hover,
+.auth-boton--google:focus-visible {
+  border-color: var(--color-texto-fuerte);
+}
+
+.auth-divisor {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(58, 58, 58, 0.55);
+  font-size: 0.78rem;
+  margin: 0.35rem 0;
+}
+
+.auth-divisor::before,
+.auth-divisor::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: rgba(27, 42, 74, 0.12);
+}
+
+.auth-mensaje {
+  font-size: 0.85rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.6rem;
+  display: none;
+}
+
+.auth-mensaje--visible {
+  display: block;
+}
+
+.auth-mensaje--error {
+  background-color: rgba(216, 90, 48, 0.1);
+  color: var(--color-acento);
+}
+
+.auth-mensaje--ok {
+  background-color: rgba(27, 42, 74, 0.08);
+  color: var(--color-texto-fuerte);
+}
+
+.auth-tarjeta__pie {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--color-texto);
+}
+
+.auth-tarjeta__pie a {
+  color: var(--color-acento);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-tarjeta__pie a:hover,
+.auth-tarjeta__pie a:focus-visible {
+  text-decoration: underline;
+}
