@@ -1,0 +1,9 @@
+{
+  "name": "fabrica-reels-shared",
+  "version": "1.0.0",
+  "private": true,
+  "description": "node_modules compartido para el código de fabrica-reels/schema y fabrica-reels/validation, que usan varios paquetes hoja (remotion, services/edit-spec-api, services/publish-api) que viven en subcarpetas hermanas. La resolución de módulos de Node busca hacia ARRIBA desde el archivo que importa, nunca hacia abajo ni al costado -- por eso zod tiene que estar instalado acá, no solo en cada paquete hoja, para que schema/edit-spec.zod.ts y validation/validateEditSpec.ts (que viven fuera de cualquier paquete hoja) puedan resolverlo.",
+  "dependencies": {
+    "zod": "^3.23.8"
+  }
+}

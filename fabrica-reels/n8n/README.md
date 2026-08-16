@@ -1,4 +1,4 @@
-# Workflows n8n — Capa 3, Capa 4 y Capa 5
+# Workflows n8n — Capa 3 a Capa 6
 
 ## Capa 3 — "Edit Director"
 
@@ -33,15 +33,27 @@ Detecta `raw_videos.status='rendered_pending_review'`, manda el mensaje interact
 
 **No necesita servicios propios corriendo** (solo `renderService` de Capa 4, para el botón "Regenerar link").
 
-## Cómo importar cualquiera de los tres
+## Capa 6 — "Publicación"
+
+Workflow importable: [`capa6-publishing.workflow.json`](./capa6-publishing.workflow.json)
+Documentación completa: [`../../capa6-publishing.md`](../../capa6-publishing.md)
+
+Detecta `publications.status='queued'` (creadas por Capa 5), arma el caption final, calcula horario respetando timezone/espaciado, publica vía el proveedor configurado (`mock` para pruebas, `upload_post` en real) con locking anti-duplicados, y deja la fila en `published`/`scheduled`/`failed`.
+
+**Servicios que necesita corriendo:**
+```bash
+cd fabrica-reels/services/publish-api && npm install && npm start   # :3003
+```
+
+## Cómo importar cualquiera de los cuatro
 
 1. n8n → Workflows → Import from File.
-2. Revisar visualmente los nodos **"Procesar de a uno"** (Loop Over Items /
-   Split In Batches, presentes en Capa 3 y 4): sus dos salidas son
-   "done" (índice 0, sin nada conectado, fin del ciclo) y "loop" (índice 1,
-   conecta al resto del flujo). El orden exacto de estos índices varía un
-   poco según la versión de n8n — si al importar el wiring queda cruzado,
-   es el único lugar donde hay que corregir a mano.
+2. Revisar visualmente los nodos **"Procesar de a uno/a"** (Loop Over
+   Items / Split In Batches, presentes en Capa 3, 4 y 6): sus dos salidas
+   son "done" (índice 0, sin nada conectado, fin del ciclo) y "loop"
+   (índice 1, conecta al resto del flujo). El orden exacto de estos
+   índices varía un poco según la versión de n8n — si al importar el
+   wiring queda cruzado, es el único lugar donde hay que corregir a mano.
 3. Cargar las env vars (ver tabla en cada doc).
 4. Crear la credencial de Telegram Bot en n8n y asignarla al nodo
    `n8n-nodes-base.telegramTrigger` de Capa 5 (los envíos de mensajes ya no
@@ -54,7 +66,10 @@ Detecta `raw_videos.status='rendered_pending_review'`, manda el mensaje interact
    URL" en desarrollo, "Production URL" con el workflow activo).
 6. En Capa 5: correr `fabrica-reels/schema/capa5-review.migration.sql` y
    dar de alta al menos un `reviewer` activo antes de activar el workflow.
-7. Activar los tres. **Si tenías una v1 vieja de Capa 4** (con nodos de
+7. En Capa 6: correr `fabrica-reels/schema/capa6-publishing.migration.sql`
+   y dar de alta al menos una `social_accounts` activa por cliente+plataforma
+   (`publisher_provider='mock'` para probar sin publicar de verdad).
+8. Activar los cuatro. **Si tenías una v1 vieja de Capa 4** (con nodos de
    Telegram para revisión), desactivala antes de activar Capa 5 — si
    quedan las dos escuchando el mismo bot, un mismo click se procesa dos
    veces.
@@ -68,5 +83,8 @@ cd fabrica-reels/services/edit-spec-api && npm install && npm start   # :3002
 # Terminal 2
 cd fabrica-reels/remotion && npm install && npm run render:service    # :3001
 
-# Terminal 3: n8n, con Capa 3, Capa 4 (v2) y Capa 5 importadas y activas
+# Terminal 3
+cd fabrica-reels/services/publish-api && npm install && npm start     # :3003
+
+# Terminal 4: n8n, con Capa 3, Capa 4 (v2), Capa 5 y Capa 6 importadas y activas
 ```

@@ -1,0 +1,160 @@
+{
+  "name": "Fabrica de Reels - Capa 6 - Publicacion",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "0d186433-3daa-42f0-b9ff-284e7d3e2dc7",
+      "name": "Cada 5 min",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1160,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "/**\n * Nodo n8n: \"0. Preparar publicaciones queued\"\n * Tipo: Code (JavaScript, \"Run Once for All Items\")\n *\n * Toma las publications recién creadas por Capa 5 (status='queued') y las\n * deja listas para publicar: valida que la cuenta esté conectada, arma el\n * caption final (caption + hashtags), calcula scheduled_at respetando\n * timezone del cliente y espaciado mínimo entre publicaciones.\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n};\n\nconst MAX_CAPTION_LENGTH = 2200;\n\n// Convierte \"año/mes/día/hora local en timeZone\" a un Date UTC exacto,\n// sin hardcodear el offset (que cambia con horario de verano). Es un\n// truco estándar: formateamos un UTC tentativo EN timeZone, medimos la\n// diferencia contra lo que queríamos, y corregimos.\n// Limitación conocida: en el día exacto de un cambio de horario de\n// verano el resultado puede quedar corrido en 1h -- aceptable para una\n// heurística de \"mejor horario\", no crítico.\nconst zonedHourToUtcDate = (year, month, day, hourLocal, timeZone) => {\n  const tentative = new Date(Date.UTC(year, month - 1, day, hourLocal, 0, 0));\n  const formatter = new Intl.DateTimeFormat('en-US', {\n    timeZone,\n    hour12: false,\n    year: 'numeric', month: '2-digit', day: '2-digit',\n    hour: '2-digit', minute: '2-digit', second: '2-digit',\n  });\n  const parts = Object.fromEntries(formatter.formatToParts(tentative).map((p) => [p.type, p.value]));\n  const hour24 = Number(parts.hour) === 24 ? 0 : Number(parts.hour);\n  const asIfLocal = Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day), hour24, Number(parts.minute), Number(parts.second));\n  const diff = tentative.getTime() - asIfLocal;\n  return new Date(tentative.getTime() + diff);\n};\n\nconst localDateParts = (date, timeZone) => {\n  const formatter = new Intl.DateTimeFormat('en-US', { timeZone, hour12: false, year: 'numeric', month: '2-digit', day: '2-digit' });\n  const parts = Object.fromEntries(formatter.formatToParts(date).map((p) => [p.type, p.value]));\n  return { year: Number(parts.year), month: Number(parts.month), day: Number(parts.day) };\n};\n\nconst computeScheduledAt = (client, lastPublication) => {\n  const now = new Date();\n  const { year, month, day } = localDateParts(now, client.timezone);\n  let target = zonedHourToUtcDate(year, month, day, client.default_publish_hour_local, client.timezone);\n\n  if (target <= now) {\n    // ya pasó el horario de hoy -- programar para mañana a la misma hora local\n    const tomorrow = localDateParts(new Date(target.getTime() + 24 * 3600 * 1000), client.timezone);\n    target = zonedHourToUtcDate(tomorrow.year, tomorrow.month, tomorrow.day, client.default_publish_hour_local, client.timezone);\n  }\n\n  if (lastPublication) {\n    const lastTime = new Date(lastPublication.scheduled_at || lastPublication.published_at).getTime();\n    const minGapMs = client.min_hours_between_posts * 3600 * 1000;\n    if (target.getTime() - lastTime < minGapMs) {\n      target = new Date(lastTime + minGapMs);\n    }\n  }\n\n  return target.toISOString();\n};\n\nconst queued = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `${SUPABASE_URL}/rest/v1/publications?status=eq.queued&select=id,client_id,platform,render_id,caption_used,hashtags_used`,\n  headers: SUPABASE_HEADERS,\n  json: true,\n});\n\nconst results = [];\n\nfor (const pub of queued) {\n  const accounts = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `${SUPABASE_URL}/rest/v1/social_accounts?client_id=eq.${pub.client_id}&platform=eq.${pub.platform}&status=eq.active&select=id,publisher_provider,external_account_id`,\n    headers: SUPABASE_HEADERS,\n    json: true,\n  });\n  const account = accounts[0];\n\n  if (!account) {\n    await this.helpers.httpRequest({\n      method: 'PATCH',\n      url: `${SUPABASE_URL}/rest/v1/publications?id=eq.${pub.id}`,\n      headers: SUPABASE_HEADERS,\n      body: { status: 'failed', error_message: `No hay una cuenta activa de ${pub.platform} conectada para este cliente`, updated_at: new Date().toISOString() },\n      json: true,\n    });\n    results.push({ publication_id: pub.id, outcome: 'failed_no_account' });\n    continue;\n  }\n\n  const finalCaption = [pub.caption_used || '', pub.hashtags_used || ''].filter(Boolean).join('\\n\\n').trim();\n\n  if (!finalCaption) {\n    await this.helpers.httpRequest({\n      method: 'PATCH',\n      url: `${SUPABASE_URL}/rest/v1/publications?id=eq.${pub.id}`,\n      headers: SUPABASE_HEADERS,\n      body: { status: 'failed', error_message: 'Caption vacío -- no hay nada que publicar', updated_at: new Date().toISOString() },\n      json: true,\n    });\n    results.push({ publication_id: pub.id, outcome: 'failed_empty_caption' });\n    continue;\n  }\n\n  const truncatedCaption = finalCaption.length > MAX_CAPTION_LENGTH\n    ? `${finalCaption.slice(0, MAX_CAPTION_LENGTH - 1)}…`\n    : finalCaption;\n\n  const clients = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `${SUPABASE_URL}/rest/v1/clients?id=eq.${pub.client_id}&select=timezone,default_publish_hour_local,min_hours_between_posts`,\n    headers: SUPABASE_HEADERS,\n    json: true,\n  });\n  const client = clients[0] || { timezone: 'America/Santiago', default_publish_hour_local: 10, min_hours_between_posts: 4 };\n\n  const lastRows = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `${SUPABASE_URL}/rest/v1/publications?client_id=eq.${pub.client_id}&platform=eq.${pub.platform}&status=in.(scheduled,published)&order=scheduled_at.desc.nullslast&limit=1&select=scheduled_at,published_at`,\n    headers: SUPABASE_HEADERS,\n    json: true,\n  });\n  const scheduledAt = computeScheduledAt(client, lastRows[0] || null);\n\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/publications?id=eq.${pub.id}`,\n    headers: SUPABASE_HEADERS,\n    body: {\n      status: 'ready_to_schedule',\n      caption_used: truncatedCaption,\n      provider: account.publisher_provider,\n      account_id: account.id,\n      scheduled_at: scheduledAt,\n      updated_at: new Date().toISOString(),\n    },\n    json: true,\n  });\n\n  results.push({ publication_id: pub.id, outcome: 'ready_to_schedule', scheduled_at: scheduledAt });\n}\n\nreturn results.map((r) => ({ json: r }));\n"
+      },
+      "id": "73f60ef7-b96d-4425-92a6-164d3f4edd55",
+      "name": "0. Preparar publicaciones queued",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        -180
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "/**\n * Nodo n8n: \"1. Detectar publicaciones listas para publicar\"\n * Tipo: Code (JavaScript, \"Run Once for All Items\")\n *\n * publications en 'ready_to_schedule', cuyo scheduled_at ya llegó, sin\n * lock activo, y (si es un reintento) cuyo next_attempt_at ya pasó.\n * Se arma la URL a mano en vez de usar la UI de query params de un nodo\n * HTTP nativo porque el filtro `or=()` de PostgREST (next_attempt_at\n * NULL o ya vencido) es más simple de construir con template strings que\n * peleando con esa UI.\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n};\n\nconst nowIso = new Date().toISOString();\n\nconst query = [\n  'status=eq.ready_to_schedule',\n  `scheduled_at=lte.${encodeURIComponent(nowIso)}`,\n  'locked_at=is.null',\n  `or=(${encodeURIComponent(`next_attempt_at.is.null,next_attempt_at.lte.${nowIso}`)})`,\n  'select=id,client_id,platform,render_id,account_id,provider,caption_used,retry_count',\n  'order=scheduled_at.asc',\n].join('&');\n\nconst rows = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `${SUPABASE_URL}/rest/v1/publications?${query}`,\n  headers: SUPABASE_HEADERS,\n  json: true,\n});\n\nreturn rows.map((r) => ({ json: r }));\n"
+      },
+      "id": "7644fccf-c64b-4fcb-875b-3b91bd07df86",
+      "name": "1. Detectar publicaciones listas para publicar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "773b61fd-2867-4741-ad6c-c4c74de328e2",
+      "name": "Procesar de a una",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -620,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "/**\n * Nodo n8n: \"2. Publicar (con lock)\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Reclama un lock atómico sobre la fila de `publications` antes de hacer\n * nada (idempotencia + evita publicar dos veces el mismo render si dos\n * ciclos del schedule se solapan), llama a publish-api, y guarda el\n * resultado. Reintentos con backoff exponencial simple para errores\n * transitorios (rate limit, red).\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,\n * PUBLISH_API_URL, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID\n */\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n  Prefer: 'return=representation',\n};\nconst PUBLISH_API_URL = $env.PUBLISH_API_URL;\nconst TELEGRAM_BOT_TOKEN = $env.TELEGRAM_BOT_TOKEN;\n\nconst MAX_ATTEMPTS = 3;\nconst WORKER_ID = `n8n-capa6-${$execution.id}`;\n\nconst pub = $json;\n\nconst sendTelegram = async (chatId, text) => this.helpers.httpRequest({\n  method: 'POST',\n  url: `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,\n  body: { chat_id: chatId, text },\n  json: true,\n});\n\n// 1. Reclamar el lock -- PATCH condicional: solo pega si locked_at sigue\n// NULL. Si la respuesta viene vacía, alguien más ya lo tomó -- se aborta\n// sin tocar nada más.\nconst claimed = await this.helpers.httpRequest({\n  method: 'PATCH',\n  url: `${SUPABASE_URL}/rest/v1/publications?id=eq.${pub.id}&locked_at=is.null`,\n  headers: SUPABASE_HEADERS,\n  body: { locked_at: new Date().toISOString(), locked_by: WORKER_ID },\n  json: true,\n});\n\nif (!Array.isArray(claimed) || claimed.length === 0) {\n  return [{ json: { publication_id: pub.id, outcome: 'skipped_already_locked' } }];\n}\n\n// 2. Idempotencia real: si por lo que sea esta fila ya tiene\n// external_post_id, ya se publicó -- no se vuelve a llamar al proveedor\n// aunque el lock se haya podido tomar (ej. un estado inconsistente\n// después de un fallo a mitad de camino).\nconst current = claimed[0];\nif (current.external_post_id) {\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/publications?id=eq.${pub.id}`,\n    headers: SUPABASE_HEADERS,\n    body: { locked_at: null, locked_by: null },\n    json: true,\n  });\n  return [{ json: { publication_id: pub.id, outcome: 'already_published', external_post_id: current.external_post_id } }];\n}\n\n// 3. Traer el video y la cuenta destino.\nconst renders = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `${SUPABASE_URL}/rest/v1/renders?id=eq.${pub.render_id}&select=public_url,status`,\n  headers: SUPABASE_HEADERS,\n  json: true,\n});\nconst render = renders[0];\n\nconst accounts = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `${SUPABASE_URL}/rest/v1/social_accounts?id=eq.${pub.account_id}&select=external_account_id,status`,\n  headers: SUPABASE_HEADERS,\n  json: true,\n});\nconst account = accounts[0];\n\nif (!render || render.status !== 'done' || !account || account.status !== 'active') {\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/publications?id=eq.${pub.id}`,\n    headers: SUPABASE_HEADERS,\n    body: {\n      status: 'failed',\n      error_message: !render || render.status !== 'done' ? 'El render asociado ya no está disponible' : 'La cuenta se desconectó después de programar la publicación',\n      locked_at: null,\n      locked_by: null,\n      updated_at: new Date().toISOString(),\n    },\n    json: true,\n  });\n  return [{ json: { publication_id: pub.id, outcome: 'failed_missing_dependency' } }];\n}\n\n// 4. Publicar.\nawait this.helpers.httpRequest({\n  method: 'PATCH',\n  url: `${SUPABASE_URL}/rest/v1/publications?id=eq.${pub.id}`,\n  headers: SUPABASE_HEADERS,\n  body: { status: 'publishing', updated_at: new Date().toISOString() },\n  json: true,\n});\n\nconst job = {\n  publication_id: pub.id,\n  client_id: pub.client_id,\n  platform: pub.platform,\n  provider: pub.provider,\n  account_external_id: account.external_account_id,\n  video_url: render.public_url,\n  caption: pub.caption_used,\n  scheduled_at: null, // publicación inmediata: n8n ya esperó hasta scheduled_at antes de tomar esta fila\n};\n\nlet result;\ntry {\n  result = await this.helpers.httpRequest({\n    method: 'POST',\n    url: `${PUBLISH_API_URL}/publish`,\n    body: job,\n    json: true,\n  });\n} catch (err) {\n  result = { ok: false, status: 'rate_limited', error_message: `publish-api inaccesible: ${String(err)}`, retryable: true, provider_post_id: null, provider_status: null, published_at: null, scheduled_at: null };\n}\n\n// 5. Guardar resultado + liberar el lock.\nif (result.ok && (result.status === 'published' || result.status === 'scheduled')) {\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/publications?id=eq.${pub.id}`,\n    headers: SUPABASE_HEADERS,\n    body: {\n      status: result.status,\n      external_post_id: result.provider_post_id,\n      provider_status: result.provider_status,\n      published_at: result.published_at,\n      error_message: null,\n      locked_at: null,\n      locked_by: null,\n      updated_at: new Date().toISOString(),\n    },\n    json: true,\n  });\n\n  const chatIdRows = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `${SUPABASE_URL}/rest/v1/clients?id=eq.${pub.client_id}&select=telegram_chat_id`,\n    headers: SUPABASE_HEADERS,\n    json: true,\n  });\n  const chatId = (chatIdRows[0] && chatIdRows[0].telegram_chat_id) || $env.TELEGRAM_CHAT_ID;\n  const label = result.status === 'published' ? '🚀 Publicado' : '🗓️ Programado';\n  await sendTelegram(chatId, `${label} en ${pub.platform} -- ID del proveedor: ${result.provider_post_id}`);\n\n  return [{ json: { publication_id: pub.id, outcome: result.status } }];\n}\n\n// Fallo: decidir si reintenta o queda terminal.\nconst nextAttempts = (pub.retry_count || 0) + 1;\nconst isTerminal = !result.retryable || nextAttempts >= MAX_ATTEMPTS;\nconst backoffMinutes = Math.pow(3, nextAttempts); // 3, 9, 27 minutos\n\nawait this.helpers.httpRequest({\n  method: 'PATCH',\n  url: `${SUPABASE_URL}/rest/v1/publications?id=eq.${pub.id}`,\n  headers: SUPABASE_HEADERS,\n  body: {\n    status: isTerminal ? 'failed' : 'ready_to_schedule',\n    error_message: result.error_message,\n    provider_status: result.provider_status,\n    retry_count: nextAttempts,\n    next_attempt_at: isTerminal ? null : new Date(Date.now() + backoffMinutes * 60 * 1000).toISOString(),\n    locked_at: null,\n    locked_by: null,\n    updated_at: new Date().toISOString(),\n  },\n  json: true,\n});\n\nif (isTerminal) {\n  const chatIdRows = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `${SUPABASE_URL}/rest/v1/clients?id=eq.${pub.client_id}&select=telegram_chat_id`,\n    headers: SUPABASE_HEADERS,\n    json: true,\n  });\n  const chatId = (chatIdRows[0] && chatIdRows[0].telegram_chat_id) || $env.TELEGRAM_CHAT_ID;\n  await sendTelegram(chatId, `❌ No se pudo publicar en ${pub.platform} después de ${nextAttempts} intentos.\\nError: ${result.error_message}`);\n}\n\nreturn [{ json: { publication_id: pub.id, outcome: isTerminal ? 'failed' : 'retry_scheduled', attempt: nextAttempts } }];\n"
+      },
+      "id": "902ef52b-1ffc-4f1a-afd4-42e011264014",
+      "name": "2. Publicar (con lock)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -360,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "/**\n * Nodo n8n: \"3. Sweep locks vencidos\"\n * Tipo: Code (JavaScript, \"Run Once for All Items\")\n *\n * Si una ejecución de \"2. Publicar (con lock)\" muere a mitad de camino\n * (n8n se reinicia, timeout, etc.), la fila queda con locked_at seteado\n * para siempre y nunca se vuelve a intentar. Esto libera locks de más de\n * 10 minutos -- mismo principio que los sweeps de Capa 4 y Capa 5.\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n  Prefer: 'return=representation',\n};\n\nconst TIMEOUT_MINUTES = 10;\nconst cutoff = new Date(Date.now() - TIMEOUT_MINUTES * 60 * 1000).toISOString();\n\nconst stuck = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `${SUPABASE_URL}/rest/v1/publications?locked_at=lt.${encodeURIComponent(cutoff)}&select=id,locked_by`,\n  headers: SUPABASE_HEADERS,\n  json: true,\n});\n\nconst results = [];\n\nfor (const pub of stuck) {\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/publications?id=eq.${pub.id}`,\n    headers: SUPABASE_HEADERS,\n    body: { locked_at: null, locked_by: null, updated_at: new Date().toISOString() },\n    json: true,\n  });\n  results.push({ publication_id: pub.id, previously_locked_by: pub.locked_by });\n}\n\nreturn results.map((r) => ({ json: r }));\n"
+      },
+      "id": "c59f444b-976f-4f3d-a17e-9f032cd11b8a",
+      "name": "3. Sweep locks vencidos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        240
+      ]
+    }
+  ],
+  "connections": {
+    "Cada 5 min": {
+      "main": [
+        [
+          {
+            "node": "0. Preparar publicaciones queued",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "1. Detectar publicaciones listas para publicar",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "3. Sweep locks vencidos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Detectar publicaciones listas para publicar": {
+      "main": [
+        [
+          {
+            "node": "Procesar de a una",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar de a una": {
+      "main": [
+        [],
+        [
+          {
+            "node": "2. Publicar (con lock)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Publicar (con lock)": {
+      "main": [
+        [
+          {
+            "node": "Procesar de a una",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "instructions": "Antes de activar: 1) correr capa6-publishing.migration.sql; 2) levantar publish-api (fabrica-reels/services/publish-api, :3003) con PUBLISH_API_URL apuntando ahi desde n8n; 3) dar de alta al menos una fila en social_accounts (status='active') por cliente+plataforma, con publisher_provider='mock' para probar sin publicar de verdad, o 'upload_post' con la cuenta ya conectada del lado del proveedor; 4) cargar las env vars (ver capa6-publishing.md); 5) revisar visualmente el wiring de 'Procesar de a una' (Loop Over Items) igual que en las capas anteriores; 6) activar."
+  }
+}
