@@ -1,11 +1,13 @@
-# fabrica-reels — Capas 3 y 4 de la Fábrica de Reels (Nexo.IA)
+# fabrica-reels — Capas 3, 4 y 5 de la Fábrica de Reels (Nexo.IA)
 
 Código base real del contrato (`edit_spec`), el orquestador n8n de Capa 3
-(Edit Director) y Capa 4 (render automático). Ver `../sistema-fabrica-reels-nexoia.md`
-para la arquitectura completa, `../capa4-edit-spec-y-remotion.md` para el
-contrato + la composition Remotion, `../capa3-edit-director-n8n.md` para el
-workflow que genera el `edit_spec`, y `../capa4-render.md` para el workflow
-que lo renderiza automáticamente.
+(Edit Director), Capa 4 (render automático) y Capa 5 (revisión y
+aprobación). Ver `../sistema-fabrica-reels-nexoia.md` para la arquitectura
+completa, `../capa4-edit-spec-y-remotion.md` para el contrato + la
+composition Remotion, `../capa3-edit-director-n8n.md` para el workflow que
+genera el `edit_spec`, `../capa4-render.md` para el workflow que lo
+renderiza automáticamente, y `../capa5-review.md` para el sistema de
+revisión/aprobación por Telegram.
 
 ```
 fabrica-reels/
@@ -15,6 +17,7 @@ fabrica-reels/
     safe-areas.ts                  Safe areas de TikTok/Instagram Reels
     edit-specs.migration.sql       SQL Capa 3→4: columnas de validación en edit_specs
     capa4-render.migration.sql     SQL Capa 4: columnas de render/idempotencia
+    capa5-review.migration.sql     SQL Capa 5: reviewers, review_sessions, review_actions extendida
     examples/
       valid-edit-spec.json
       invalid-edit-spec.json
@@ -35,7 +38,8 @@ fabrica-reels/
     sample-data/example-edit-spec.json
   n8n/
     capa3-edit-director.workflow.json    Genera el edit_spec con el LLM
-    capa4-render.workflow.json           Dispara el render, sube el MP4, alerta de revisión
+    capa4-render.workflow.json           Dispara el render, sube el MP4 (v2: sin botones de revisión)
+    capa5-review.workflow.json           Revisión/aprobación por Telegram, deja listo para publicar
     code-nodes/                          Nodos Code como archivos sueltos (testeables aparte)
 ```
 
@@ -63,8 +67,10 @@ npm start
 # por el render service (para iterar sobre el template):
 npm run render:local
 
-# Terminal 3 — n8n, con capa3-edit-director.workflow.json y
-# capa4-render.workflow.json importados y activos (ver fabrica-reels/n8n/README.md)
+# Terminal 3 — n8n, con las 3 capas importadas y activas
+# (ver fabrica-reels/n8n/README.md) -- correr antes
+# fabrica-reels/schema/capa5-review.migration.sql y dar de alta un
+# reviewer para poder aprobar/rechazar desde Telegram
 ```
 
 ## Regla más importante del contrato
@@ -81,8 +87,10 @@ Director.
 ```
 video bruto → transcripción → Edit Director (Capa 3) → edit_spec válido
   → Supabase → render automático (Capa 4) → MP4 final en Storage
-  → rendered_pending_review → alerta Telegram (aprobar/rechazar/variante)
+  → rendered_pending_review → revisión por Telegram (Capa 5)
+  → approved_for_publish → fila lista en `publications` para Capa 6
 ```
 
-Pendiente (próximas capas): medir métricas 24/48/72h/7d, scoring, motor de
-variantes real, portal de revisión propio, publicación en IG/TikTok.
+Pendiente (próximas capas): publicación real en IG/TikTok (Capa 6), medir
+métricas 24/48/72h/7d, scoring, motor de variantes real (hoy solo se
+captura la intención en `variant_requested`), portal de revisión propio.

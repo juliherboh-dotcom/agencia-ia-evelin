@@ -123,6 +123,38 @@ app.get("/render/:id", async (req, res) => {
   res.json(data);
 });
 
+// Capa 5: botón "🔗 Regenerar link" -- las URLs firmadas duran 7 días: si
+// un video queda mucho tiempo en revisión, el link que ya se mandó por
+// Telegram puede morir antes de que alguien lo revise. Re-firma el mismo
+// objeto de Storage sin volver a renderizar nada.
+app.post("/renders/:id/refresh-link", async (req, res) => {
+  const { data: render, error } = await supabase
+    .from("renders")
+    .select("id, storage_path, status")
+    .eq("id", req.params.id)
+    .single();
+
+  if (error || !render || render.status !== "done" || !render.storage_path) {
+    return res.status(404).json({ error: "render no encontrado o sin archivo asociado" });
+  }
+
+  const objectPath = render.storage_path.replace(`${STORAGE_BUCKET}/`, "");
+  const { data: signed, error: signError } = await supabase.storage
+    .from(STORAGE_BUCKET)
+    .createSignedUrl(objectPath, SIGNED_URL_TTL_SEC);
+
+  if (signError || !signed) {
+    return res.status(500).json({ error: "no se pudo regenerar la URL firmada" });
+  }
+
+  await supabase
+    .from("renders")
+    .update({ public_url: signed.signedUrl, updated_at: new Date().toISOString() })
+    .eq("id", render.id);
+
+  res.json({ ok: true, public_url: signed.signedUrl });
+});
+
 async function processRenderInBackground(renderId: string, rawVideoId: string, spec: EditSpec) {
   await supabase.from("renders").update({ status: "rendering", updated_at: new Date().toISOString() }).eq("id", renderId);
 

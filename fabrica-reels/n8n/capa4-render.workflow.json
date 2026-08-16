@@ -12,7 +12,7 @@
           ]
         }
       },
-      "id": "0501e0ab-e865-48f2-a182-05435860a208",
+      "id": "bbddd1e6-093f-478b-b1ef-8ae63c70a773",
       "name": "Cada 2 min",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
@@ -26,13 +26,13 @@
         "mode": "runOnceForAllItems",
         "jsCode": "/**\n * Nodo n8n: \"0. Sweep renders vencidos (timeout)\"\n * Tipo: Code (JavaScript, \"Run Once for All Items\")\n *\n * Red de seguridad del patrón async: si renderService se cae a mitad de\n * un render (o nunca llega a llamar al webhook de resultado por lo que\n * sea), esto evita que el video quede \"colgado\" en rendering para\n * siempre. Corre en cada ciclo del Schedule Trigger, en paralelo a la\n * rama que dispara renders nuevos.\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n};\n\nconst TIMEOUT_MINUTES = 10;\nconst MAX_RENDER_ATTEMPTS = 3;\nconst cutoff = new Date(Date.now() - TIMEOUT_MINUTES * 60 * 1000).toISOString();\n\nconst stuck = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `${SUPABASE_URL}/rest/v1/renders?status=in.(queued,rendering)&created_at=lt.${encodeURIComponent(cutoff)}&select=id,raw_video_id,attempt,created_at`,\n  headers: SUPABASE_HEADERS,\n  json: true,\n});\n\nconst results = [];\n\nfor (const render of stuck) {\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/renders?id=eq.${render.id}`,\n    headers: SUPABASE_HEADERS,\n    body: {\n      status: 'failed',\n      error_message: `Timeout: sin respuesta de render service después de ${TIMEOUT_MINUTES} minutos`,\n      stage: 'render',\n      updated_at: new Date().toISOString(),\n    },\n    json: true,\n  });\n\n  const nextStatus = render.attempt < MAX_RENDER_ATTEMPTS ? 'edit_spec_ready' : 'failed_render_timeout';\n\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${render.raw_video_id}`,\n    headers: SUPABASE_HEADERS,\n    body: { status: nextStatus },\n    json: true,\n  });\n\n  results.push({ render_id: render.id, raw_video_id: render.raw_video_id, next_status: nextStatus });\n}\n\nreturn results.map((r) => ({ json: r }));\n"
       },
-      "id": "a0ab842e-7db6-410a-8904-c8dec3fc11c8",
+      "id": "9da01ef8-c7ec-4c7b-a593-333d09d18b63",
       "name": "0. Sweep renders vencidos (timeout)",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
         -1120,
-        -200
+        -160
       ]
     },
     {
@@ -71,13 +71,13 @@
         },
         "options": {}
       },
-      "id": "36af4fa2-5b9f-4eba-8a32-3678f94b1196",
+      "id": "51c033b4-1b2d-471e-a284-52e9ef5178fd",
       "name": "1. Detectar raw_videos edit_spec_ready",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
         -1120,
-        100
+        60
       ]
     },
     {
@@ -85,13 +85,13 @@
         "batchSize": 1,
         "options": {}
       },
-      "id": "345af289-cba3-441e-a05e-0702289c84fc",
+      "id": "0b0a178e-ab64-4f83-9b3d-f8e6e2aa067f",
       "name": "Procesar de a uno (render)",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
         -860,
-        100
+        60
       ]
     },
     {
@@ -99,13 +99,13 @@
         "mode": "runOnceForEachItem",
         "jsCode": "/**\n * Nodo n8n: \"2. Traer edit_spec listo para renderizar\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst rawVideo = $json;\n\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n};\n\nconst rows = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `${SUPABASE_URL}/rest/v1/edit_specs?raw_video_id=eq.${rawVideo.id}&status=eq.ready&order=version.desc&limit=1&select=id,spec_json`,\n  headers: SUPABASE_HEADERS,\n  json: true,\n});\n\nconst editSpec = rows[0];\nif (!editSpec) {\n  throw new Error(`raw_video ${rawVideo.id} está en edit_spec_ready pero no se encontró un edit_specs.status='ready' -- revisar Capa 3.`);\n}\n\nreturn [{\n  json: {\n    raw_video: rawVideo,\n    edit_spec_id: editSpec.id,\n    spec_json: editSpec.spec_json,\n  },\n}];\n"
       },
-      "id": "d55caa9e-b543-41de-8ec7-ddafdc605db6",
+      "id": "b5ee9847-2b08-4db8-b1ac-d5a6cea341a6",
       "name": "2. Traer edit_spec listo",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
         -600,
-        180
+        140
       ]
     },
     {
@@ -113,13 +113,13 @@
         "mode": "runOnceForEachItem",
         "jsCode": "/**\n * Nodo n8n: \"3-4. Disparar render en render service y actualizar estado\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Llama a POST /render (patrón async: renderService responde de inmediato\n * con un `outcome`, ver comentario en renderService.ts). Este nodo nunca\n * espera a que termine el render -- el resultado real llega después por\n * el webhook \"Recibir resultado de render\".\n *\n * Env vars usadas: RENDER_SERVICE_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst RENDER_SERVICE_URL = $env.RENDER_SERVICE_URL;\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n};\n\nconst MAX_ATTEMPTS = 3;\nconst currentAttempts = $json.raw_video.render_attempts || 0;\n\nconst updateRawVideo = async (fields) => {\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${$json.raw_video.id}`,\n    headers: SUPABASE_HEADERS,\n    body: fields,\n    json: true,\n  });\n};\n\nlet response;\ntry {\n  response = await this.helpers.httpRequest({\n    method: 'POST',\n    url: `${RENDER_SERVICE_URL}/render`,\n    body: { edit_spec_id: $json.edit_spec_id },\n    json: true,\n  });\n} catch (err) {\n  // render service caído / no accesible por red -- reintento acotado.\n  const nextAttempts = currentAttempts + 1;\n  await updateRawVideo({\n    render_attempts: nextAttempts,\n    status: nextAttempts >= MAX_ATTEMPTS ? 'failed_render_dispatch' : 'edit_spec_ready',\n  });\n  return [{ json: { ...$json, dispatch_ok: false, outcome: 'render_service_unreachable', error: String(err) } }];\n}\n\nif (response.outcome === 'queued' || response.outcome === 'already_in_progress') {\n  await updateRawVideo({ status: 'rendering', render_attempts: 0 });\n  return [{ json: { ...$json, dispatch_ok: true, outcome: response.outcome, render_id: response.render_id } }];\n}\n\nif (response.outcome === 'already_done') {\n  // Idempotencia real: si ya estaba renderizado, saltamos directo al\n  // estado final sin pasar por 'rendering' ni esperar ningún webhook.\n  await updateRawVideo({ status: 'rendered_pending_review' });\n  return [{\n    json: {\n      ...$json,\n      dispatch_ok: true,\n      outcome: 'already_done',\n      render_id: response.render_id,\n      public_url: response.public_url,\n    },\n  }];\n}\n\nif (response.outcome === 'invalid_edit_spec') {\n  // No tiene sentido reintentar solo -- hace falta que Capa 3 regenere el edit_spec.\n  await updateRawVideo({ status: 'failed_render_validation', render_attempts: currentAttempts + 1 });\n  return [{ json: { ...$json, dispatch_ok: false, outcome: 'invalid_edit_spec', errors: response.errors } }];\n}\n\n// not_found, internal_error, missing_input: casos inesperados -- se tratan\n// igual que un fallo transitorio, con reintento acotado.\nconst nextAttempts = currentAttempts + 1;\nawait updateRawVideo({\n  render_attempts: nextAttempts,\n  status: nextAttempts >= MAX_ATTEMPTS ? 'failed_render_dispatch' : 'edit_spec_ready',\n});\nreturn [{ json: { ...$json, dispatch_ok: false, outcome: response.outcome, error: response.message } }];\n"
       },
-      "id": "8a8994ad-dbad-46e6-9218-2c4508dd6313",
+      "id": "846de0b0-ea89-41f9-b905-34ee6dce04a5",
       "name": "3-4. Disparar render y actualizar estado",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
         -360,
-        180
+        140
       ]
     },
     {
@@ -130,142 +130,27 @@
         "responseData": "={\"ok\":true}",
         "options": {}
       },
-      "id": "12ed169c-151f-4a36-8944-91b4b23e6d33",
+      "id": "b6d56bfe-c17a-4023-8501-0a27caa3aa99",
       "name": "Recibir resultado de render",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
         -1120,
-        420
+        320
       ]
     },
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "/**\n * Nodo n8n: \"5. Procesar resultado de render\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n * Disparado por el Webhook \"Recibir resultado de render\", que recibe el\n * POST que hace renderService cuando termina (bien o mal) un render.\n *\n * Deja preparado el texto y los botones inline de Telegram para el\n * siguiente nodo -- éxito y fallo comparten un único mensaje de salida\n * con distinto contenido, para no necesitar un IF en este tramo.\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\n// El nodo Webhook de n8n entrega el body del POST bajo $json.body en la\n// mayoría de las versiones/configuraciones; esta línea cubre también el\n// caso en que tu instancia lo entrega ya aplanado en $json directamente.\nconst payload = $json.body || $json;\n\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n};\n\nlet text;\nlet replyMarkup;\n\nif (payload.status === 'done') {\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${payload.raw_video_id}`,\n    headers: SUPABASE_HEADERS,\n    body: { status: 'rendered_pending_review' },\n    json: true,\n  });\n\n  text = [\n    `🎬 Render listo -- ${payload.video_id}`,\n    `Tiempo de render: ${Number(payload.render_time_sec).toFixed(1)}s`,\n    '',\n    `Ver video: ${payload.public_url}`,\n    '',\n    '¿Qué hacemos con este video?',\n  ].join('\\n');\n\n  replyMarkup = {\n    inline_keyboard: [[\n      { text: '✅ Aprobar', callback_data: `appr:${payload.render_id}` },\n      { text: '❌ Rechazar', callback_data: `rejt:${payload.render_id}` },\n      { text: '🔁 Pedir variante', callback_data: `varr:${payload.render_id}` },\n    ]],\n  };\n} else {\n  const failedStatus = payload.stage === 'upload' ? 'failed_upload' : 'failed_render';\n\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${payload.raw_video_id}`,\n    headers: SUPABASE_HEADERS,\n    body: { status: failedStatus },\n    json: true,\n  });\n\n  text = [\n    `❌ Falló el render -- raw_video ${payload.raw_video_id}`,\n    `Etapa: ${payload.stage === 'upload' ? 'subida a Storage' : 'render con Remotion'}`,\n    `Error: ${payload.error}`,\n  ].join('\\n');\n\n  replyMarkup = {\n    inline_keyboard: [[\n      { text: '🔁 Reintentar', callback_data: `retr:${payload.raw_video_id}` },\n    ]],\n  };\n}\n\nreturn [{\n  json: {\n    ...payload,\n    telegram_text: text,\n    telegram_reply_markup: JSON.stringify(replyMarkup),\n  },\n}];\n"
+        "jsCode": "/**\n * Nodo n8n: \"5. Procesar resultado de render\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n * Disparado por el Webhook \"Recibir resultado de render\".\n *\n * AJUSTE DE CAPA 5: este nodo ya NO manda el mensaje interactivo de\n * revisión (con botones aprobar/rechazar/etc.) -- esa responsabilidad\n * pasó al poller propio de Capa 5\n * (capa5-00-enviar-revisiones-pendientes.js), que es quien de verdad\n * posee el flujo de revisión. Acá solo se actualiza el estado y, si el\n * render FALLÓ, se avisa -- un fallo de render es un tema operativo de\n * Capa 4, no un tema editorial de Capa 5.\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,\n * TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID\n */\nconst payload = $json.body || $json;\n\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n};\n\nif (payload.status === 'done') {\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${payload.raw_video_id}`,\n    headers: SUPABASE_HEADERS,\n    body: { status: 'rendered_pending_review' },\n    json: true,\n  });\n  return [{ json: { ...payload, handled: true } }];\n}\n\nconst failedStatus = payload.stage === 'upload' ? 'failed_upload' : 'failed_render';\n\nawait this.helpers.httpRequest({\n  method: 'PATCH',\n  url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${payload.raw_video_id}`,\n  headers: SUPABASE_HEADERS,\n  body: { status: failedStatus },\n  json: true,\n});\n\nconst text = [\n  `❌ Falló el render -- raw_video ${payload.raw_video_id}`,\n  `Etapa: ${payload.stage === 'upload' ? 'subida a Storage' : 'render con Remotion'}`,\n  `Error: ${payload.error}`,\n].join('\\n');\n\n// Llamada directa a la Bot API de Telegram (no nodo nativo) -- el botón\n// \"retr:<raw_video_id>\" lo procesa el router de Capa 5\n// (capa5-02-rutear-interaccion.js), que es quien escucha callback_query\n// desde este punto en adelante.\nawait this.helpers.httpRequest({\n  method: 'POST',\n  url: `https://api.telegram.org/bot${$env.TELEGRAM_BOT_TOKEN}/sendMessage`,\n  body: {\n    chat_id: $env.TELEGRAM_CHAT_ID,\n    text,\n    reply_markup: { inline_keyboard: [[{ text: '🔁 Reintentar', callback_data: `retr:${payload.raw_video_id}` }]] },\n  },\n  json: true,\n});\n\nreturn [{ json: { ...payload, handled: true, failed_status: failedStatus } }];\n"
       },
-      "id": "e3c86cd5-5253-46c9-921d-ec43724f8318",
+      "id": "b01b289b-b13c-405c-94df-dcb0bff193a1",
       "name": "5. Procesar resultado de render",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
         -860,
-        420
-      ]
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
-        "text": "={{ $json.telegram_text }}",
-        "additionalFields": {
-          "reply_markup": "={{ $json.telegram_reply_markup }}"
-        }
-      },
-      "id": "5deb5a93-faa2-4ae3-9e12-b0e1fdb83821",
-      "name": "9. Enviar alerta de revisión",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        -600,
-        420
-      ]
-    },
-    {
-      "parameters": {
-        "updates": [
-          "callback_query"
-        ]
-      },
-      "id": "c1a0507c-ffcd-4f74-a450-6188b19a4258",
-      "name": "Recibir decisión de revisión",
-      "type": "n8n-nodes-base.telegramTrigger",
-      "typeVersion": 1.1,
-      "position": [
-        -1120,
-        660
-      ]
-    },
-    {
-      "parameters": {
-        "mode": "runOnceForEachItem",
-        "jsCode": "/**\n * Nodo n8n: \"6. Procesar decisión de revisión\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n * Disparado por el Telegram Trigger, escuchando actualizaciones tipo\n * callback_query (los clicks en los botones del mensaje de revisión).\n *\n * callback_data llega en el formato \"<accion>:<id>\":\n *   appr = aprobar          (id = render_id)\n *   rejt = rechazar         (id = render_id)\n *   varr = pedir variante   (id = render_id)\n *   retr = reintentar render (id = raw_video_id)\n *\n * Esto es la versión mínima de Capa 5 (revisión humana) -- deja escrito\n * en review_actions y raw_videos.status lo necesario para que la Capa 5\n * \"de verdad\" (portal propio, ver sistema-fabrica-reels-nexoia.md sección\n * 14) se enchufe después sin cambiar el modelo de datos.\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst update = $json;\nconst callbackQuery = update.callback_query;\n\nif (!callbackQuery) {\n  // Update de Telegram que no es un click de botón (ej. un mensaje de\n  // texto normal al bot) -- no hacemos nada con esto en este flujo.\n  return [{ json: { skip: true } }];\n}\n\nconst [action, targetId] = (callbackQuery.data || '').split(':');\nconst reviewer = callbackQuery.from && callbackQuery.from.username\n  ? `telegram:@${callbackQuery.from.username}`\n  : `telegram:${callbackQuery.from ? callbackQuery.from.id : 'desconocido'}`;\n\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n  Prefer: 'return=representation',\n};\n\nconst getRender = async (renderId) => {\n  const rows = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `${SUPABASE_URL}/rest/v1/renders?id=eq.${renderId}&select=id,raw_video_id`,\n    headers: SUPABASE_HEADERS,\n    json: true,\n  });\n  return rows[0];\n};\n\nlet confirmationText = '';\nlet toastText = '';\n\nif (action === 'appr' || action === 'rejt' || action === 'varr') {\n  const render = await getRender(targetId);\n  if (!render) {\n    return [{ json: { skip: true, error: `render ${targetId} no encontrado` } }];\n  }\n\n  const decisionMap = { appr: 'approved', rejt: 'rejected', varr: 'variant_requested' };\n  const decision = decisionMap[action];\n\n  await this.helpers.httpRequest({\n    method: 'POST',\n    url: `${SUPABASE_URL}/rest/v1/review_actions`,\n    headers: SUPABASE_HEADERS,\n    body: { render_id: targetId, reviewer, decision, decided_at: new Date().toISOString() },\n    json: true,\n  });\n\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${render.raw_video_id}`,\n    headers: SUPABASE_HEADERS,\n    body: { status: decision },\n    json: true,\n  });\n\n  const labelMap = { appr: '✅ Aprobado', rejt: '❌ Rechazado', varr: '🔁 Variante solicitada' };\n  confirmationText = `${labelMap[action]} por ${reviewer}`;\n  toastText = labelMap[action];\n} else if (action === 'retr') {\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${targetId}`,\n    headers: SUPABASE_HEADERS,\n    body: { status: 'edit_spec_ready', render_attempts: 0 },\n    json: true,\n  });\n  confirmationText = `🔁 Reintento encolado por ${reviewer} -- se vuelve a disparar en el próximo ciclo (cada 2 min).`;\n  toastText = 'Reintento encolado';\n} else {\n  return [{ json: { skip: true, error: `acción desconocida: ${action}` } }];\n}\n\nreturn [{\n  json: {\n    skip: false,\n    callback_query_id: callbackQuery.id,\n    chat_id: callbackQuery.message && callbackQuery.message.chat ? callbackQuery.message.chat.id : null,\n    message_id: callbackQuery.message ? callbackQuery.message.message_id : null,\n    confirmation_text: confirmationText,\n    toast_text: toastText,\n  },\n}];\n"
-      },
-      "id": "e697e4a8-d240-4b4b-aabf-45cb580c4a5f",
-      "name": "6. Procesar decisión de revisión",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -860,
-        660
-      ]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict"
-          },
-          "conditions": [
-            {
-              "id": "06746e8d-fe9d-4753-9605-a10a4bd1ec17",
-              "leftValue": "={{ $json.skip }}",
-              "rightValue": true,
-              "operator": {
-                "type": "boolean",
-                "operation": "notEquals",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "256a4bcc-71d0-4c55-b1cb-7bb0028a5bf8",
-      "name": "¿Hay que responder?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        -600,
-        660
-      ]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/answerCallbackQuery",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ callback_query_id: $json.callback_query_id, text: $json.toast_text }) }}",
-        "options": {}
-      },
-      "id": "045eaa0b-bb1d-4739-ac8b-26641545f086",
-      "name": "Responder callback_query (Telegram)",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -340,
-        660
-      ]
-    },
-    {
-      "parameters": {
-        "resource": "message",
-        "operation": "editMessageText",
-        "chatId": "={{ $json.chat_id }}",
-        "messageId": "={{ $json.message_id }}",
-        "text": "={{ $json.confirmation_text }}",
-        "additionalFields": {}
-      },
-      "id": "d705246f-8b9e-45ba-9324-2cec596b5105",
-      "name": "Editar mensaje con la decisión",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        -80,
-        660
+        320
       ]
     }
   ],
@@ -341,62 +226,6 @@
           }
         ]
       ]
-    },
-    "5. Procesar resultado de render": {
-      "main": [
-        [
-          {
-            "node": "9. Enviar alerta de revisión",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Recibir decisión de revisión": {
-      "main": [
-        [
-          {
-            "node": "6. Procesar decisión de revisión",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "6. Procesar decisión de revisión": {
-      "main": [
-        [
-          {
-            "node": "¿Hay que responder?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "¿Hay que responder?": {
-      "main": [
-        [
-          {
-            "node": "Responder callback_query (Telegram)",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        []
-      ]
-    },
-    "Responder callback_query (Telegram)": {
-      "main": [
-        [
-          {
-            "node": "Editar mensaje con la decisión",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "active": false,
@@ -405,6 +234,6 @@
   },
   "pinData": {},
   "meta": {
-    "instructions": "Antes de activar: 1) levantar edit-spec-api y renderService con las env vars cargadas; 2) crear la credencial de Telegram Bot en n8n y asignarla a los nodos Telegram y Telegram Trigger; 3) configurar N8N_RENDER_CALLBACK_URL en renderService apuntando a la URL publica del nodo Webhook 'Recibir resultado de render' de ESTE workflow; 4) revisar visualmente el wiring de 'Procesar de a uno (render)' (Loop Over Items) igual que en la Capa 3."
+    "instructions": "v2 (post-Capa 5): este workflow ya NO maneja botones de revision -- eso lo hace capa5-review.workflow.json. Antes de activar: 1) levantar edit-spec-api y renderService con las env vars cargadas; 2) configurar N8N_RENDER_CALLBACK_URL en renderService apuntando a la URL publica del nodo Webhook 'Recibir resultado de render' de ESTE workflow; 3) revisar visualmente el wiring de 'Procesar de a uno (render)' (Loop Over Items)."
   }
 }

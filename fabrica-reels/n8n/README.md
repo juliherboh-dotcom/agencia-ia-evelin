@@ -1,4 +1,4 @@
-# Workflows n8n — Capa 3 y Capa 4
+# Workflows n8n — Capa 3, Capa 4 y Capa 5
 
 ## Capa 3 — "Edit Director"
 
@@ -14,34 +14,50 @@ cd fabrica-reels/services/edit-spec-api && npm install && npm start   # :3002
 
 ## Capa 4 — "Render automático"
 
-Workflow importable: [`capa4-render.workflow.json`](./capa4-render.workflow.json)
+Workflow importable: [`capa4-render.workflow.json`](./capa4-render.workflow.json) (v2 — ya no maneja botones de revisión, eso es Capa 5)
 Documentación completa: [`../../capa4-render.md`](../../capa4-render.md)
 
-Detecta `raw_videos.status='edit_spec_ready'`, dispara el render (async) con `personal_brand_clean`, sube el MP4 a Supabase Storage, deja el video en `rendered_pending_review` y manda la alerta de revisión por Telegram con botones aprobar/rechazar/pedir variante.
+Detecta `raw_videos.status='edit_spec_ready'`, dispara el render (async) con `personal_brand_clean`, sube el MP4 a Supabase Storage y deja el video en `rendered_pending_review`. Si el render falla, avisa por Telegram con un botón de reintento.
 
 **Servicios que necesita corriendo:**
 ```bash
 cd fabrica-reels/remotion && npm install && npm run render:service   # :3001
 ```
 
-## Cómo importar cualquiera de los dos
+## Capa 5 — "Revisión y aprobación"
+
+Workflow importable: [`capa5-review.workflow.json`](./capa5-review.workflow.json)
+Documentación completa: [`../../capa5-review.md`](../../capa5-review.md)
+
+Detecta `raw_videos.status='rendered_pending_review'`, manda el mensaje interactivo de revisión (7 acciones) por Telegram, procesa las decisiones (incluido el paso de pedir comentario/tipo de variante), y deja el video en `approved_for_publish` / `rejected` / `needs_changes` / `variant_requested` / `error_flagged`. Al aprobar, deja lista una fila en `publications` para Capa 6.
+
+**No necesita servicios propios corriendo** (solo `renderService` de Capa 4, para el botón "Regenerar link").
+
+## Cómo importar cualquiera de los tres
 
 1. n8n → Workflows → Import from File.
 2. Revisar visualmente los nodos **"Procesar de a uno"** (Loop Over Items /
-   Split In Batches, presentes en ambos workflows): sus dos salidas son
+   Split In Batches, presentes en Capa 3 y 4): sus dos salidas son
    "done" (índice 0, sin nada conectado, fin del ciclo) y "loop" (índice 1,
    conecta al resto del flujo). El orden exacto de estos índices varía un
    poco según la versión de n8n — si al importar el wiring queda cruzado,
    es el único lugar donde hay que corregir a mano.
 3. Cargar las env vars (ver tabla en cada doc).
-4. Crear la credencial de Telegram Bot en n8n y asignarla a los nodos
-   `n8n-nodes-base.telegram` / `telegramTrigger`.
-5. En Capa 4, además: configurar `N8N_RENDER_CALLBACK_URL` en el entorno
-   del render service apuntando a la URL pública del nodo Webhook
-   `Recibir resultado de render` de ese workflow (n8n te la da al abrir el
-   nodo — "Test URL" mientras development, "Production URL" con el
-   workflow activo).
-6. Activar.
+4. Crear la credencial de Telegram Bot en n8n y asignarla al nodo
+   `n8n-nodes-base.telegramTrigger` de Capa 5 (los envíos de mensajes ya no
+   usan nodos nativos de Telegram, llaman directo a la Bot API por HTTP
+   desde los nodos Code — solo el *receptor* de updates sigue siendo el
+   nodo nativo).
+5. En Capa 4: configurar `N8N_RENDER_CALLBACK_URL` en el entorno del
+   render service apuntando a la URL pública del nodo Webhook
+   `Recibir resultado de render` (n8n te la da al abrir el nodo — "Test
+   URL" en desarrollo, "Production URL" con el workflow activo).
+6. En Capa 5: correr `fabrica-reels/schema/capa5-review.migration.sql` y
+   dar de alta al menos un `reviewer` activo antes de activar el workflow.
+7. Activar los tres. **Si tenías una v1 vieja de Capa 4** (con nodos de
+   Telegram para revisión), desactivala antes de activar Capa 5 — si
+   quedan las dos escuchando el mismo bot, un mismo click se procesa dos
+   veces.
 
 ## Orden recomendado para levantar todo
 
@@ -52,5 +68,5 @@ cd fabrica-reels/services/edit-spec-api && npm install && npm start   # :3002
 # Terminal 2
 cd fabrica-reels/remotion && npm install && npm run render:service    # :3001
 
-# Terminal 3: n8n, con Capa 3 y Capa 4 importadas y activas
+# Terminal 3: n8n, con Capa 3, Capa 4 (v2) y Capa 5 importadas y activas
 ```
