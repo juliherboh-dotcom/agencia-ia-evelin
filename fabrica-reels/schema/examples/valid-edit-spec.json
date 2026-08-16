@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0.0",
+  "video_id": "VID-2026-08-16-001",
+  "client_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "raw_video_id": "9b2f1e3a-6c4d-4a2b-8e1f-2d3c4b5a6e7f",
+  "template_id": "personal_brand_clean",
+  "platform": "instagram_reels",
+  "aspect_ratio": "9:16",
+  "canvas": { "width": 1080, "height": 1920 },
+  "source_video": {
+    "url": "https://storage.nexo-ia.cl/raw/3fa85f64-5717-4562-b3fc-2c963f66afa6/VID-2026-08-16-001.mp4",
+    "duration_sec": 45
+  },
+  "duration": { "target_sec": 38 },
+  "cuts": [
+    { "start": 0.0, "end": 9.0, "keep": true },
+    { "start": 9.0, "end": 10.6, "keep": false, "reason": "silencio antes de la segunda idea" },
+    { "start": 10.6, "end": 27.0, "keep": true },
+    { "start": 27.0, "end": 29.0, "keep": false, "reason": "muletilla 'o sea'" },
+    { "start": 29.0, "end": 45.0, "keep": true }
+  ],
+  "hook": {
+    "text": "Esto cambió mi forma de vender",
+    "emphasis_words": ["cambió", "vender"],
+    "display_start": 0,
+    "display_end": 2.8
+  },
+  "subtitles": {
+    "style": {
+      "font_family": "Manrope",
+      "font_size": 58,
+      "color": "#FFFFFF",
+      "highlight_color": "#F2A93B",
+      "position": "bottom"
+    },
+    "lines": [
+      { "start": 0.0, "end": 2.8, "text": "Esto cambió mi forma de vender", "emphasis": true },
+      { "start": 2.9, "end": 6.5, "text": "y no fue con más publicidad", "emphasis": false },
+      { "start": 6.6, "end": 10.2, "text": "fue con un solo cambio en el guion", "emphasis": true },
+      { "start": 10.3, "end": 15.0, "text": "te lo muestro paso a paso", "emphasis": false },
+      { "start": 15.1, "end": 20.0, "text": "primero: dejé de hablar de mí", "emphasis": false },
+      { "start": 20.1, "end": 25.0, "text": "y empecé a hablar del cliente", "emphasis": true },
+      { "start": 25.1, "end": 31.0, "text": "eso solo triplicó las respuestas", "emphasis": true },
+      { "start": 31.1, "end": 37.5, "text": "probalo en tu próximo reel", "emphasis": false }
+    ]
+  },
+  "overlays": [
+    {
+      "id": "stat-x3",
+      "type": "text",
+      "text": "🔥 x3 respuestas",
+      "start": 25.0,
+      "end": 28.0,
+      "position": { "x": 0.5, "y": 0.3 }
+    }
+  ],
+  "zoom_keyframes": [
+    { "t": 0, "scale": 1.0, "focus": "center" },
+    { "t": 6, "scale": 1.08, "focus": "center" },
+    { "t": 20, "scale": 1.0, "focus": "center" }
+  ],
+  "progress_bar": { "enabled": true, "color": "#F2A93B" },
+  "branding": {
+    "logo_url": "https://cdn.nexo-ia.cl/clients/3fa85f64-5717-4562-b3fc-2c963f66afa6/logo.png",
+    "primary_color": "#1B2A4A",
+    "accent_color": "#F2A93B",
+    "handle": "@nexo.ia",
+    "watermark_position": "bottom_right"
+  },
+  "end_card": { "enabled": true, "cta_text": "Seguime para más", "duration_sec": 2 },
+  "music": { "track_id": "upbeat_soft_01", "volume_db": -18 },
+  "meta": {
+    "created_by": "llm_edit_director",
+    "created_at": "2026-08-16T14:30:00Z",
+    "version": 1
+  }
+}

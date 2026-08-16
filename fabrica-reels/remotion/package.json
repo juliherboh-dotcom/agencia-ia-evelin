@@ -1,0 +1,31 @@
+{
+  "name": "fabrica-reels-remotion",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Capa 4 (render) de la Fábrica de Reels — Compositions Remotion + servicio de render.",
+  "scripts": {
+    "start": "remotion studio src/index.ts",
+    "render:local": "ts-node --transpile-only src/render/renderLocal.ts",
+    "render:service": "ts-node --transpile-only src/render/renderService.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "remotion": "^4.0.190",
+    "@remotion/renderer": "^4.0.190",
+    "@remotion/bundler": "^4.0.190",
+    "@remotion/cli": "^4.0.190",
+    "@supabase/supabase-js": "^2.45.0",
+    "express": "^4.19.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "ts-node": "^10.9.2",
+    "@types/express": "^4.17.21",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/node": "^20.14.2"
+  }
+}

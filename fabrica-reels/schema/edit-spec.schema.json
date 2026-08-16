@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nexo-ia.cl/schemas/edit-spec.schema.json",
+  "title": "EditSpec",
+  "description": "Contrato entre el Edit Director (LLM, Capa 3) y el motor de render Remotion (Capa 4) de la Fábrica de Reels. IMPORTANTE: 'cuts[].start/end' están expresados en la línea de tiempo del VIDEO FUENTE original. Todos los demás campos de tiempo (hook, subtitles.lines, overlays, zoom_keyframes) están expresados en la línea de tiempo FINAL ya editada, de 0 a duration.target_sec.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "video_id", "client_id", "raw_video_id", "template_id",
+    "platform", "aspect_ratio", "source_video", "duration", "cuts", "hook",
+    "subtitles", "branding", "meta"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "video_id": {
+      "type": "string",
+      "pattern": "^VID-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{3,}$",
+      "description": "Debe matchear el ID_Video del sistema de datos."
+    },
+    "client_id": { "type": "string", "format": "uuid" },
+    "raw_video_id": { "type": "string", "format": "uuid" },
+    "template_id": {
+      "type": "string",
+      "enum": ["educativo_v1", "historia_v1", "venta_v1", "hook_fuerte_v1", "prueba_social_v1", "personal_brand_clean"],
+      "description": "Registro cerrado de templates Remotion existentes. Agregar un template nuevo = agregar un valor acá + desplegar la Composition correspondiente."
+    },
+    "platform": { "type": "string", "enum": ["tiktok", "instagram_reels"] },
+    "aspect_ratio": { "const": "9:16" },
+    "canvas": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "width": { "const": 1080 },
+        "height": { "const": 1920 }
+      },
+      "default": { "width": 1080, "height": 1920 }
+    },
+    "source_video": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url", "duration_sec"],
+      "properties": {
+        "url": { "type": "string", "format": "uri" },
+        "duration_sec": { "type": "number", "exclusiveMinimum": 0, "maximum": 1800 }
+      }
+    },
+    "duration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_sec"],
+      "properties": {
+        "target_sec": { "type": "number", "minimum": 5, "maximum": 90 }
+      }
+    },
+    "cuts": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/cut" },
+      "description": "Timestamps en la línea de tiempo del video FUENTE. keep=false es lo que se descarta al armar el timeline final."
+    },
+    "hook": { "$ref": "#/$defs/hook" },
+    "subtitles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["style", "lines"],
+      "properties": {
+        "style": { "$ref": "#/$defs/subtitleStyle" },
+        "lines": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/captionLine" } }
+      }
+    },
+    "overlays": { "type": "array", "default": [], "items": { "$ref": "#/$defs/overlay" } },
+    "zoom_keyframes": { "type": "array", "default": [], "items": { "$ref": "#/$defs/zoomKeyframe" } },
+    "progress_bar": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "color": { "$ref": "#/$defs/hexColor" }
+      },
+      "default": { "enabled": true, "color": "#F2A93B" }
+    },
+    "branding": { "$ref": "#/$defs/branding" },
+    "end_card": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "cta_text": { "type": "string", "maxLength": 60 },
+        "duration_sec": { "type": "number", "minimum": 1, "maximum": 4 }
+      }
+    },
+    "music": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "track_id": { "type": "string" },
+        "volume_db": { "type": "number", "minimum": -60, "maximum": 0 }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["created_by", "created_at", "version"],
+      "properties": {
+        "created_by": { "type": "string", "enum": ["llm_edit_director", "human_edit", "llm_repair"] },
+        "created_at": { "type": "string", "format": "date-time" },
+        "version": { "type": "integer", "minimum": 1 }
+      }
+    }
+  },
+  "$defs": {
+    "hexColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+    "position": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y"],
+      "properties": {
+        "x": { "type": "number", "minimum": 0, "maximum": 1 },
+        "y": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "description": "Fracción relativa del canvas (0-1), no píxeles absolutos."
+    },
+    "cut": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end", "keep"],
+      "properties": {
+        "start": { "type": "number", "minimum": 0 },
+        "end": { "type": "number", "minimum": 0 },
+        "keep": { "type": "boolean" },
+        "reason": { "type": "string", "maxLength": 120 }
+      }
+    },
+    "hook": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "display_start", "display_end"],
+      "properties": {
+        "text": { "type": "string", "minLength": 1, "maxLength": 90 },
+        "emphasis_words": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "display_start": { "type": "number", "minimum": 0 },
+        "display_end": { "type": "number", "minimum": 0 }
+      }
+    },
+    "subtitleStyle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["font_family", "font_size", "color", "highlight_color", "position"],
+      "properties": {
+        "font_family": { "type": "string" },
+        "font_size": { "type": "integer", "minimum": 28, "maximum": 96 },
+        "color": { "$ref": "#/$defs/hexColor" },
+        "highlight_color": { "$ref": "#/$defs/hexColor" },
+        "position": { "type": "string", "enum": ["top", "center", "bottom"] }
+      }
+    },
+    "captionLine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end", "text"],
+      "properties": {
+        "start": { "type": "number", "minimum": 0 },
+        "end": { "type": "number", "minimum": 0 },
+        "text": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "emphasis": { "type": "boolean", "default": false }
+      }
+    },
+    "overlay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "start", "end", "position"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["text", "image", "badge"] },
+        "text": { "type": "string", "maxLength": 60 },
+        "image_url": { "type": "string", "format": "uri" },
+        "start": { "type": "number", "minimum": 0 },
+        "end": { "type": "number", "minimum": 0 },
+        "position": { "$ref": "#/$defs/position" }
+      }
+    },
+    "zoomKeyframe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["t", "scale"],
+      "properties": {
+        "t": { "type": "number", "minimum": 0 },
+        "scale": { "type": "number", "minimum": 1.0, "maximum": 1.6 },
+        "focus": { "type": "string", "enum": ["center", "top", "bottom"], "default": "center" }
+      }
+    },
+    "branding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["logo_url", "primary_color", "accent_color", "handle"],
+      "properties": {
+        "logo_url": { "type": "string", "format": "uri" },
+        "primary_color": { "$ref": "#/$defs/hexColor" },
+        "accent_color": { "$ref": "#/$defs/hexColor" },
+        "handle": { "type": "string", "pattern": "^@[a-zA-Z0-9._]{2,30}$" },
+        "watermark_position": {
+          "type": "string",
+          "enum": ["top_left", "top_right", "bottom_left", "bottom_right"],
+          "default": "bottom_right"
+        }
+      }
+    }
+  }
+}

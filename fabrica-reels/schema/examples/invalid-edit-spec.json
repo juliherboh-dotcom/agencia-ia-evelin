@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0.0",
+  "video_id": "VID-2026-08-16-001",
+  "client_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "raw_video_id": "9b2f1e3a-6c4d-4a2b-8e1f-2d3c4b5a6e7f",
+  "template_id": "personal_brand_clean",
+  "platform": "instagram_reels",
+  "aspect_ratio": "9:16",
+  "source_video": {
+    "url": "https://storage.nexo-ia.cl/raw/3fa85f64-5717-4562-b3fc-2c963f66afa6/VID-2026-08-16-001.mp4",
+    "duration_sec": 45
+  },
+  "duration": { "target_sec": 38 },
+  "cuts": [
+    { "start": 0.0, "end": 9.0, "keep": true },
+    { "start": 9.0, "end": 10.6, "keep": false, "reason": "silencio" },
+    { "start": 10.6, "end": 27.0, "keep": true },
+    { "start": 27.0, "end": 29.0, "keep": false, "reason": "muletilla" },
+    { "start": 29.0, "end": 45.0, "keep": true }
+  ],
+  "hook": {
+    "text": "Esto cambió mi forma de vender",
+    "emphasis_words": ["cambió", "vender"],
+    "display_start": 0,
+    "display_end": 2.8
+  },
+  "subtitles": {
+    "style": {
+      "font_family": "Manrope",
+      "font_size": 58,
+      "color": "#FFFFFF",
+      "highlight_color": "#F2A93B",
+      "position": "bottom"
+    },
+    "lines": [
+      { "start": 0.0, "end": 2.8, "text": "Esto cambió mi forma de vender", "emphasis": true },
+      { "start": 2.9, "end": 6.5, "text": "y no fue con más publicidad", "emphasis": false },
+      { "start": 6.0, "end": 10.2, "text": "fue con un solo cambio en el guion", "emphasis": true }
+    ]
+  },
+  "overlays": [],
+  "zoom_keyframes": [],
+  "branding": {
+    "logo_url": "https://cdn.nexo-ia.cl/clients/3fa85f64-5717-4562-b3fc-2c963f66afa6/logo.png",
+    "primary_color": "#1B2A4A",
+    "accent_color": "#F2A93B",
+    "handle": "nexo.ia",
+    "watermark_position": "bottom_right"
+  },
+  "meta": {
+    "created_by": "llm_edit_director",
+    "created_at": "2026-08-16T14:30:00Z",
+    "version": 1
+  }
+}
