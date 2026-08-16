@@ -9,11 +9,14 @@ alter table edit_specs
   add column if not exists validation_errors jsonb,
   add column if not exists repair_attempts int not null default 0;
 
--- Columnas generadas desde el jsonb para poder filtrar/indexar sin tener
--- que parsear spec_json en cada query (ej. "dame todos los edit_specs
--- pendientes de render del template X").
+-- NOTA: `template_id` YA existe como columna de texto plana en el diseño
+-- original de edit_specs (sistema-fabrica-reels-nexoia.md, sección 9) y se
+-- puebla al insertar la fila (ver code-node-8-guardar-supabase.js) — no se
+-- agrega como columna generada acá para no colisionar con esa columna.
+--
+-- `platform` sí es nueva: no existía en el diseño original, y conviene
+-- derivarla del jsonb en vez de duplicarla a mano en cada insert.
 alter table edit_specs
-  add column if not exists template_id text generated always as (spec_json ->> 'template_id') stored,
   add column if not exists platform text generated always as (spec_json ->> 'platform') stored;
 
 create index if not exists idx_edit_specs_spec_json on edit_specs using gin (spec_json);
