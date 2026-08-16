@@ -1,4 +1,4 @@
-# Workflows n8n — Capa 3 a Capa 6
+# Workflows n8n — Capa 3 a Capa 8
 
 ## Capa 3 — "Edit Director"
 
@@ -45,15 +45,27 @@ Detecta `publications.status='queued'` (creadas por Capa 5), arma el caption fin
 cd fabrica-reels/services/publish-api && npm install && npm start   # :3003
 ```
 
-## Cómo importar cualquiera de los cuatro
+## Capa 7 — "Métricas" y Capa 8 — "Scoring"
+
+Workflows importables: [`capa7-metrics.workflow.json`](./capa7-metrics.workflow.json), [`capa8-scoring.workflow.json`](./capa8-scoring.workflow.json)
+Documentación completa: [`../../capa7-8-metrics-scoring.md`](../../capa7-8-metrics-scoring.md)
+
+Capa 7 (cada 30 min) recolecta snapshots 24h/48h/72h/7d para `publications.status='published'` y los guarda en `post_metrics`. Capa 8 (cada 15 min, independiente) calcula el score de rendimiento de cada snapshot nuevo, actualiza el benchmark de cuenta+plataforma+ventana, y marca `raw_videos.variant_generation_status='ready'` cuando un video cruza el umbral de ganador (score ≥70) — la cola que va a leer Capa 9.
+
+**Servicios que necesita corriendo:**
+```bash
+cd fabrica-reels/services/metrics-api && npm install && npm start   # :3004
+```
+
+## Cómo importar cualquiera de los seis
 
 1. n8n → Workflows → Import from File.
 2. Revisar visualmente los nodos **"Procesar de a uno/a"** (Loop Over
-   Items / Split In Batches, presentes en Capa 3, 4 y 6): sus dos salidas
-   son "done" (índice 0, sin nada conectado, fin del ciclo) y "loop"
-   (índice 1, conecta al resto del flujo). El orden exacto de estos
-   índices varía un poco según la versión de n8n — si al importar el
-   wiring queda cruzado, es el único lugar donde hay que corregir a mano.
+   Items / Split In Batches, presentes en Capa 3, 4, 6, 7 y 8): sus dos
+   salidas son "done" (índice 0, sin nada conectado, fin del ciclo) y
+   "loop" (índice 1, conecta al resto del flujo). El orden exacto de
+   estos índices varía un poco según la versión de n8n — si al importar
+   el wiring queda cruzado, es el único lugar donde hay que corregir a mano.
 3. Cargar las env vars (ver tabla en cada doc).
 4. Crear la credencial de Telegram Bot en n8n y asignarla al nodo
    `n8n-nodes-base.telegramTrigger` de Capa 5 (los envíos de mensajes ya no
@@ -69,7 +81,11 @@ cd fabrica-reels/services/publish-api && npm install && npm start   # :3003
 7. En Capa 6: correr `fabrica-reels/schema/capa6-publishing.migration.sql`
    y dar de alta al menos una `social_accounts` activa por cliente+plataforma
    (`publisher_provider='mock'` para probar sin publicar de verdad).
-8. Activar los cuatro. **Si tenías una v1 vieja de Capa 4** (con nodos de
+8. En Capa 7-8: correr `fabrica-reels/schema/capa7-8-metrics-scoring.migration.sql`
+   (esta migración renombra `metrics`→`post_metrics` y `benchmarks`→`account_benchmarks`
+   si venías de la arquitectura original — revisar que no haya datos que
+   dependan del nombre viejo antes de correrla en producción).
+9. Activar los seis. **Si tenías una v1 vieja de Capa 4** (con nodos de
    Telegram para revisión), desactivala antes de activar Capa 5 — si
    quedan las dos escuchando el mismo bot, un mismo click se procesa dos
    veces.
@@ -86,5 +102,8 @@ cd fabrica-reels/remotion && npm install && npm run render:service    # :3001
 # Terminal 3
 cd fabrica-reels/services/publish-api && npm install && npm start     # :3003
 
-# Terminal 4: n8n, con Capa 3, Capa 4 (v2), Capa 5 y Capa 6 importadas y activas
+# Terminal 4
+cd fabrica-reels/services/metrics-api && npm install && npm start     # :3004
+
+# Terminal 5: n8n, con las 6 capas importadas y activas
 ```

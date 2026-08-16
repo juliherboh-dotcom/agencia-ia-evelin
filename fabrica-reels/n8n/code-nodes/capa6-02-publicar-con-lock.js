@@ -149,6 +149,22 @@ if (result.ok && (result.status === 'published' || result.status === 'scheduled'
     json: true,
   });
 
+  // Ajuste de Capa 7-8: sin esto, raw_videos.status se quedaba pegado en
+  // 'approved_for_publish' para siempre incluso después de publicar de
+  // verdad -- Capa 7 no lo necesita para su propio trigger (usa
+  // publications.status), pero cualquier vista/reporte que mire
+  // raw_videos.status sí. Solo se marca en 'published' real, no en
+  // 'scheduled' (todavía no salió al aire).
+  if (result.status === 'published') {
+    await this.helpers.httpRequest({
+      method: 'PATCH',
+      url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${pub.raw_video_id}`,
+      headers: SUPABASE_HEADERS,
+      body: { status: 'published' },
+      json: true,
+    });
+  }
+
   const chatIdRows = await this.helpers.httpRequest({
     method: 'GET',
     url: `${SUPABASE_URL}/rest/v1/clients?id=eq.${pub.client_id}&select=telegram_chat_id`,

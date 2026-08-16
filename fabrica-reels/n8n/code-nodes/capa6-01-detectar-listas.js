@@ -24,7 +24,7 @@ const query = [
   `scheduled_at=lte.${encodeURIComponent(nowIso)}`,
   'locked_at=is.null',
   `or=(${encodeURIComponent(`next_attempt_at.is.null,next_attempt_at.lte.${nowIso}`)})`,
-  'select=id,client_id,platform,render_id,account_id,provider,caption_used,retry_count',
+  'select=id,client_id,platform,render_id,raw_video_id,account_id,provider,caption_used,retry_count',
   'order=scheduled_at.asc',
 ].join('&');
 

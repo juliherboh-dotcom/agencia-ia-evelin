@@ -1,0 +1,122 @@
+{
+  "name": "Fabrica de Reels - Capa 7 - Metricas",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "id": "0f9cf7e7-03f6-46be-bf7e-edd14895bb0b",
+      "name": "Cada 30 min",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1000,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "/**\n * Nodo n8n: \"0. Detectar snapshots pendientes\"\n * Tipo: Code (JavaScript, \"Run Once for All Items\")\n *\n * Para cada publication en status='published', calcula qué ventanas\n * (24h/48h/72h/7d) ya deberían tener snapshot según published_at, y\n * devuelve un item por cada (publication, window) que todavía no tiene\n * fila en post_metrics.\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n};\n\nconst WINDOW_HOURS = { '24h': 24, '48h': 48, '72h': 72, '7d': 168 };\n\nconst published = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `${SUPABASE_URL}/rest/v1/publications?status=eq.published&select=id,client_id,platform,render_id,raw_video_id,account_id,published_at`,\n  headers: SUPABASE_HEADERS,\n  json: true,\n});\n\nconst now = Date.now();\nconst results = [];\n\nfor (const pub of published) {\n  if (!pub.published_at) continue;\n  const publishedAt = new Date(pub.published_at).getTime();\n\n  const existing = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `${SUPABASE_URL}/rest/v1/post_metrics?publication_id=eq.${pub.id}&select=snapshot_window`,\n    headers: SUPABASE_HEADERS,\n    json: true,\n  });\n  const done = new Set(existing.map((e) => e.snapshot_window));\n\n  for (const [windowName, hours] of Object.entries(WINDOW_HOURS)) {\n    if (done.has(windowName)) continue;\n    const dueAt = publishedAt + hours * 3600 * 1000;\n    if (now >= dueAt) {\n      results.push({\n        publication_id: pub.id,\n        client_id: pub.client_id,\n        platform: pub.platform,\n        render_id: pub.render_id,\n        raw_video_id: pub.raw_video_id,\n        account_id: pub.account_id,\n        window: windowName,\n      });\n    }\n  }\n}\n\nreturn results.map((r) => ({ json: r }));\n"
+      },
+      "id": "06cd8f38-1646-4572-b7cb-45a2c1c2b6c6",
+      "name": "0. Detectar snapshots pendientes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -740,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "90a10261-6ebe-461e-9a8c-828d33db533e",
+      "name": "Procesar de a uno",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -480,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "/**\n * Nodo n8n: \"1. Tomar snapshot y guardar\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Llama a metrics-api para la ventana correspondiente, hace un chequeo\n * de plausibilidad, y guarda en post_metrics. Si el provider no tiene\n * ciertos campos (ej. saves/retención en TikTok), se guardan como NULL,\n * nunca como 0 -- la diferencia importa para el scoring (Capa 8): NULL\n * redistribuye peso, 0 sería \"lo midieron y dio cero\", que es otra cosa.\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,\n * METRICS_API_URL, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID\n */\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n  Prefer: 'return=representation',\n};\nconst METRICS_API_URL = $env.METRICS_API_URL;\n\nconst item = $json;\n\n// Idempotencia defensiva: aunque el nodo 0 ya filtra, una carrera entre\n// dos ciclos podría duplicar -- el índice único de la migración es la\n// última línea de defensa, esto evita gastar la llamada al provider de más.\nconst already = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `${SUPABASE_URL}/rest/v1/post_metrics?publication_id=eq.${item.publication_id}&snapshot_window=eq.${item.window}&select=id`,\n  headers: SUPABASE_HEADERS,\n  json: true,\n});\nif (already.length > 0) {\n  return [{ json: { ...item, outcome: 'already_exists' } }];\n}\n\nconst publications = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `${SUPABASE_URL}/rest/v1/publications?id=eq.${item.publication_id}&select=external_post_id,provider`,\n  headers: SUPABASE_HEADERS,\n  json: true,\n});\nconst pub = publications[0];\nif (!pub || !pub.external_post_id) {\n  return [{ json: { ...item, outcome: 'skipped_no_external_id' } }];\n}\n\nlet snapshot;\ntry {\n  snapshot = await this.helpers.httpRequest({\n    method: 'POST',\n    url: `${METRICS_API_URL}/snapshot`,\n    body: {\n      publication_id: item.publication_id,\n      platform: item.platform,\n      provider: pub.provider,\n      provider_post_id: pub.external_post_id,\n      window: item.window,\n    },\n    json: true,\n  });\n} catch (err) {\n  return [{ json: { ...item, outcome: 'provider_unreachable', error: String(err) } }];\n}\n\nif (!snapshot.ok) {\n  if (snapshot.retryable) {\n    return [{ json: { ...item, outcome: 'retry_next_cycle', error: snapshot.error_message } }];\n  }\n  // Fallo terminal del provider (ej. \"publicación removida\"): se guarda\n  // igual una fila con source='failed' para no reintentar esta ventana\n  // para siempre y dejar rastro de qué pasó.\n  await this.helpers.httpRequest({\n    method: 'POST',\n    url: `${SUPABASE_URL}/rest/v1/post_metrics`,\n    headers: SUPABASE_HEADERS,\n    body: {\n      publication_id: item.publication_id,\n      client_id: item.client_id,\n      raw_video_id: item.raw_video_id,\n      render_id: item.render_id,\n      account_id: item.account_id,\n      platform: item.platform,\n      snapshot_window: item.window,\n      snapshot_at: new Date().toISOString(),\n      source: 'failed',\n      confidence_level: 'low',\n      raw_payload: { error: snapshot.error_message },\n    },\n    json: true,\n  });\n  return [{ json: { ...item, outcome: 'failed_terminal', error: snapshot.error_message } }];\n}\n\n// Chequeo de valores imposibles: negativos, o engagement absurdamente por\n// encima de las views (indicio de un bug del proveedor, no un dato real).\nconst numericFields = [snapshot.views, snapshot.likes, snapshot.comments, snapshot.shares, snapshot.saves, snapshot.follows];\nconst looksImplausible =\n  numericFields.some((v) => typeof v === 'number' && v < 0) ||\n  (snapshot.views !== null && (snapshot.likes || 0) > snapshot.views * 5);\n\nawait this.helpers.httpRequest({\n  method: 'POST',\n  url: `${SUPABASE_URL}/rest/v1/post_metrics`,\n  headers: SUPABASE_HEADERS,\n  body: {\n    publication_id: item.publication_id,\n    client_id: item.client_id,\n    raw_video_id: item.raw_video_id,\n    render_id: item.render_id,\n    account_id: item.account_id,\n    platform: item.platform,\n    snapshot_window: item.window,\n    snapshot_at: new Date().toISOString(),\n    views: snapshot.views,\n    likes: snapshot.likes,\n    comments: snapshot.comments,\n    shares: snapshot.shares,\n    saves: snapshot.saves,\n    follows: snapshot.follows,\n    profile_visits: snapshot.profile_visits,\n    avg_watch_time: snapshot.avg_watch_time_sec,\n    retention_rate: snapshot.retention_rate,\n    completion_rate: snapshot.completion_rate,\n    engagement_rate: snapshot.views\n      ? ((snapshot.likes || 0) + (snapshot.comments || 0) + (snapshot.shares || 0) + (snapshot.saves || 0)) / snapshot.views\n      : null,\n    raw_payload: snapshot.raw_payload,\n    source: snapshot.source,\n    confidence_level: looksImplausible ? 'low' : snapshot.confidence_level,\n  },\n  json: true,\n});\n\nif (looksImplausible) {\n  await this.helpers.httpRequest({\n    method: 'POST',\n    url: `https://api.telegram.org/bot${$env.TELEGRAM_BOT_TOKEN}/sendMessage`,\n    body: {\n      chat_id: $env.TELEGRAM_CHAT_ID,\n      text: `⚠️ Métricas con valores poco plausibles para publication ${item.publication_id} (${item.window}) -- revisar manualmente.\\nraw: ${JSON.stringify(snapshot).slice(0, 300)}`,\n    },\n    json: true,\n  });\n}\n\nreturn [{ json: { ...item, outcome: 'saved' } }];\n"
+      },
+      "id": "32d82621-3d96-4ad3-866e-f205b2c342c4",
+      "name": "1. Tomar snapshot y guardar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -220,
+        80
+      ]
+    }
+  ],
+  "connections": {
+    "Cada 30 min": {
+      "main": [
+        [
+          {
+            "node": "0. Detectar snapshots pendientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "0. Detectar snapshots pendientes": {
+      "main": [
+        [
+          {
+            "node": "Procesar de a uno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar de a uno": {
+      "main": [
+        [],
+        [
+          {
+            "node": "1. Tomar snapshot y guardar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Tomar snapshot y guardar": {
+      "main": [
+        [
+          {
+            "node": "Procesar de a uno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "instructions": "Antes de activar: 1) correr capa7-8-metrics-scoring.migration.sql; 2) levantar metrics-api (fabrica-reels/services/metrics-api, :3004) con METRICS_API_URL apuntando ahi desde n8n; 3) las publications ya deben tener provider/external_post_id seteados por Capa 6; 4) cargar env vars (ver capa7-8-metrics-scoring.md); 5) revisar visualmente el wiring de 'Procesar de a uno' (Loop Over Items); 6) activar. Ojo: este workflow NO calcula el score -- eso es capa8-scoring.workflow.json, que corre por separado leyendo los snapshots que este deja."
+  }
+}

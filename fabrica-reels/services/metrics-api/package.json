@@ -1,0 +1,20 @@
+{
+  "name": "metrics-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Servicio HTTP de Capa 7-8: contrato MetricsProvider (snapshots) + calculatePerformanceScore() (scoring 0-100). n8n orquesta, este servicio sabe hablar con cada proveedor de métricas y sabe calcular el score.",
+  "scripts": {
+    "start": "ts-node --transpile-only src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "import-csv": "ts-node --transpile-only scripts/import-metrics-csv.ts"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "ts-node": "^10.9.2",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.2"
+  }
+}

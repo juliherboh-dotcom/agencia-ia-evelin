@@ -1,39 +1,43 @@
-# fabrica-reels — Capas 3 a 6 de la Fábrica de Reels (Nexo.IA)
+# fabrica-reels — Capas 3 a 8 de la Fábrica de Reels (Nexo.IA)
 
 Código base real del contrato (`edit_spec`), el orquestador n8n de Capa 3
 (Edit Director), Capa 4 (render automático), Capa 5 (revisión y
-aprobación) y Capa 6 (publicación real). Ver `../sistema-fabrica-reels-nexoia.md`
-para la arquitectura completa, `../capa4-edit-spec-y-remotion.md` para el
-contrato + la composition Remotion, `../capa3-edit-director-n8n.md` para el
-workflow que genera el `edit_spec`, `../capa4-render.md` para el workflow
-que lo renderiza automáticamente, `../capa5-review.md` para el sistema de
-revisión/aprobación por Telegram, y `../capa6-publishing.md` para la
-publicación en TikTok/Instagram.
+aprobación), Capa 6 (publicación real) y Capa 7-8 (métricas y scoring).
+Ver `../sistema-fabrica-reels-nexoia.md` para la arquitectura completa,
+`../capa4-edit-spec-y-remotion.md` para el contrato + la composition
+Remotion, `../capa3-edit-director-n8n.md` para el workflow que genera el
+`edit_spec`, `../capa4-render.md` para el workflow que lo renderiza
+automáticamente, `../capa5-review.md` para el sistema de
+revisión/aprobación por Telegram, `../capa6-publishing.md` para la
+publicación en TikTok/Instagram, y `../capa7-8-metrics-scoring.md` para el
+loop de métricas y detección de ganadores.
 
 ```
 fabrica-reels/
-  package.json                    node_modules compartido (zod) para schema/ y validation/
+  package.json                       node_modules compartido (zod) para schema/ y validation/
   schema/
-    edit-spec.schema.json          JSON Schema canónico (contrato portable)
-    edit-spec.zod.ts               Mismo contrato en Zod: valida + genera EditSpec (TS)
-    safe-areas.ts                  Safe areas de TikTok/Instagram Reels
-    edit-specs.migration.sql       SQL Capa 3→4: columnas de validación en edit_specs
-    capa4-render.migration.sql     SQL Capa 4: columnas de render/idempotencia
-    capa5-review.migration.sql     SQL Capa 5: reviewers, review_sessions, review_actions extendida
-    capa6-publishing.migration.sql SQL Capa 6: publications extendida, social_accounts, timezone/scheduling
+    edit-spec.schema.json             JSON Schema canónico (contrato portable)
+    edit-spec.zod.ts                  Mismo contrato en Zod: valida + genera EditSpec (TS)
+    safe-areas.ts                     Safe areas de TikTok/Instagram Reels
+    edit-specs.migration.sql          SQL Capa 3→4: columnas de validación en edit_specs
+    capa4-render.migration.sql        SQL Capa 4: columnas de render/idempotencia
+    capa5-review.migration.sql        SQL Capa 5: reviewers, review_sessions, review_actions extendida
+    capa6-publishing.migration.sql    SQL Capa 6: publications extendida, social_accounts, timezone/scheduling
+    capa7-8-metrics-scoring.migration.sql   SQL Capa 7-8: post_metrics, account_benchmarks, scores, raw_videos
     examples/
       valid-edit-spec.json
       invalid-edit-spec.json
   validation/
-    validateEditSpec.ts            Validación estructural (Zod) + semántica (reglas de negocio)
-    repair-prompt.ts               Prompt correctivo para el LLM cuando el JSON es inválido
-    generateValidEditSpec.ts       Bucle de reparación (hasta 3 intentos)
+    validateEditSpec.ts               Validación estructural (Zod) + semántica (reglas de negocio)
+    repair-prompt.ts                  Prompt correctivo para el LLM cuando el JSON es inválido
+    generateValidEditSpec.ts          Bucle de reparación (hasta 3 intentos)
   prompts/
-    edit-director-system-prompt.md Rol, reglas y criterios del Edit Director
-    nexoia-brand-voice.md          Voz de marca Nexo.IA (pieza enchufable por cliente)
+    edit-director-system-prompt.md    Rol, reglas y criterios del Edit Director
+    nexoia-brand-voice.md             Voz de marca Nexo.IA (pieza enchufable por cliente)
   services/
-    edit-spec-api/                 /validate, /repair-prompt, /prompts/edit-director-system
-    publish-api/                   Contrato PublishJob/PublishResult + adapters (mock, upload_post)
+    edit-spec-api/                    /validate, /repair-prompt, /prompts/edit-director-system
+    publish-api/                      Contrato PublishJob/PublishResult + adapters (mock, upload_post)
+    metrics-api/                      Contrato MetricsProvider + calculatePerformanceScore()
   remotion/
     src/
       compositions/PersonalBrandClean/   Composition de referencia (template)
@@ -45,6 +49,8 @@ fabrica-reels/
     capa4-render.workflow.json           Dispara el render, sube el MP4 (v2: sin botones de revisión)
     capa5-review.workflow.json           Revisión/aprobación por Telegram, deja listo para publicar
     capa6-publishing.workflow.json       Publica en TikTok/Instagram vía proveedor intermedio
+    capa7-metrics.workflow.json          Recolecta snapshots 24h/48h/72h/7d
+    capa8-scoring.workflow.json          Calcula score, benchmark y marca ganadores
     code-nodes/                          Nodos Code como archivos sueltos (testeables aparte)
 ```
 
@@ -55,9 +61,7 @@ fabrica-reels/
 cd fabrica-reels && npm install
 
 # Terminal 1 — Capa 3
-cd fabrica-reels/services/edit-spec-api
-npm install
-npm start          # :3002
+cd fabrica-reels/services/edit-spec-api && npm install && npm start   # :3002
 
 # Terminal 2 — Capa 4
 cd fabrica-reels/remotion
@@ -68,9 +72,10 @@ export N8N_RENDER_CALLBACK_URL=http://localhost:5678/webhook/render-callback
 npm run render:service   # :3001
 
 # Terminal 3 — Capa 6
-cd fabrica-reels/services/publish-api
-npm install
-npm start          # :3003
+cd fabrica-reels/services/publish-api && npm install && npm start   # :3003
+
+# Terminal 4 — Capa 7-8
+cd fabrica-reels/services/metrics-api && npm install && npm start   # :3004
 
 # Abrir Remotion Studio con la Composition PersonalBrandClean cargada con
 # el ejemplo de sample-data/example-edit-spec.json:
@@ -80,11 +85,11 @@ cd fabrica-reels/remotion && npm start
 # por el render service (para iterar sobre el template):
 npm run render:local
 
-# Terminal 4 — n8n, con las 4 capas importadas y activas
-# (ver fabrica-reels/n8n/README.md) -- correr antes las migraciones SQL
-# (capa5-review.migration.sql, capa6-publishing.migration.sql) y dar de
-# alta un reviewer + una social_accounts activa (usar provider='mock'
-# para probar sin publicar de verdad)
+# Terminal 5 — n8n, con las 6 capas importadas y activas
+# (ver fabrica-reels/n8n/README.md) -- correr antes todas las migraciones
+# SQL en orden (capa5, capa6, capa7-8) y dar de alta un reviewer + una
+# social_accounts activa (usar provider='mock' para probar sin publicar
+# ni medir de verdad)
 ```
 
 ## Regla más importante del contrato
@@ -104,8 +109,11 @@ video bruto → transcripción → Edit Director (Capa 3) → edit_spec válido
   → rendered_pending_review → revisión por Telegram (Capa 5)
   → approved_for_publish → publications:queued
   → Capa 6 → published en TikTok/Instagram (o simulado con provider='mock')
+  → Capa 7 → snapshots 24h/48h/72h/7d
+  → Capa 8 → score 0-100 + benchmark + variant_generation_status='ready'
+    si score ≥ 70 (ganador) o ≥ 85 (super ganador)
 ```
 
-Pendiente (próximas capas): medir métricas 24/48/72h/7d, scoring, motor de
-variantes real (hoy solo se captura la intención en `variant_requested`),
-portal de revisión propio.
+Pendiente (próximas capas): motor de variantes real que consuma
+`raw_videos.variant_generation_status='ready'` (Capa 9), reporte semanal
+(Capa 10), portal de revisión propio (Capa 11).
