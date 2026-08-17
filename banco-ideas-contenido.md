@@ -129,3 +129,68 @@
 - Qué se probaría: mostrar en pantalla el estudio y contrastarlo con una encuesta rápida a la audiencia ("¿tú ya usas IA en tu negocio?") para exponer la brecha entre percepción y realidad en Chile.
 - Resultado esperado: usar el dato local (no una estadística "de otro país") para bajar la resistencia inicial y posicionar a Nexo.IA como el que conoce el contexto chileno específico.
 - Objeción típica: "esa estadística debe estar inflada / es de empresas grandes disfrazadas de pyme" → matizar mostrando los casos de uso concretos del estudio (WhatsApp, cobranza, agenda), que son tareas de cualquier tamaño de negocio.
+
+## Semana del 2026-08-17
+
+### 1. El "agente gratis" de Meta para WhatsApp/Instagram/Messenger dejó de ser gratis
+**Fuente:** https://www.techtimes.com/articles/320787/20260716/meta-business-agent-billing-starts-aug-1-free-test-window-ends-days.htm
+**Qué es:** Desde el 1 de agosto de 2026, Meta Business Agent (el asistente de IA que responde en WhatsApp, Instagram y Messenger) empezó a cobrar por token: unos US$2 por millón de tokens, lo que equivale a entre 4 y 5 centavos de dólar por conversación. Antes era gratis durante todo julio como periodo de prueba.
+**Ángulo para Nexo.IA:** Video "El bot 'gratis' de Meta ya te está cobrando — así se calcula cuánto te va a salir al mes".
+- Contexto del problema: en semanas anteriores mostramos que más de 1 millón de negocios activó el agente gratis de Meta; muchos dueños de pyme no se enteraron de que eso cambió.
+- Qué se probaría: tomar un negocio real, estimar su volumen mensual de conversaciones por WhatsApp y calcular en vivo cuánto le costaría al mes usando la calculadora de tokens de Meta.
+- Resultado esperado: mostrar que para un volumen bajo/medio de mensajes el costo sigue siendo bajísimo comparado con un sueldo, pero que a partir de cierto volumen conviene tener un sistema propio con reglas claras (menos tokens desperdiciados en conversaciones que no cierran venta).
+- Objeción típica: "entonces ya no me conviene automatizar" → mostrar que el costo por conversación sigue siendo mucho menor que el costo de una persona respondiendo lo mismo, y que un flujo bien diseñado (no un chat abierto) gasta menos tokens.
+
+### 2. n8n suma "AI Agent Builder" y soporte nativo de MCP para armar agentes sin programar
+**Fuente:** https://blog.n8n.io/tag/news/
+**Qué es:** n8n (la herramienta visual de automatización más usada por agencias como Nexo.IA) lanzó un asistente de IA integrado y un "Agent Builder" para crear agentes arrastrando bloques, además de soporte ampliado para MCP (el protocolo que conecta agentes con herramientas externas) y mejoras de estabilidad en nodos de uso frecuente (WooCommerce, Slack, WordPress, entre otros).
+**Ángulo para Nexo.IA:** Video "Le pedí a la IA que me arme un agente dentro de otra herramienta de IA — así quedó en 5 minutos".
+- Contexto del problema: armar un agente de IA para un proceso del negocio (ej. seguimiento de cobranza) todavía se siente "técnico" para muchos dueños de pyme, aunque las herramientas visuales llevan meses simplificándolo.
+- Qué se probaría: usar el nuevo Agent Builder de n8n para construir en vivo un agente simple (ej. "avisa por WhatsApp cuando un cliente no responde en 48 horas") sin escribir código.
+- Resultado esperado: mostrar el agente funcionando de punta a punta y el tiempo real que tomó construirlo.
+- Objeción típica: "eso lo tiene que armar un programador" → contrargumento visual: se ve el flujo completo armado a mano, con bloques, no con código.
+
+### 3. Google abarata fuerte la generación de imágenes con Nano Banana 2 Lite
+**Fuente:** https://cloud.google.com/blog/products/ai-machine-learning/nano-banana-2-lite-and-gemini-omni-flash-available/
+**Qué es:** Google lanzó Nano Banana 2 Lite, una versión más rápida y barata de su modelo de generación de imágenes (Gemini), a US$0,034 por cada mil imágenes generadas —casi la mitad del costo del Nano Banana 2 estándar—, pensada para uso masivo de contenido visual.
+**Ángulo para Nexo.IA:** Reel "Le generé todas las fotos de catálogo de un negocio con IA por menos de lo que cuesta un café".
+- Contexto del problema: muchas pymes chilenas (ropa, comida, decoración) no tienen plata ni tiempo para una sesión de fotos profesional cada vez que sacan un producto nuevo.
+- Qué se probaría: generar en vivo 10-15 variaciones de fotos de producto o de posteos para redes usando Nano Banana y calcular el costo real de esa tanda de imágenes.
+- Resultado esperado: mostrar el costo en pesos chilenos de generar un mes completo de contenido visual para redes, comparado con contratar a un fotógrafo o diseñador puntual.
+- Objeción típica: "se van a ver todas iguales / poco reales" → mostrar el proceso de iterar y ajustar (no la primera imagen que sale), y cuándo sí conviene una foto real (ej. el local, el equipo).
+
+### 4. Caso chileno real: el "Cyber AI Agent" de Mercado Pago triplicó la efectividad para conectar clientes con pymes
+**Fuente:** https://anda.cl/pymeday-2026-pymes-ecommerce-chile/
+**Qué es:** En PymeDay 2026 (evento de e-commerce con más de 70 pymes chilenas y 354.000 usuarios, hasta el 5 de agosto), el "Cyber AI Agent" —un recomendador de marcas con IA— logró una tasa de clics de 27,1%, 7,2 veces más efectiva que la navegación tradicional del sitio para conectar compradores con las pymes participantes.
+**Ángulo para Nexo.IA:** Video "Un evento chileno real probó un 'vendedor con IA' contra la navegación normal — así ganó la IA por goleada".
+- Contexto del problema: muchos dueños de pyme piensan que los datos sobre IA que ven en redes son "de otro país" y no confían en que apliquen a su realidad.
+- Qué se probaría: explicar con manzanas y peras qué significa "27,1% de clics vs. navegación tradicional" para un catálogo chileno normal, y simular el mismo tipo de recomendador en la tienda online de un cliente.
+- Resultado esperado: dejar claro que no es una promesa de marketing sino un resultado medido en un evento real de Chile, con pymes chilenas reales.
+- Objeción típica: "eso funcionó porque era un evento grande con mucho tráfico, mi tienda no tiene eso" → aclarar que el efecto (mejor tasa de clics) es proporcional, no depende del tamaño del tráfico sino de que la recomendación sea más relevante que un menú genérico.
+
+### 5. Google y Shopify lanzan el "Universal Commerce Protocol": la IA va a comprar por el cliente
+**Fuente:** https://www.shopify.com/blog/agentic-commerce
+**Qué es:** Shopify y Google presentaron el Universal Commerce Protocol (UCP), un estándar abierto para que agentes de IA (ChatGPT, Gemini, Copilot) descubran productos, arme el carro y completen la compra por el cliente dentro del mismo chat. Shopify reporta que los pedidos que llegan desde búsquedas con IA crecieron casi 13 veces interanual en el primer trimestre de 2026.
+**Ángulo para Nexo.IA:** Video "Si tu cliente le pide a ChatGPT que le compre algo de tu rubro, ¿tu negocio aparece o aparece la competencia?".
+- Contexto del problema: las pymes con tienda online chilena siguen optimizando solo para que Google las encuentre buscando, sin pensar en que ahora un agente de IA puede comprar directamente sin que la persona visite el sitio.
+- Qué se probaría: simular la pregunta de compra de un cliente real en ChatGPT o Gemini para un rubro específico y ver si el negocio del cliente aparece como opción o queda afuera.
+- Resultado esperado: mostrar en vivo el resultado (aparece o no aparece) y qué ajustes de catálogo/ficha de producto mejorarían esa visibilidad.
+- Objeción típica: "eso es cosa de Estados Unidos, en Chile eso se demora años en llegar" → responder que preparar el catálogo (nombres claros, precios, stock, FAQ) sirve igual hoy para Google y para IA, así que no hay nada que perder por adelantarse.
+
+### 6. Sube en GitHub "Firecrawl", la herramienta que le da "ojos" a los agentes de IA para leer la web en tiempo real
+**Fuente:** https://github.com/firecrawl/firecrawl
+**Qué es:** Firecrawl es uno de los proyectos de IA más populares esta semana en GitHub: una herramienta que permite que un agente de IA "lea" y extraiga información estructurada de cualquier sitio web (precios, stock, noticias) para usarla en sus respuestas o decisiones, sin que un programador tenga que armar ese acceso a mano.
+**Ángulo para Nexo.IA:** Video "Le armé a una pyme un 'espía' de IA que revisa los precios de la competencia todas las mañanas".
+- Contexto del problema: los dueños de pyme revisan manualmente (cuando alcanzan) los precios o promociones de la competencia, y muchas veces se enteran tarde de un cambio.
+- Qué se probaría: armar un flujo simple que cada mañana revise 2-3 sitios de competidores reales y le mande al dueño un resumen corto por WhatsApp con los cambios de precio detectados.
+- Resultado esperado: mostrar el primer resumen automático generado y cuánto tiempo se ahorra versus revisar sitio por sitio a mano.
+- Objeción típica: "eso sí suena técnico, seguro es caro de mantener" → aclarar que es un flujo que se arma una sola vez y corre solo, y mostrar el costo real (bajo) de mantenerlo corriendo.
+
+### 7. ChatGPT ya muestra anuncios y llega a Brasil, México, Japón, Corea del Sur y Reino Unido
+**Fuente:** https://www.ghacks.net/2026/08/13/openai-expands-chatgpt-ads-test-to-uk-mexico-brazil-japan-and-south-korea/
+**Qué es:** Desde el 11 de agosto de 2026, OpenAI amplió la prueba de anuncios dentro de ChatGPT (que ya corría en EE.UU. desde febrero) a Reino Unido, México, Brasil, Japón y Corea del Sur: los usuarios de plan gratuito o Go ven anuncios debajo de algunas respuestas, y negocios de esos países ya pueden abrir una cuenta de anunciante. Chile todavía no está en la lista, pero la expansión a Brasil y México muestra que LatAm ya está en el radar.
+**Ángulo para Nexo.IA:** Video "La publicidad dentro de ChatGPT ya llegó a Latinoamérica — así se prepara tu pyme antes de que llegue a Chile".
+- Contexto del problema: las pymes chilenas todavía piensan la publicidad digital solo en términos de Meta Ads y Google Ads, sin considerar que las respuestas de IA se están convirtiendo en un canal de venta y de publicidad nuevo.
+- Qué se probaría: mostrar cómo se ven hoy los anuncios dentro de ChatGPT en un país donde ya está activo (con capturas reales) y explicar qué tendría que tener lista una pyme (ficha de producto, catálogo, descripción de marca) para cuando llegue la opción a Chile.
+- Resultado esperado: dejar a la audiencia con una checklist simple de "prepárate ahora" en vez de un anuncio de algo lejano.
+- Objeción típica: "eso todavía no existe acá, para qué me preocupo ahora" → responder que las pymes que ya tienen su presencia digital ordenada (Google, redes, catálogo) son justamente las que después pueden subirse rápido a cualquier canal nuevo, sin partir de cero.
