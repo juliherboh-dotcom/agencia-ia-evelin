@@ -59,6 +59,26 @@ app.get("/prompts/edit-director-system", (_req, res) => {
   }
 });
 
+app.get("/prompts/variant-director-system", (_req, res) => {
+  try {
+    const rolePrompt = fs.readFileSync(
+      path.join(PROMPTS_DIR, "variant-director-system-prompt.md"),
+      "utf-8"
+    );
+    const editRules = fs.readFileSync(
+      path.join(PROMPTS_DIR, "edit-director-system-prompt.md"),
+      "utf-8"
+    );
+    const brandVoice = fs.readFileSync(
+      path.join(PROMPTS_DIR, "nexoia-brand-voice.md"),
+      "utf-8"
+    );
+    res.json({ text: `${rolePrompt}\n\n---\n\n# REGLAS EDIT DIRECTOR PARA TIPO B\n\n${editRules}\n\n---\n\n${brandVoice}` });
+  } catch (err) {
+    res.status(500).json({ error: `No se pudo leer el prompt: ${String(err)}` });
+  }
+});
+
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
 const PORT = process.env.EDIT_SPEC_API_PORT ? Number(process.env.EDIT_SPEC_API_PORT) : 3002;

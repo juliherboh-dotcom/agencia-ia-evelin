@@ -1,16 +1,18 @@
-# fabrica-reels — Capas 3 a 8 de la Fábrica de Reels (Nexo.IA)
+# fabrica-reels — Capas 3 a 9 de la Fábrica de Reels (Nexo.IA)
 
 Código base real del contrato (`edit_spec`), el orquestador n8n de Capa 3
 (Edit Director), Capa 4 (render automático), Capa 5 (revisión y
-aprobación), Capa 6 (publicación real) y Capa 7-8 (métricas y scoring).
+aprobación), Capa 6 (publicación real), Capa 7-8 (métricas y scoring) y
+Capa 9 (motor de variantes Tipo A/Tipo B).
 Ver `../sistema-fabrica-reels-nexoia.md` para la arquitectura completa,
 `../capa4-edit-spec-y-remotion.md` para el contrato + la composition
 Remotion, `../capa3-edit-director-n8n.md` para el workflow que genera el
 `edit_spec`, `../capa4-render.md` para el workflow que lo renderiza
 automáticamente, `../capa5-review.md` para el sistema de
 revisión/aprobación por Telegram, `../capa6-publishing.md` para la
-publicación en TikTok/Instagram, y `../capa7-8-metrics-scoring.md` para el
-loop de métricas y detección de ganadores.
+publicación en TikTok/Instagram, `../capa7-8-metrics-scoring.md` para el
+loop de métricas y detección de ganadores, y `../capa9-variant-engine.md`
+para el motor de variantes.
 
 ```
 fabrica-reels/
@@ -24,6 +26,7 @@ fabrica-reels/
     capa5-review.migration.sql        SQL Capa 5: reviewers, review_sessions, review_actions extendida
     capa6-publishing.migration.sql    SQL Capa 6: publications extendida, social_accounts, timezone/scheduling
     capa7-8-metrics-scoring.migration.sql   SQL Capa 7-8: post_metrics, account_benchmarks, scores, raw_videos
+    capa9-variant-engine.migration.sql      SQL Capa 9: trazabilidad, idempotencia y cola manual
     examples/
       valid-edit-spec.json
       invalid-edit-spec.json
@@ -33,9 +36,10 @@ fabrica-reels/
     generateValidEditSpec.ts          Bucle de reparación (hasta 3 intentos)
   prompts/
     edit-director-system-prompt.md    Rol, reglas y criterios del Edit Director
+    variant-director-system-prompt.md Variantes A/B basadas en evidencia del ganador
     nexoia-brand-voice.md             Voz de marca Nexo.IA (pieza enchufable por cliente)
   services/
-    edit-spec-api/                    /validate, /repair-prompt, /prompts/edit-director-system
+    edit-spec-api/                    /validate, /repair-prompt, prompts Edit/Variant Director
     publish-api/                      Contrato PublishJob/PublishResult + adapters (mock, upload_post)
     metrics-api/                      Contrato MetricsProvider + calculatePerformanceScore()
   remotion/
@@ -51,6 +55,7 @@ fabrica-reels/
     capa6-publishing.workflow.json       Publica en TikTok/Instagram vía proveedor intermedio
     capa7-metrics.workflow.json          Recolecta snapshots 24h/48h/72h/7d
     capa8-scoring.workflow.json          Calcula score, benchmark y marca ganadores
+    capa9-variant-engine.workflow.json   Genera 2-3 Tipo B y 5-7 Tipo A
     code-nodes/                          Nodos Code como archivos sueltos (testeables aparte)
 ```
 
@@ -85,9 +90,9 @@ cd fabrica-reels/remotion && npm start
 # por el render service (para iterar sobre el template):
 npm run render:local
 
-# Terminal 5 — n8n, con las 6 capas importadas y activas
+# Terminal 5 — n8n, con las 7 capas importadas y activas
 # (ver fabrica-reels/n8n/README.md) -- correr antes todas las migraciones
-# SQL en orden (capa5, capa6, capa7-8) y dar de alta un reviewer + una
+# SQL en orden (capa5, capa6, capa7-8, capa9) y dar de alta un reviewer + una
 # social_accounts activa (usar provider='mock' para probar sin publicar
 # ni medir de verdad)
 ```
@@ -112,8 +117,9 @@ video bruto → transcripción → Edit Director (Capa 3) → edit_spec válido
   → Capa 7 → snapshots 24h/48h/72h/7d
   → Capa 8 → score 0-100 + benchmark + variant_generation_status='ready'
     si score ≥ 70 (ganador) o ≥ 85 (super ganador)
+  → Capa 9 → 2-3 edit_specs Tipo B + 5-7 scripts Tipo A
+    → variant_generation_status='variants_generated'
 ```
 
-Pendiente (próximas capas): motor de variantes real que consuma
-`raw_videos.variant_generation_status='ready'` (Capa 9), reporte semanal
-(Capa 10), portal de revisión propio (Capa 11).
+Pendiente (próximas capas): reporte semanal (Capa 10) y portal de revisión
+propio (Capa 11).
