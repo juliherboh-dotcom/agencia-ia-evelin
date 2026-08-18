@@ -37,7 +37,7 @@ const [transcript, analysis, assets, brandKit, promptRes] = await Promise.all([
   getOne(`brand_kit?client_id=eq.${rawVideo.client_id}&select=logo_url,primary_color,accent_color,handle_instagram,handle_tiktok,end_card_cta`),
   this.helpers.httpRequest({
     method: 'GET',
-    url: `${EDIT_SPEC_API_URL}/prompts/edit-director-system`,
+    url: `${EDIT_SPEC_API_URL}/prompts/edit-director-system?client_id=${encodeURIComponent(rawVideo.client_id)}`,
     json: true,
   }),
 ]);
@@ -99,6 +99,7 @@ const userPrompt = [
   '',
   '## Transcripción completa con timestamps por palabra (línea de tiempo del video FUENTE)',
   wordsFormatted,
+  ...(rawVideo.cut_qa_feedback ? ['', '## Feedback obligatorio de QA visual del intento anterior', rawVideo.cut_qa_feedback] : []),
 ].join('\n');
 
 return [{

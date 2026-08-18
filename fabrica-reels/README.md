@@ -1,7 +1,8 @@
-# fabrica-reels — Capas 3 a 9 de la Fábrica de Reels (Nexo.IA)
+# fabrica-reels — Capas 2B a 9 de la Fábrica de Reels (Nexo.IA)
 
-Código base real del contrato (`edit_spec`), el orquestador n8n de Capa 3
-(Edit Director), Capa 4 (render automático), Capa 5 (revisión y
+Código base real del perfil de estilo (Capa 2B), el contrato (`edit_spec`),
+el orquestador n8n de Capa 3 (Edit Director), el QA visual por corte
+(Capa 3.5), Capa 4 (render automático), Capa 5 (revisión y
 aprobación), Capa 6 (publicación real), Capa 7-8 (métricas y scoring) y
 Capa 9 (motor de variantes Tipo A/Tipo B).
 Ver `../sistema-fabrica-reels-nexoia.md` para la arquitectura completa,
@@ -13,6 +14,7 @@ revisión/aprobación por Telegram, `../capa6-publishing.md` para la
 publicación en TikTok/Instagram, `../capa7-8-metrics-scoring.md` para el
 loop de métricas y detección de ganadores, y `../capa9-variant-engine.md`
 para el motor de variantes.
+Ver también `../capa2b-style-profile.md` y `../capa3-5-cut-qa.md`.
 
 ```
 fabrica-reels/
@@ -49,7 +51,9 @@ fabrica-reels/
       Root.tsx, index.ts
     sample-data/example-edit-spec.json
   n8n/
+    capa2b-style-profile.workflow.json   Analiza referencias y activa un perfil reusable
     capa3-edit-director.workflow.json    Genera el edit_spec con el LLM
+    capa3-5-cut-qa.workflow.json         Revisa cuatro frames por corte antes del render
     capa4-render.workflow.json           Dispara el render, sube el MP4 (v2: sin botones de revisión)
     capa5-review.workflow.json           Revisión/aprobación por Telegram, deja listo para publicar
     capa6-publishing.workflow.json       Publica en TikTok/Instagram vía proveedor intermedio
@@ -109,7 +113,9 @@ Director.
 ## El ciclo completo hoy
 
 ```
-video bruto → transcripción → Edit Director (Capa 3) → edit_spec válido
+referencias → Perfil de estilo (Capa 2B, on-demand)
+video bruto → transcripción → Edit Director (Capa 3, usa perfil activo si existe) → edit_spec válido
+  → QA visual por corte (Capa 3.5) → passed o revisión Telegram
   → Supabase → render automático (Capa 4) → MP4 final en Storage
   → rendered_pending_review → revisión por Telegram (Capa 5)
   → approved_for_publish → publications:queued

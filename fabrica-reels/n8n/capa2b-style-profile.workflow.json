@@ -1,0 +1,189 @@
+{
+  "name": "Fabrica de Reels - Capa 2B - Perfil de estilo",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "2b-trigger",
+      "name": "Cada 5 min",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -700,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const headers={apikey:$env.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`};\nconst rows=await this.helpers.httpRequest({method:'GET',url:`${$env.SUPABASE_URL}/rest/v1/style_profiles?status=eq.pending&select=*&order=created_at.asc&limit=25`,headers,json:true});\nreturn rows.map(row=>({json:row}));\n"
+      },
+      "id": "2b-detect",
+      "name": "0. Detectar perfiles pendientes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -450,
+        0
+      ],
+      "sourceFile": "capa2b-00-detectar-perfiles-pendientes.js"
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "2b-loop",
+      "name": "Procesar de a uno",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const profile=$json; const sbHeaders={apikey:$env.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,'Content-Type':'application/json',Prefer:'return=representation'};\nconst claimed=await this.helpers.httpRequest({method:'PATCH',url:`${$env.SUPABASE_URL}/rest/v1/style_profiles?id=eq.${profile.id}&status=eq.pending`,headers:sbHeaders,body:{status:'in_progress'},json:true});\nif(!claimed.length)return [];\nconst prompt=await this.helpers.httpRequest({method:'GET',url:`${$env.EDIT_SPEC_API_URL}/prompts/style-profile-system`,json:true});\nconst analyses=[];\nfor(const url of profile.source_video_refs){\n const extracted=await this.helpers.httpRequest({method:'POST',url:`${$env.EDIT_SPEC_API_URL}/video-frames`,body:{video_url:url,positions:[0.1,0.3,0.5,0.7,0.9]},json:true});\n const content=[{type:'text',text:`Analiza esta referencia: ${url}. Metadata/transcript no disponibles; no inventes audio.`},...extracted.frames.map(f=>({type:'image',source:{type:'base64',media_type:f.media_type,data:f.data}}))];\n const response=await this.helpers.httpRequest({method:'POST',url:'https://api.anthropic.com/v1/messages',headers:{'x-api-key':$env.ANTHROPIC_API_KEY,'anthropic-version':$env.ANTHROPIC_VERSION||'2023-06-01','content-type':'application/json'},body:{model:$env.EDIT_DIRECTOR_MODEL,max_tokens:3000,temperature:0.2,system:prompt.text,messages:[{role:'user',content}]},json:true});\n const text=(response.content||[]).map(b=>b.text||'').join('').trim().replace(/^```json\\s*|```$/gi,''); const analysis=JSON.parse(text); for(const key of ['fonts','color_palette','cut_pacing','card_patterns','audio_notes'])if(analysis[key]===undefined)throw new Error(`Analisis individual sin ${key}`); analyses.push({source:url,analysis});\n}\nconst consolidatedResponse=await this.helpers.httpRequest({method:'POST',url:'https://api.anthropic.com/v1/messages',headers:{'x-api-key':$env.ANTHROPIC_API_KEY,'anthropic-version':$env.ANTHROPIC_VERSION||'2023-06-01','content-type':'application/json'},body:{model:$env.EDIT_DIRECTOR_MODEL,max_tokens:3000,temperature:0.1,system:prompt.text,messages:[{role:'user',content:`Consolida estos analisis y documenta excepciones: ${JSON.stringify(analyses)}`}]},json:true});\nconst raw=(consolidatedResponse.content||[]).map(b=>b.text||'').join('').trim().replace(/^```json\\s*|```$/gi,''); const result=JSON.parse(raw);\nfor(const key of ['fonts','color_palette','cut_pacing','card_patterns','audio_notes'])if(result[key]===undefined)throw new Error(`Perfil consolidado sin ${key}`);\nif(!result.audio_notes||result.audio_notes.status!=='no_verificable_sin_audio')throw new Error('audio_notes debe declarar no_verificable_sin_audio');\nreturn [{json:{profile,analyses,result}}];\n"
+      },
+      "id": "2b-analyze",
+      "name": "1. Analizar y consolidar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        50,
+        60
+      ],
+      "onError": "continueErrorOutput",
+      "sourceFile": "capa2b-01-analizar-y-consolidar.js"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const h={apikey:$env.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,'Content-Type':'application/json'}; const {profile,result,analyses}=$json;\nawait this.helpers.httpRequest({method:'PATCH',url:`${$env.SUPABASE_URL}/rest/v1/style_profiles?client_id=eq.${profile.client_id}&status=eq.active&id=neq.${profile.id}`,headers:h,body:{status:'archived'},json:true});\nawait this.helpers.httpRequest({method:'PATCH',url:`${$env.SUPABASE_URL}/rest/v1/style_profiles?id=eq.${profile.id}&status=eq.in_progress`,headers:h,body:{fonts:result.fonts,color_palette:result.color_palette,cut_pacing:result.cut_pacing,card_patterns:{...result.card_patterns,exceptions:result.exceptions||[],individual_analyses:analyses},audio_notes:result.audio_notes,status:'active'},json:true});\nreturn [{json:{style_profile_id:profile.id,status:'active'}}];\n"
+      },
+      "id": "2b-save",
+      "name": "2. Persistir perfil activo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        60
+      ],
+      "onError": "continueErrorOutput",
+      "sourceFile": "capa2b-02-persistir-perfil.js"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const source=$json.profile||$json; const id=source.id||source.style_profile_id;\nif(id)await this.helpers.httpRequest({method:'PATCH',url:`${$env.SUPABASE_URL}/rest/v1/style_profiles?id=eq.${id}`,headers:{apikey:$env.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,'Content-Type':'application/json'},body:{status:'failed',processing_error:String($json.error?.message||$json.message||'Error de procesamiento').slice(0,2000)},json:true});\nreturn [{json:{style_profile_id:id,status:'failed'}}];\n"
+      },
+      "id": "2b-error",
+      "name": "99. Marcar perfil failed",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        180
+      ],
+      "sourceFile": "capa2b-99-marcar-error.js"
+    }
+  ],
+  "connections": {
+    "Cada 5 min": {
+      "main": [
+        [
+          {
+            "node": "0. Detectar perfiles pendientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "0. Detectar perfiles pendientes": {
+      "main": [
+        [
+          {
+            "node": "Procesar de a uno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar de a uno": {
+      "main": [
+        [],
+        [
+          {
+            "node": "1. Analizar y consolidar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Analizar y consolidar": {
+      "main": [
+        [
+          {
+            "node": "2. Persistir perfil activo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "99. Marcar perfil failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Persistir perfil activo": {
+      "main": [
+        [
+          {
+            "node": "Procesar de a uno",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "99. Marcar perfil failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "99. Marcar perfil failed": {
+      "main": [
+        [
+          {
+            "node": "Procesar de a uno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

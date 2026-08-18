@@ -14,7 +14,7 @@ const SUPABASE_HEADERS = {
 
 const rows = await this.helpers.httpRequest({
   method: 'GET',
-  url: `${SUPABASE_URL}/rest/v1/edit_specs?raw_video_id=eq.${rawVideo.id}&status=eq.ready&order=version.desc&limit=1&select=id,spec_json`,
+  url: `${SUPABASE_URL}/rest/v1/edit_specs?raw_video_id=eq.${rawVideo.id}&status=eq.ready&cut_qa_status=eq.passed&order=version.desc&limit=1&select=id,spec_json`,
   headers: SUPABASE_HEADERS,
   json: true,
 });

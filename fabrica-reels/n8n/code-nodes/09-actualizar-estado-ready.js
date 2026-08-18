@@ -15,7 +15,7 @@ await this.helpers.httpRequest({
   method: 'PATCH',
   url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${$json.raw_video.id}`,
   headers: SUPABASE_HEADERS,
-  body: { status: 'edit_spec_ready' },
+  body: { status: 'cut_qa_pending' },
   json: true,
 });
 
