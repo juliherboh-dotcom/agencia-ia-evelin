@@ -1,18 +1,19 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "0. Detectar snapshots pendientes"
  * Tipo: Code (JavaScript, "Run Once for All Items")
  *
- * Para cada publication en status='published', calcula qué ventanas
- * (24h/48h/72h/7d) ya deberían tener snapshot según published_at, y
- * devuelve un item por cada (publication, window) que todavía no tiene
+ * Para cada publication en status='published', calcula qu? ventanas
+ * (24h/48h/72h/7d) ya deber?an tener snapshot seg?n published_at, y
+ * devuelve un item por cada (publication, window) que todav?a no tiene
  * fila en post_metrics.
  *
- * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+ * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  */
-const SUPABASE_URL = $env.SUPABASE_URL;
+const SUPABASE_URL = cfg.SUPABASE_URL;
 const SUPABASE_HEADERS = {
-  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,
+  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,
 };
 
 const WINDOW_HOURS = { '24h': 24, '48h': 48, '72h': 72, '7d': 168 };

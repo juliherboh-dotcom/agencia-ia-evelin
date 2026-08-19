@@ -316,3 +316,13 @@ curl -X POST http://localhost:3001/renders/<render_id>/refresh-link
 **Rechazo:** click en ❌ → mensaje nuevo "✍️ Contame el motivo..." → responde "el hook queda flojo, no engancha en el segundo 1" → `review_actions` nueva fila `{decision:"rejected", comment:"el hook queda flojo..."}` → `raw_videos.status="rejected"` → confirmación "❌ Rechazado -- registrado. Comentario: \"el hook queda flojo...\"".
 
 **Pedido de variante:** click en 🔁 → menú de 6 tipos → elige "Subtítulos más agresivos" → mensaje "✍️ Contame en una frase..." → responde "skip" → `review_actions` nueva fila `{decision:"variant_requested", variant_type:"subtitulos_agresivos", comment:null}` → `raw_videos.status="variant_requested"`.
+
+## Configuración en n8n Community (sin variables de entorno de servidor)
+
+Después de importar `capa5-review.workflow.json`, abre el nodo `0. Config` y completa sus campos manualmente. Los secretos se entregan vacíos; no los guardes en archivos versionados.
+
+- `SUPABASE_URL`: URL base del proyecto Supabase (por ejemplo, `https://<proyecto>.supabase.co`).
+- `SUPABASE_SERVICE_ROLE_KEY`: clave `service_role` de Supabase.
+- `TELEGRAM_BOT_TOKEN`: token del bot de Telegram.
+- `TELEGRAM_CHAT_ID`: chat ID de Telegram usado como destino de respaldo para alertas.
+- `RENDER_SERVICE_URL`: URL base alcanzable del servicio de render, sin barra final.

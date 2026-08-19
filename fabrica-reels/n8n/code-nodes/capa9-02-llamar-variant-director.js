@@ -1,18 +1,19 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "2. Llamar Variant Director"
  * Tipo: Code (JavaScript, "Run Once for Each Item")
- * Env: ANTHROPIC_API_KEY, ANTHROPIC_VERSION, VARIANT_DIRECTOR_MODEL
+ * Config: ANTHROPIC_API_KEY, ANTHROPIC_VERSION, VARIANT_DIRECTOR_MODEL
  */
 const response = await this.helpers.httpRequest({
   method: 'POST',
   url: 'https://api.anthropic.com/v1/messages',
   headers: {
-    'x-api-key': $env.ANTHROPIC_API_KEY,
-    'anthropic-version': $env.ANTHROPIC_VERSION || '2023-06-01',
+    'x-api-key': cfg.ANTHROPIC_API_KEY,
+    'anthropic-version': cfg.ANTHROPIC_VERSION || '2023-06-01',
     'content-type': 'application/json',
   },
   body: {
-    model: $env.VARIANT_DIRECTOR_MODEL || $env.EDIT_DIRECTOR_MODEL,
+    model: cfg.VARIANT_DIRECTOR_MODEL || cfg.EDIT_DIRECTOR_MODEL,
     max_tokens: 12000,
     temperature: 0.4,
     system: $json.system_prompt,

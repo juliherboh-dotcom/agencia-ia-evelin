@@ -1,30 +1,31 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "0. Preparar publicaciones queued"
  * Tipo: Code (JavaScript, "Run Once for All Items")
  *
- * Toma las publications recién creadas por Capa 5 (status='queued') y las
- * deja listas para publicar: valida que la cuenta esté conectada, arma el
+ * Toma las publications reci?n creadas por Capa 5 (status='queued') y las
+ * deja listas para publicar: valida que la cuenta est? conectada, arma el
  * caption final (caption + hashtags), calcula scheduled_at respetando
- * timezone del cliente y espaciado mínimo entre publicaciones.
+ * timezone del cliente y espaciado m?nimo entre publicaciones.
  *
- * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+ * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  */
-const SUPABASE_URL = $env.SUPABASE_URL;
+const SUPABASE_URL = cfg.SUPABASE_URL;
 const SUPABASE_HEADERS = {
-  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,
+  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,
   'Content-Type': 'application/json',
 };
 
 const MAX_CAPTION_LENGTH = 2200;
 
-// Convierte "año/mes/día/hora local en timeZone" a un Date UTC exacto,
+// Convierte "a?o/mes/d?a/hora local en timeZone" a un Date UTC exacto,
 // sin hardcodear el offset (que cambia con horario de verano). Es un
-// truco estándar: formateamos un UTC tentativo EN timeZone, medimos la
-// diferencia contra lo que queríamos, y corregimos.
-// Limitación conocida: en el día exacto de un cambio de horario de
+// truco est?ndar: formateamos un UTC tentativo EN timeZone, medimos la
+// diferencia contra lo que quer?amos, y corregimos.
+// Limitaci?n conocida: en el d?a exacto de un cambio de horario de
 // verano el resultado puede quedar corrido en 1h -- aceptable para una
-// heurística de "mejor horario", no crítico.
+// heur?stica de "mejor horario", no cr?tico.
 const zonedHourToUtcDate = (year, month, day, hourLocal, timeZone) => {
   const tentative = new Date(Date.UTC(year, month - 1, day, hourLocal, 0, 0));
   const formatter = new Intl.DateTimeFormat('en-US', {
@@ -52,7 +53,7 @@ const computeScheduledAt = (client, lastPublication) => {
   let target = zonedHourToUtcDate(year, month, day, client.default_publish_hour_local, client.timezone);
 
   if (target <= now) {
-    // ya pasó el horario de hoy -- programar para mañana a la misma hora local
+    // ya pas? el horario de hoy -- programar para ma?ana a la misma hora local
     const tomorrow = localDateParts(new Date(target.getTime() + 24 * 3600 * 1000), client.timezone);
     target = zonedHourToUtcDate(tomorrow.year, tomorrow.month, tomorrow.day, client.default_publish_hour_local, client.timezone);
   }
@@ -105,7 +106,7 @@ for (const pub of queued) {
       method: 'PATCH',
       url: `${SUPABASE_URL}/rest/v1/publications?id=eq.${pub.id}`,
       headers: SUPABASE_HEADERS,
-      body: { status: 'failed', error_message: 'Caption vacío -- no hay nada que publicar', updated_at: new Date().toISOString() },
+      body: { status: 'failed', error_message: 'Caption vac?o -- no hay nada que publicar', updated_at: new Date().toISOString() },
       json: true,
     });
     results.push({ publication_id: pub.id, outcome: 'failed_empty_caption' });
@@ -113,7 +114,7 @@ for (const pub of queued) {
   }
 
   const truncatedCaption = finalCaption.length > MAX_CAPTION_LENGTH
-    ? `${finalCaption.slice(0, MAX_CAPTION_LENGTH - 1)}…`
+    ? `${finalCaption.slice(0, MAX_CAPTION_LENGTH - 1)}?`
     : finalCaption;
 
   const clients = await this.helpers.httpRequest({

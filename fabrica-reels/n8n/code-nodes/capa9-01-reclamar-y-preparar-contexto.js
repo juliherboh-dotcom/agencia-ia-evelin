@@ -1,13 +1,14 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "1. Reclamar ganador y preparar contexto"
  * Tipo: Code (JavaScript, "Run Once for Each Item")
- * Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, EDIT_SPEC_API_URL
+ * Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, EDIT_SPEC_API_URL
  */
 const rawVideo = $json;
-const SUPABASE_URL = $env.SUPABASE_URL;
+const SUPABASE_URL = cfg.SUPABASE_URL;
 const headers = {
-  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,
+  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,
   'Content-Type': 'application/json',
   Prefer: 'return=representation',
 };
@@ -42,7 +43,7 @@ const [transcripts, analyses, assetRows, brandRows, scoreRows, editSpecRows, ren
   getRows.call(this, `scores?raw_video_id=eq.${rawVideo.id}&select=id,score_rendimiento,classification,platform,window,components,computed_at&order=score_rendimiento.desc,computed_at.desc&limit=1`),
   getRows.call(this, `edit_specs?raw_video_id=eq.${rawVideo.id}&validation_status=eq.valid&select=id,spec_json,version&order=version.desc&limit=1`),
   getRows.call(this, `renders?raw_video_id=eq.${rawVideo.id}&select=id&order=created_at.desc`),
-  this.helpers.httpRequest({ method: 'GET', url: `${$env.EDIT_SPEC_API_URL}/prompts/variant-director-system`, json: true }),
+  this.helpers.httpRequest({ method: 'GET', url: `${cfg.EDIT_SPEC_API_URL}/prompts/variant-director-system`, json: true }),
 ]);
 
 const transcript = transcripts[0];

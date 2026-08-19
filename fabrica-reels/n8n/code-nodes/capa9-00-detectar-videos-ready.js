@@ -1,12 +1,13 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "0. Detectar ganadores listos"
  * Tipo: Code (JavaScript, "Run Once for All Items")
- * Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+ * Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  */
-const SUPABASE_URL = $env.SUPABASE_URL;
+const SUPABASE_URL = cfg.SUPABASE_URL;
 const headers = {
-  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,
+  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,
 };
 
 const videos = await this.helpers.httpRequest({

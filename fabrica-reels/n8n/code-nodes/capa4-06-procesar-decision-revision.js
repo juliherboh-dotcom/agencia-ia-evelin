@@ -1,3 +1,4 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "6. Procesar decisión de revisión"
  * Tipo: Code (JavaScript, "Run Once for Each Item")
@@ -15,7 +16,7 @@
  * "de verdad" (portal propio, ver sistema-fabrica-reels-nexoia.md sección
  * 14) se enchufe después sin cambiar el modelo de datos.
  *
- * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+ * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  */
 const update = $json;
 const callbackQuery = update.callback_query;
@@ -31,10 +32,10 @@ const reviewer = callbackQuery.from && callbackQuery.from.username
   ? `telegram:@${callbackQuery.from.username}`
   : `telegram:${callbackQuery.from ? callbackQuery.from.id : 'desconocido'}`;
 
-const SUPABASE_URL = $env.SUPABASE_URL;
+const SUPABASE_URL = cfg.SUPABASE_URL;
 const SUPABASE_HEADERS = {
-  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,
+  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,
   'Content-Type': 'application/json',
   Prefer: 'return=representation',
 };

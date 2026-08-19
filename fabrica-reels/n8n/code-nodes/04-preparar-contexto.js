@@ -1,3 +1,4 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "2-3. Traer contexto + armar prompt Edit Director"
  * Tipo: Code (JavaScript, "Run Once for Each Item")
@@ -7,17 +8,17 @@
  *
  * Hace las 4 lecturas de Supabase relacionadas al video (transcript,
  * analysis, assets, brand_kit) + trae el system prompt ya armado desde
- * edit-spec-api, y arma el user prompt específico de este video.
+ * edit-spec-api, y arma el user prompt espec?fico de este video.
  *
- * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, EDIT_SPEC_API_URL
+ * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, EDIT_SPEC_API_URL
  */
 const rawVideo = $json;
 
-const SUPABASE_URL = $env.SUPABASE_URL;
-const EDIT_SPEC_API_URL = $env.EDIT_SPEC_API_URL;
+const SUPABASE_URL = cfg.SUPABASE_URL;
+const EDIT_SPEC_API_URL = cfg.EDIT_SPEC_API_URL;
 const SUPABASE_HEADERS = {
-  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,
+  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,
 };
 
 async function getOne(query) {
@@ -37,26 +38,26 @@ const [transcript, analysis, assets, brandKit, promptRes] = await Promise.all([
   getOne(`brand_kit?client_id=eq.${rawVideo.client_id}&select=logo_url,primary_color,accent_color,handle_instagram,handle_tiktok,end_card_cta`),
   this.helpers.httpRequest({
     method: 'GET',
-    url: `${EDIT_SPEC_API_URL}/prompts/edit-director-system?client_id=${encodeURIComponent(rawVideo.client_id)}`,
+    url: `${EDIT_SPEC_API_URL}/prompts/edit-director-system`,
     json: true,
   }),
 ]);
 
 if (!transcript || !transcript.words || transcript.words.length === 0) {
-  throw new Error(`raw_video ${rawVideo.id} no tiene transcripción con timestamps por palabra todavía.`);
+  throw new Error(`raw_video ${rawVideo.id} no tiene transcripci?n con timestamps por palabra todav?a.`);
 }
 if (!analysis || !assets || !brandKit) {
-  throw new Error(`raw_video ${rawVideo.id} está marcado assets_ready pero falta analysis/assets/brand_kit en Supabase.`);
+  throw new Error(`raw_video ${rawVideo.id} est? marcado assets_ready pero falta analysis/assets/brand_kit en Supabase.`);
 }
 
-// Heurística de duración objetivo: ~85% del bruto, acotada a [15,60]s.
+// Heur?stica de duraci?n objetivo: ~85% del bruto, acotada a [15,60]s.
 // Punto de partida razonable -- el Edit Director puede ajustar los cortes
 // para acercarse, no tiene que calzar exacto.
 const targetSec = Math.min(60, Math.max(15, Math.round(rawVideo.duration_sec * 0.85)));
 
 const today = new Date().toISOString().slice(0, 10);
-// Sufijo numérico de 3 dígitos derivado del uuid, para no depender de un
-// contador aparte -- suficiente para no colisionar dentro del mismo día.
+// Sufijo num?rico de 3 d?gitos derivado del uuid, para no depender de un
+// contador aparte -- suficiente para no colisionar dentro del mismo d?a.
 const idDigits = String(parseInt(rawVideo.id.replace(/-/g, '').slice(0, 6), 16) % 1000).padStart(3, '0');
 const videoId = `VID-${today}-${idDigits}`;
 
@@ -87,19 +88,18 @@ const userPrompt = [
   `meta.created_at: ${new Date().toISOString()}`,
   'meta.version: 1',
   '',
-  '## Análisis previo',
+  '## An?lisis previo',
   `tema: ${analysis.tema}`,
   `categoria: ${analysis.categoria}`,
   `hook_principal detectado: ${analysis.hook_principal}`,
   `hook_score previo: ${analysis.hook_score}/10`,
   `score_calidad previo: ${analysis.score_calidad}/10`,
   '',
-  '## Hooks alternativos ya generados (podés usarlos o reescribir el propio)',
+  '## Hooks alternativos ya generados (pod?s usarlos o reescribir el propio)',
   JSON.stringify(assets.hooks_alternativos || []),
   '',
-  '## Transcripción completa con timestamps por palabra (línea de tiempo del video FUENTE)',
+  '## Transcripci?n completa con timestamps por palabra (l?nea de tiempo del video FUENTE)',
   wordsFormatted,
-  ...(rawVideo.cut_qa_feedback ? ['', '## Feedback obligatorio de QA visual del intento anterior', rawVideo.cut_qa_feedback] : []),
 ].join('\n');
 
 return [{

@@ -1,18 +1,19 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "Marcar failed_edit_spec_generation (agotados los intentos)"
  * Tipo: Code (JavaScript, "Run Once for Each Item")
  *
  * Se ejecuta cuando se agotaron los 3 intentos y el edit_spec sigue
- * inválido. Guarda el último intento fallido para auditoría (nunca se
+ * inv?lido. Guarda el ?ltimo intento fallido para auditor?a (nunca se
  * borran los intentos fallidos, ver sistema-fabrica-reels-nexoia.md) y
  * deja el video en un estado que un humano tiene que revisar a mano.
  *
- * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+ * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  */
-const SUPABASE_URL = $env.SUPABASE_URL;
+const SUPABASE_URL = cfg.SUPABASE_URL;
 const SUPABASE_HEADERS = {
-  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,
+  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,
   'Content-Type': 'application/json',
   Prefer: 'return=representation',
 };

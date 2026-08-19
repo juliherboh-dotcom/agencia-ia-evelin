@@ -24,7 +24,7 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const h={apikey:$env.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`};\nconst rows=await this.helpers.httpRequest({method:'GET',url:`${$env.SUPABASE_URL}/rest/v1/edit_specs?status=eq.ready&validation_status=eq.valid&cut_qa_status=eq.pending&select=id,raw_video_id,client_id,spec_json,created_at&order=created_at.asc&limit=25`,headers:h,json:true}); return rows.map(row=>({json:row}));\n"
+        "jsCode": "const cfg = $('0. Config').first().json;\nconst h={apikey:cfg.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`};\nconst rows=await this.helpers.httpRequest({method:'GET',url:`${cfg.SUPABASE_URL}/rest/v1/edit_specs?status=eq.ready&validation_status=eq.valid&cut_qa_status=eq.pending&select=id,raw_video_id,client_id,spec_json,created_at&order=created_at.asc&limit=25`,headers:h,json:true}); return rows.map(row=>({json:row}));\n"
       },
       "id": "35-detect",
       "name": "0. Detectar edit specs",
@@ -53,7 +53,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const spec=$json,h={apikey:$env.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,'Content-Type':'application/json',Prefer:'return=representation'};\nconst claim=await this.helpers.httpRequest({method:'PATCH',url:`${$env.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${spec.id}&cut_qa_status=eq.pending`,headers:h,body:{cut_qa_status:'in_progress'},json:true}); if(!claim.length)return [];\nconst prompt=await this.helpers.httpRequest({method:'GET',url:`${$env.EDIT_SPEC_API_URL}/prompts/cut-qa-system`,json:true}); const cuts=[];\nfor(const [cut_index,cut] of spec.spec_json.cuts.entries()){if(!cut.keep)continue; const d=cut.end-cut.start; const timestamps=[cut.start,cut.start+d*.33,cut.start+d*.66,Math.max(cut.start,cut.end-.04)]; const f=await this.helpers.httpRequest({method:'POST',url:`${$env.EDIT_SPEC_API_URL}/video-frames`,body:{video_url:spec.spec_json.source_video.url,timestamps},json:true}); cuts.push({cut_index,timestamps,frames:f.frames});}\nconst content=[{type:'text',text:`Evalua todos los cortes. Timestamps fuente: ${JSON.stringify(cuts.map(c=>({cut_index:c.cut_index,timestamps:c.timestamps})))}`},...cuts.flatMap(c=>c.frames.map(f=>({type:'image',source:{type:'base64',media_type:f.media_type,data:f.data}})))];\nconst response=await this.helpers.httpRequest({method:'POST',url:'https://api.anthropic.com/v1/messages',headers:{'x-api-key':$env.ANTHROPIC_API_KEY,'anthropic-version':$env.ANTHROPIC_VERSION||'2023-06-01','content-type':'application/json'},body:{model:$env.EDIT_DIRECTOR_MODEL,max_tokens:4000,temperature:0,system:prompt.text,messages:[{role:'user',content}]},json:true}); const text=(response.content||[]).map(b=>b.text||'').join('').trim().replace(/^```json\\s*|```$/gi,''); const parsed=JSON.parse(text);\nif(!Array.isArray(parsed.results)||parsed.results.length!==cuts.length)throw new Error('QA visual no devolvio un resultado por corte keep:true');\nconst expected=new Set(cuts.map(c=>c.cut_index)); for(const result of parsed.results){if(!expected.has(result.cut_index)||typeof result.ok!=='boolean')throw new Error('QA visual devolvio cut_index u ok invalido'); if(!result.ok&&(!Number.isFinite(result.flagged_frame_time)||!result.reason))throw new Error('Corte marcado sin timestamp o motivo');}\nreturn [{json:{spec,cuts,results:parsed.results}}];\n"
+        "jsCode": "const cfg = $('0. Config').first().json;\nconst spec=$json,h={apikey:cfg.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,'Content-Type':'application/json',Prefer:'return=representation'};\nconst claim=await this.helpers.httpRequest({method:'PATCH',url:`${cfg.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${spec.id}&cut_qa_status=eq.pending`,headers:h,body:{cut_qa_status:'in_progress'},json:true}); if(!claim.length)return [];\nconst prompt=await this.helpers.httpRequest({method:'GET',url:`${cfg.EDIT_SPEC_API_URL}/prompts/cut-qa-system`,json:true}); const cuts=[];\nfor(const [cut_index,cut] of spec.spec_json.cuts.entries()){if(!cut.keep)continue; const d=cut.end-cut.start; const timestamps=[cut.start,cut.start+d*.33,cut.start+d*.66,Math.max(cut.start,cut.end-.04)]; const f=await this.helpers.httpRequest({method:'POST',url:`${cfg.EDIT_SPEC_API_URL}/video-frames`,body:{video_url:spec.spec_json.source_video.url,timestamps},json:true}); cuts.push({cut_index,timestamps,frames:f.frames});}\nconst content=[{type:'text',text:`Evalua todos los cortes. Timestamps fuente: ${JSON.stringify(cuts.map(c=>({cut_index:c.cut_index,timestamps:c.timestamps})))}`},...cuts.flatMap(c=>c.frames.map(f=>({type:'image',source:{type:'base64',media_type:f.media_type,data:f.data}})))];\nconst response=await this.helpers.httpRequest({method:'POST',url:'https://api.anthropic.com/v1/messages',headers:{'x-api-key':cfg.ANTHROPIC_API_KEY,'anthropic-version':cfg.ANTHROPIC_VERSION||'2023-06-01','content-type':'application/json'},body:{model:cfg.EDIT_DIRECTOR_MODEL,max_tokens:4000,temperature:0,system:prompt.text,messages:[{role:'user',content}]},json:true}); const text=(response.content||[]).map(b=>b.text||'').join('').trim().replace(/^```json\\s*|```$/gi,''); const parsed=JSON.parse(text);\nif(!Array.isArray(parsed.results)||parsed.results.length!==cuts.length)throw new Error('QA visual no devolvio un resultado por corte keep:true');\nconst expected=new Set(cuts.map(c=>c.cut_index)); for(const result of parsed.results){if(!expected.has(result.cut_index)||typeof result.ok!=='boolean')throw new Error('QA visual devolvio cut_index u ok invalido'); if(!result.ok&&(!Number.isFinite(result.flagged_frame_time)||!result.reason))throw new Error('Corte marcado sin timestamp o motivo');}\nreturn [{json:{spec,cuts,results:parsed.results}}];\n"
       },
       "id": "35-eval",
       "name": "1. Extraer y evaluar",
@@ -69,7 +69,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const h={apikey:$env.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,'Content-Type':'application/json'},now=new Date().toISOString(); const {spec,cuts,results}=$json;\nawait this.helpers.httpRequest({method:'POST',url:`${$env.SUPABASE_URL}/rest/v1/cut_qa_results`,headers:h,body:results.map(r=>({edit_spec_id:spec.id,cut_index:r.cut_index,ok:r.ok,flagged_frame_time:r.flagged_frame_time,reason:r.reason,checked_at:now})),json:true}); const flagged=results.filter(r=>!r.ok); const status=flagged.length?'flagged':'passed';\nawait this.helpers.httpRequest({method:'PATCH',url:`${$env.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${spec.id}`,headers:h,body:{cut_qa_status:status,cut_qa_checked_at:now},json:true});\nif(!flagged.length){await this.helpers.httpRequest({method:'PATCH',url:`${$env.SUPABASE_URL}/rest/v1/raw_videos?id=eq.${spec.raw_video_id}`,headers:h,body:{status:'edit_spec_ready',cut_qa_feedback:null},json:true});return [{json:{edit_spec_id:spec.id,cut_qa_status:'passed'}}];}\nconst clients=await this.helpers.httpRequest({method:'GET',url:`${$env.SUPABASE_URL}/rest/v1/clients?id=eq.${spec.client_id}&select=telegram_chat_id`,headers:h,json:true}); const chatId=clients[0]?.telegram_chat_id||$env.TELEGRAM_CHAT_ID;\nfor(const r of flagged){const cut=cuts.find(c=>c.cut_index===r.cut_index);const frame=cut.frames.reduce((a,b)=>Math.abs(b.timestamp-r.flagged_frame_time)<Math.abs(a.timestamp-r.flagged_frame_time)?b:a);await this.helpers.httpRequest({method:'POST',url:`https://api.telegram.org/bot${$env.TELEGRAM_BOT_TOKEN}/sendPhoto`,formData:{chat_id:String(chatId),caption:`Corte ${r.cut_index} - t=${r.flagged_frame_time}s: ${r.reason}`,photo:{value:Buffer.from(frame.data,'base64'),options:{filename:`cut-${r.cut_index}.jpg`,contentType:frame.media_type}}}});}\nawait this.helpers.httpRequest({method:'POST',url:`https://api.telegram.org/bot${$env.TELEGRAM_BOT_TOKEN}/sendMessage`,body:{chat_id:chatId,text:`QA visual marco ${flagged.length} corte(s) del edit_spec ${spec.id}.`,reply_markup:{inline_keyboard:[[{text:'Aprobar igual',callback_data:`cqap:${spec.id}`},{text:'Pedir regenerar ese corte',callback_data:`cqrg:${spec.id}`}]]}},json:true}); return [{json:{edit_spec_id:spec.id,cut_qa_status:'flagged'}}];\n"
+        "jsCode": "const cfg = $('0. Config').first().json;\nconst h={apikey:cfg.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,'Content-Type':'application/json'},now=new Date().toISOString(); const {spec,cuts,results}=$json;\nawait this.helpers.httpRequest({method:'POST',url:`${cfg.SUPABASE_URL}/rest/v1/cut_qa_results`,headers:h,body:results.map(r=>({edit_spec_id:spec.id,cut_index:r.cut_index,ok:r.ok,flagged_frame_time:r.flagged_frame_time,reason:r.reason,checked_at:now})),json:true}); const flagged=results.filter(r=>!r.ok); const status=flagged.length?'flagged':'passed';\nawait this.helpers.httpRequest({method:'PATCH',url:`${cfg.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${spec.id}`,headers:h,body:{cut_qa_status:status,cut_qa_checked_at:now},json:true});\nif(!flagged.length){await this.helpers.httpRequest({method:'PATCH',url:`${cfg.SUPABASE_URL}/rest/v1/raw_videos?id=eq.${spec.raw_video_id}`,headers:h,body:{status:'edit_spec_ready',cut_qa_feedback:null},json:true});return [{json:{edit_spec_id:spec.id,cut_qa_status:'passed'}}];}\nconst clients=await this.helpers.httpRequest({method:'GET',url:`${cfg.SUPABASE_URL}/rest/v1/clients?id=eq.${spec.client_id}&select=telegram_chat_id`,headers:h,json:true}); const chatId=clients[0]?.telegram_chat_id||cfg.TELEGRAM_CHAT_ID;\nfor(const r of flagged){const cut=cuts.find(c=>c.cut_index===r.cut_index);const frame=cut.frames.reduce((a,b)=>Math.abs(b.timestamp-r.flagged_frame_time)<Math.abs(a.timestamp-r.flagged_frame_time)?b:a);await this.helpers.httpRequest({method:'POST',url:`https://api.telegram.org/bot${cfg.TELEGRAM_BOT_TOKEN}/sendPhoto`,formData:{chat_id:String(chatId),caption:`Corte ${r.cut_index} - t=${r.flagged_frame_time}s: ${r.reason}`,photo:{value:Buffer.from(frame.data,'base64'),options:{filename:`cut-${r.cut_index}.jpg`,contentType:frame.media_type}}}});}\nawait this.helpers.httpRequest({method:'POST',url:`https://api.telegram.org/bot${cfg.TELEGRAM_BOT_TOKEN}/sendMessage`,body:{chat_id:chatId,text:`QA visual marco ${flagged.length} corte(s) del edit_spec ${spec.id}.`,reply_markup:{inline_keyboard:[[{text:'Aprobar igual',callback_data:`cqap:${spec.id}`},{text:'Pedir regenerar ese corte',callback_data:`cqrg:${spec.id}`}]]}},json:true}); return [{json:{edit_spec_id:spec.id,cut_qa_status:'flagged'}}];\n"
       },
       "id": "35-save",
       "name": "2. Persistir y alertar",
@@ -101,7 +101,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const u=$json.body||$json,cb=u.callback_query;if(!cb)return [{json:{skip:true}}];const [action,id]=(cb.data||'').split(':');if(!['cqap','cqrg'].includes(action))return [{json:{skip:true}}];const h={apikey:$env.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,'Content-Type':'application/json'};\nconst rows=await this.helpers.httpRequest({method:'GET',url:`${$env.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${id}&cut_qa_status=eq.flagged&select=id,raw_video_id,client_id`,headers:h,json:true});if(!rows.length)return [{json:{skip:true,reason:'already_decided'}}];\nconst reviewerId=String(cb.from?.id||'');const reviewers=await this.helpers.httpRequest({method:'GET',url:`${$env.SUPABASE_URL}/rest/v1/reviewers?client_id=eq.${rows[0].client_id}&telegram_user_id=eq.${encodeURIComponent(reviewerId)}&active=eq.true&select=id`,headers:h,json:true});if(!reviewers.length){try{await this.helpers.httpRequest({method:'POST',url:`https://api.telegram.org/bot${$env.TELEGRAM_BOT_TOKEN}/answerCallbackQuery`,body:{callback_query_id:cb.id,text:'Sin permiso para este cliente'},json:true});}catch{}return [{json:{skip:true,reason:'not_a_reviewer'}}];\nif(action==='cqap'){await this.helpers.httpRequest({method:'PATCH',url:`${$env.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${id}`,headers:h,body:{cut_qa_status:'passed'},json:true});await this.helpers.httpRequest({method:'PATCH',url:`${$env.SUPABASE_URL}/rest/v1/raw_videos?id=eq.${rows[0].raw_video_id}`,headers:h,body:{status:'edit_spec_ready'},json:true});}\nelse{const rr=await this.helpers.httpRequest({method:'GET',url:`${$env.SUPABASE_URL}/rest/v1/cut_qa_results?edit_spec_id=eq.${id}&ok=eq.false&select=cut_index,flagged_frame_time,reason&order=checked_at.desc`,headers:h,json:true});const feedback=`QA visual rechazo cortes: ${JSON.stringify(rr)}`;await this.helpers.httpRequest({method:'PATCH',url:`${$env.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${id}`,headers:h,body:{status:'rejected_cut_qa'},json:true});await this.helpers.httpRequest({method:'PATCH',url:`${$env.SUPABASE_URL}/rest/v1/raw_videos?id=eq.${rows[0].raw_video_id}`,headers:h,body:{status:'assets_ready',cut_qa_feedback:feedback},json:true});}\nawait this.helpers.httpRequest({method:'POST',url:`https://api.telegram.org/bot${$env.TELEGRAM_BOT_TOKEN}/answerCallbackQuery`,body:{callback_query_id:cb.id,text:action==='cqap'?'Aprobado para render':'Reencolado en Capa 3'},json:true});return [{json:{edit_spec_id:id,decision:action}}];\n"
+        "jsCode": "const cfg = $('0. Config').first().json;\nconst u=$json.body||$json,cb=u.callback_query;if(!cb)return [{json:{skip:true}}];const [action,id]=(cb.data||'').split(':');if(!['cqap','cqrg'].includes(action))return [{json:{skip:true}}];const h={apikey:cfg.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,'Content-Type':'application/json'};\nconst rows=await this.helpers.httpRequest({method:'GET',url:`${cfg.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${id}&cut_qa_status=eq.flagged&select=id,raw_video_id,client_id`,headers:h,json:true});if(!rows.length)return [{json:{skip:true,reason:'already_decided'}}];\nconst reviewerId=String(cb.from?.id||'');const reviewers=await this.helpers.httpRequest({method:'GET',url:`${cfg.SUPABASE_URL}/rest/v1/reviewers?client_id=eq.${rows[0].client_id}&telegram_user_id=eq.${encodeURIComponent(reviewerId)}&active=eq.true&select=id`,headers:h,json:true});if(!reviewers.length){try{await this.helpers.httpRequest({method:'POST',url:`https://api.telegram.org/bot${cfg.TELEGRAM_BOT_TOKEN}/answerCallbackQuery`,body:{callback_query_id:cb.id,text:'Sin permiso para este cliente'},json:true});}catch{}return [{json:{skip:true,reason:'not_a_reviewer'}}];\nif(action==='cqap'){await this.helpers.httpRequest({method:'PATCH',url:`${cfg.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${id}`,headers:h,body:{cut_qa_status:'passed'},json:true});await this.helpers.httpRequest({method:'PATCH',url:`${cfg.SUPABASE_URL}/rest/v1/raw_videos?id=eq.${rows[0].raw_video_id}`,headers:h,body:{status:'edit_spec_ready'},json:true});}\nelse{const rr=await this.helpers.httpRequest({method:'GET',url:`${cfg.SUPABASE_URL}/rest/v1/cut_qa_results?edit_spec_id=eq.${id}&ok=eq.false&select=cut_index,flagged_frame_time,reason&order=checked_at.desc`,headers:h,json:true});const feedback=`QA visual rechazo cortes: ${JSON.stringify(rr)}`;await this.helpers.httpRequest({method:'PATCH',url:`${cfg.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${id}`,headers:h,body:{status:'rejected_cut_qa'},json:true});await this.helpers.httpRequest({method:'PATCH',url:`${cfg.SUPABASE_URL}/rest/v1/raw_videos?id=eq.${rows[0].raw_video_id}`,headers:h,body:{status:'assets_ready',cut_qa_feedback:feedback},json:true});}\nawait this.helpers.httpRequest({method:'POST',url:`https://api.telegram.org/bot${cfg.TELEGRAM_BOT_TOKEN}/answerCallbackQuery`,body:{callback_query_id:cb.id,text:action==='cqap'?'Aprobado para render':'Reencolado en Capa 3'},json:true});return [{json:{edit_spec_id:id,decision:action}}];\n"
       },
       "id": "35-decision",
       "name": "3. Procesar decision",
@@ -116,7 +116,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const source=$json.spec||$json; const id=source.id||source.edit_spec_id;\nif(id)await this.helpers.httpRequest({method:'PATCH',url:`${$env.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${id}&cut_qa_status=eq.in_progress`,headers:{apikey:$env.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,'Content-Type':'application/json'},body:{cut_qa_status:'pending'},json:true});\nreturn [{json:{edit_spec_id:id,status:'retry_pending',error:String($json.error?.message||$json.message||'Error de QA')}}];\n"
+        "jsCode": "const cfg = $('0. Config').first().json;\nconst source=$json.spec||$json; const id=source.id||source.edit_spec_id;\nif(id)await this.helpers.httpRequest({method:'PATCH',url:`${cfg.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${id}&cut_qa_status=eq.in_progress`,headers:{apikey:cfg.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,'Content-Type':'application/json'},body:{cut_qa_status:'pending'},json:true});\nreturn [{json:{edit_spec_id:id,status:'retry_pending',error:String($json.error?.message||$json.message||'Error de QA')}}];\n"
       },
       "id": "35-error",
       "name": "99. Liberar claim",
@@ -127,6 +127,105 @@
         180
       ],
       "sourceFile": "capa3-5-99-marcar-error.js"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "config-1-supabase-url",
+              "name": "SUPABASE_URL",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-2-supabase-service-role-key",
+              "name": "SUPABASE_SERVICE_ROLE_KEY",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-3-anthropic-api-key",
+              "name": "ANTHROPIC_API_KEY",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-4-anthropic-version",
+              "name": "ANTHROPIC_VERSION",
+              "value": "2023-06-01",
+              "type": "string"
+            },
+            {
+              "id": "config-5-edit-director-model",
+              "name": "EDIT_DIRECTOR_MODEL",
+              "value": "claude-sonnet-4-20250514",
+              "type": "string"
+            },
+            {
+              "id": "config-6-telegram-bot-token",
+              "name": "TELEGRAM_BOT_TOKEN",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-7-telegram-chat-id",
+              "name": "TELEGRAM_CHAT_ID",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-8-edit-spec-api-url",
+              "name": "EDIT_SPEC_API_URL",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "config-capa3-5-cut-qa-workflow-json",
+      "name": "0. Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -480,
+        150
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "route-0-1-rutear-disparador",
+              "leftValue": "={{ !!($json.body || $json.callback_query || $json.message || $json.update_id) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "route-0-1-rutear-disparador",
+      "name": "0.1 Rutear disparador",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -260,
+        150
+      ]
     }
   ],
   "connections": {
@@ -134,7 +233,7 @@
       "main": [
         [
           {
-            "node": "0. Detectar edit specs",
+            "node": "0. Config",
             "type": "main",
             "index": 0
           }
@@ -204,7 +303,7 @@
       "main": [
         [
           {
-            "node": "3. Procesar decision",
+            "node": "0. Config",
             "type": "main",
             "index": 0
           }
@@ -216,6 +315,35 @@
         [
           {
             "node": "Procesar de a uno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "0. Config": {
+      "main": [
+        [
+          {
+            "node": "0.1 Rutear disparador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "0.1 Rutear disparador": {
+      "main": [
+        [
+          {
+            "node": "3. Procesar decision",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "0. Detectar edit specs",
             "type": "main",
             "index": 0
           }

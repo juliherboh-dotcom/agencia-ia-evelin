@@ -1,14 +1,15 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "7. Guardar edit_spec en Supabase"
  * Tipo: Code (JavaScript, "Run Once for Each Item")
- * Solo se ejecuta en la rama "válido" del IF.
+ * Solo se ejecuta en la rama "v?lido" del IF.
  *
- * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+ * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  */
-const SUPABASE_URL = $env.SUPABASE_URL;
+const SUPABASE_URL = cfg.SUPABASE_URL;
 const SUPABASE_HEADERS = {
-  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,
+  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,
   'Content-Type': 'application/json',
   Prefer: 'return=representation',
 };

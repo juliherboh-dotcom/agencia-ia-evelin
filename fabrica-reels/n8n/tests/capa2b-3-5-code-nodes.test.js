@@ -6,8 +6,9 @@ const codeDir = path.join(__dirname, '..', 'code-nodes');
 
 async function runNode(filename, { json = {}, env = {}, httpRequest }) {
   const source = fs.readFileSync(path.join(codeDir, filename), 'utf8');
-  const fn = new Function('$json', '$env', `return (async function () {\n${source}\n}).call(this);`);
-  return fn.call({ helpers: { httpRequest } }, json, env);
+  const fn = new Function('$json', '$', `return (async function () {\n${source}\n}).call(this);`);
+  const $ = () => ({ first: () => ({ json: env }) });
+  return fn.call({ helpers: { httpRequest } }, json, $);
 }
 const env={SUPABASE_URL:'https://example.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'role',EDIT_SPEC_API_URL:'http://api',ANTHROPIC_API_KEY:'key',EDIT_DIRECTOR_MODEL:'model',TELEGRAM_BOT_TOKEN:'bot',TELEGRAM_CHAT_ID:'chat'};
 

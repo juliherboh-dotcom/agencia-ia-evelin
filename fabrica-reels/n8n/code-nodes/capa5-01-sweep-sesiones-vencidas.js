@@ -1,21 +1,22 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "1. Sweep sesiones de comentario vencidas"
  * Tipo: Code (JavaScript, "Run Once for All Items")
  *
  * Si un revisor clickea "Rechazar" / "Pedir cambios" / "Marcar como
- * error" / elige un tipo de variante y después nunca escribe el
- * comentario ("comentario pendiente que nunca llega"), la sesión queda
+ * error" / elige un tipo de variante y despu?s nunca escribe el
+ * comentario ("comentario pendiente que nunca llega"), la sesi?n queda
  * "awaiting_comment" o "awaiting_variant_type" para siempre si nadie la
- * cierra. Esto la cierra sola a los 30 minutos, finalizando la decisión
+ * cierra. Esto la cierra sola a los 30 minutos, finalizando la decisi?n
  * con un comentario placeholder en vez de dejar el video colgado --
  * mismo principio que el sweep de renders vencidos de Capa 4.
  *
- * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+ * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  */
-const SUPABASE_URL = $env.SUPABASE_URL;
+const SUPABASE_URL = cfg.SUPABASE_URL;
 const SUPABASE_HEADERS = {
-  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,
+  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,
   'Content-Type': 'application/json',
   Prefer: 'return=representation',
 };
@@ -48,7 +49,7 @@ for (const session of expired) {
       reviewer: session.reviewer_telegram_user_id ? `telegram:${session.reviewer_telegram_user_id}` : 'telegram:desconocido',
       decision,
       variant_type: session.variant_type || null,
-      comment: '(sin comentario -- expiró la espera de 30 minutos)',
+      comment: '(sin comentario -- expir? la espera de 30 minutos)',
       session_id: session.id,
       decided_at: new Date().toISOString(),
     },

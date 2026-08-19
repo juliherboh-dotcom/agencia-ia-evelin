@@ -263,3 +263,15 @@ Recién con `edit-spec-api` respondiendo, importar el workflow en n8n, cargar la
 - [ ] Los dos casos (éxito y fallo agotado) devuelven el control a "Procesar de a uno" y el workflow sigue con el siguiente video de la cola sin quedar colgado.
 - [ ] `raw_videos.status` nunca queda en un estado intermedio inconsistente si se interrumpe la ejecución de n8n a mitad de camino (revisar manualmente: un video en `assets_ready` que no avanzó, simplemente se vuelve a recoger en el próximo poll de 5 minutos — es idempotente mientras no haya insertado ya un `edit_specs` válido).
 - [ ] Alertas de Telegram llegan con datos legibles (no `[object Object]`) tanto en el caso de éxito como en el de fallo.
+
+## Configuración en n8n Community (sin variables de entorno de servidor)
+
+Después de importar `capa3-edit-director.workflow.json`, abre el nodo `0. Config` y completa sus campos manualmente. Los secretos se entregan vacíos; no los guardes en archivos versionados.
+
+- `SUPABASE_URL`: URL base del proyecto Supabase (por ejemplo, `https://<proyecto>.supabase.co`).
+- `SUPABASE_SERVICE_ROLE_KEY`: clave `service_role` de Supabase.
+- `ANTHROPIC_API_KEY`: API key de Anthropic.
+- `ANTHROPIC_VERSION`: versión de la API de Anthropic; dejar `2023-06-01` salvo cambio explícito.
+- `EDIT_DIRECTOR_MODEL`: modelo Anthropic del Edit Director; queda precargado como `claude-sonnet-4-20250514`.
+- `TELEGRAM_CHAT_ID`: chat ID de Telegram usado como destino de respaldo para alertas.
+- `EDIT_SPEC_API_URL`: URL base alcanzable del servicio edit-spec-api, sin barra final.

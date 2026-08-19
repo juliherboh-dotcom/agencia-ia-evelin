@@ -29,3 +29,16 @@ Reutiliza `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `EDIT_SPEC_API_URL`, `ANT
 ## 5. Limitaciones conocidas
 
 Este QA evalúa imagen, no señal sonora. Música y SFX son **no verificables solo con frames+transcript** y quedan fuera de la decisión; no se implementa mezcla real de audio. Cuatro muestras reducen el riesgo, pero no equivalen a inspeccionar cada frame del video.
+
+## Configuración en n8n Community (sin variables de entorno de servidor)
+
+Después de importar `capa3-5-cut-qa.workflow.json`, abre el nodo `0. Config` y completa sus campos manualmente. Los secretos se entregan vacíos; no los guardes en archivos versionados.
+
+- `SUPABASE_URL`: URL base del proyecto Supabase (por ejemplo, `https://<proyecto>.supabase.co`).
+- `SUPABASE_SERVICE_ROLE_KEY`: clave `service_role` de Supabase.
+- `ANTHROPIC_API_KEY`: API key de Anthropic.
+- `ANTHROPIC_VERSION`: versión de la API de Anthropic; dejar `2023-06-01` salvo cambio explícito.
+- `EDIT_DIRECTOR_MODEL`: modelo Anthropic del Edit Director; queda precargado como `claude-sonnet-4-20250514`.
+- `TELEGRAM_BOT_TOKEN`: token del bot de Telegram.
+- `TELEGRAM_CHAT_ID`: chat ID de Telegram usado como destino de respaldo para alertas.
+- `EDIT_SPEC_API_URL`: URL base alcanzable del servicio edit-spec-api, sin barra final.

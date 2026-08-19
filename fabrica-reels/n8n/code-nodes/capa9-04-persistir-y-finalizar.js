@@ -1,13 +1,14 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "4. Persistir variantes y finalizar"
  * Tipo: Code (JavaScript, "Run Once for Each Item")
- * Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, TELEGRAM_BOT_TOKEN,
+ * Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, TELEGRAM_BOT_TOKEN,
  *      TELEGRAM_CHAT_ID
  */
-const SUPABASE_URL = $env.SUPABASE_URL;
+const SUPABASE_URL = cfg.SUPABASE_URL;
 const headers = {
-  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,
+  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,
   'Content-Type': 'application/json',
   Prefer: 'return=representation',
 };
@@ -79,7 +80,7 @@ await this.helpers.httpRequest({
   json: true,
 });
 
-let chatId = $env.TELEGRAM_CHAT_ID;
+let chatId = cfg.TELEGRAM_CHAT_ID;
 const clients = await this.helpers.httpRequest({
   method: 'GET',
   url: `${SUPABASE_URL}/rest/v1/clients?id=eq.${raw.client_id}&select=telegram_chat_id`,
@@ -91,7 +92,7 @@ let telegramAlert = 'sent';
 try {
   await this.helpers.httpRequest({
     method: 'POST',
-    url: `https://api.telegram.org/bot${$env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+    url: `https://api.telegram.org/bot${cfg.TELEGRAM_BOT_TOKEN}/sendMessage`,
     body: {
       chat_id: chatId,
       text: `Variantes generadas para ${raw.filename || raw.id}: ${typeB.length} Tipo B listas para render y ${typeA.length} Tipo A pendientes de grabacion.`,

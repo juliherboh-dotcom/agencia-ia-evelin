@@ -294,3 +294,13 @@ Con un `edit_spec_id` cuyo `spec_json` fue editado a mano y quedó con `branding
 - [ ] El mensaje de Telegram de éxito llega con los 3 botones y el link abre el video; apretar cada botón escribe en `review_actions`, actualiza `raw_videos.status` y edita el mensaje mostrando la decisión (sin dejar los botones activos para un segundo click).
 - [ ] El botón "🔁 Reintentar" del mensaje de fallo efectivamente vuelve el video a `edit_spec_ready` y el ciclo normal lo re-dispara sin intervención manual adicional.
 - [ ] Un video corrido de punta a punta (Capa 3 completa → Capa 4 completa) termina en `rendered_pending_review` con un MP4 real y reproducible, sin que nadie haya tocado Supabase ni Remotion a mano.
+
+## Configuración en n8n Community (sin variables de entorno de servidor)
+
+Después de importar `capa4-render.workflow.json`, abre el nodo `0. Config` y completa sus campos manualmente. Los secretos se entregan vacíos; no los guardes en archivos versionados.
+
+- `SUPABASE_URL`: URL base del proyecto Supabase (por ejemplo, `https://<proyecto>.supabase.co`).
+- `SUPABASE_SERVICE_ROLE_KEY`: clave `service_role` de Supabase.
+- `TELEGRAM_BOT_TOKEN`: token del bot de Telegram.
+- `TELEGRAM_CHAT_ID`: chat ID de Telegram usado como destino de respaldo para alertas.
+- `RENDER_SERVICE_URL`: URL base alcanzable del servicio de render, sin barra final.

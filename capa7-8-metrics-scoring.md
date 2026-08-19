@@ -315,3 +315,13 @@ curl -X POST http://localhost:3004/score \
 - [x] Ejemplos de score verificados (malo/normal/prometedor/ganador/super ganador) — sección 3
 
 **Nota de calidad:** todo el TypeScript de `metrics-api` pasa `tsc --noEmit` sin errores, y los 5 ejemplos de la sección 3 son la salida real de ejecutar `calculatePerformanceScore()` (no números inventados a mano) — el primer intento de armar esos ejemplos, de hecho, dio casi todo `super_ganador` porque los valores de entrada elegidos a mano estaban muy por encima del benchmark; se recalibraron corriendo la función real hasta que cada caso cayera en su banda esperada, que es exactamente el tipo de error que uno quiere descubrir probando el código en vez de describiéndolo en prosa.
+
+## Configuración en n8n Community (sin variables de entorno de servidor)
+
+Después de importar `capa7-metrics.workflow.json y capa8-scoring.workflow.json`, abre el nodo `0. Config` y completa sus campos manualmente. Los secretos se entregan vacíos; no los guardes en archivos versionados.
+
+- `SUPABASE_URL`: URL base del proyecto Supabase (por ejemplo, `https://<proyecto>.supabase.co`).
+- `SUPABASE_SERVICE_ROLE_KEY`: clave `service_role` de Supabase.
+- `TELEGRAM_BOT_TOKEN`: token del bot de Telegram.
+- `TELEGRAM_CHAT_ID`: chat ID de Telegram usado como destino de respaldo para alertas.
+- `METRICS_API_URL`: URL base alcanzable del servicio metrics-api, sin barra final.

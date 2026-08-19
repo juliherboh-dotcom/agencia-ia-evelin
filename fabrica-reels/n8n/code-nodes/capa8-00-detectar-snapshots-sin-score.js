@@ -1,16 +1,17 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "0. Detectar snapshots sin score"
  * Tipo: Code (JavaScript, "Run Once for All Items")
  *
- * post_metrics con source != 'failed' que todavía no tienen una fila en
+ * post_metrics con source != 'failed' que todav?a no tienen una fila en
  * `scores` asociada (metric_snapshot_id).
  *
- * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+ * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  */
-const SUPABASE_URL = $env.SUPABASE_URL;
+const SUPABASE_URL = cfg.SUPABASE_URL;
 const SUPABASE_HEADERS = {
-  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,
+  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,
 };
 
 const snapshots = await this.helpers.httpRequest({

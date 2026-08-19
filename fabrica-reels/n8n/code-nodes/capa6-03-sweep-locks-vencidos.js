@@ -1,18 +1,19 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "3. Sweep locks vencidos"
  * Tipo: Code (JavaScript, "Run Once for All Items")
  *
- * Si una ejecución de "2. Publicar (con lock)" muere a mitad de camino
+ * Si una ejecuci?n de "2. Publicar (con lock)" muere a mitad de camino
  * (n8n se reinicia, timeout, etc.), la fila queda con locked_at seteado
- * para siempre y nunca se vuelve a intentar. Esto libera locks de más de
+ * para siempre y nunca se vuelve a intentar. Esto libera locks de m?s de
  * 10 minutos -- mismo principio que los sweeps de Capa 4 y Capa 5.
  *
- * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+ * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  */
-const SUPABASE_URL = $env.SUPABASE_URL;
+const SUPABASE_URL = cfg.SUPABASE_URL;
 const SUPABASE_HEADERS = {
-  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,
+  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,
   'Content-Type': 'application/json',
   Prefer: 'return=representation',
 };

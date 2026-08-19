@@ -295,3 +295,13 @@ curl -X PATCH "$SUPABASE_URL/rest/v1/publications?id=eq.<publication_id>" \
 - [x] Este documento
 
 **Nota de calidad:** todo el código TypeScript nuevo (`publish-api`) y el código TypeScript existente que esta capa toca indirectamente (`schema/`, `validation/`, `remotion/`) pasa `tsc --noEmit` sin errores — al armar esta capa se encontró y corrigió un bug real de continuidad de dos capas atrás: `schema/` y `validation/` son carpetas compartidas por varios paquetes hoja, pero `zod` solo estaba instalado en el `node_modules` de cada paquete hoja, no en un lugar que la resolución de módulos de Node pudiera encontrar desde esas carpetas compartidas. Se agregó `fabrica-reels/package.json` (con `zod` como dependencia) para darles un `node_modules` ancestro común.
+
+## Configuración en n8n Community (sin variables de entorno de servidor)
+
+Después de importar `capa6-publishing.workflow.json`, abre el nodo `0. Config` y completa sus campos manualmente. Los secretos se entregan vacíos; no los guardes en archivos versionados.
+
+- `SUPABASE_URL`: URL base del proyecto Supabase (por ejemplo, `https://<proyecto>.supabase.co`).
+- `SUPABASE_SERVICE_ROLE_KEY`: clave `service_role` de Supabase.
+- `TELEGRAM_BOT_TOKEN`: token del bot de Telegram.
+- `TELEGRAM_CHAT_ID`: chat ID de Telegram usado como destino de respaldo para alertas.
+- `PUBLISH_API_URL`: URL base alcanzable del servicio publish-api, sin barra final.

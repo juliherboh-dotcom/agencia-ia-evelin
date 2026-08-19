@@ -24,7 +24,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/raw_videos",
+        "url": "={{ $('0. Config').first().json.SUPABASE_URL }}/rest/v1/raw_videos",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -47,11 +47,11 @@
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+              "value": "={{ $('0. Config').first().json.SUPABASE_SERVICE_ROLE_KEY }}"
             },
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+              "value": "=Bearer {{ $('0. Config').first().json.SUPABASE_SERVICE_ROLE_KEY }}"
             }
           ]
         },
@@ -83,7 +83,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "/**\n * Nodo n8n: \"2-3. Traer contexto + armar prompt Edit Director\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Input: un item de raw_videos (status='assets_ready'), proveniente del\n * loop \"Procesar de a uno\".\n *\n * Hace las 4 lecturas de Supabase relacionadas al video (transcript,\n * analysis, assets, brand_kit) + trae el system prompt ya armado desde\n * edit-spec-api, y arma el user prompt específico de este video.\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, EDIT_SPEC_API_URL\n */\nconst rawVideo = $json;\n\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst EDIT_SPEC_API_URL = $env.EDIT_SPEC_API_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n};\n\nasync function getOne(query) {\n  const rows = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `${SUPABASE_URL}/rest/v1/${query}`,\n    headers: SUPABASE_HEADERS,\n    json: true,\n  });\n  return Array.isArray(rows) ? rows[0] : rows;\n}\n\nconst [transcript, analysis, assets, brandKit, promptRes] = await Promise.all([\n  getOne(`transcripts?raw_video_id=eq.${rawVideo.id}&select=text_full,words,language`),\n  getOne(`analyses?raw_video_id=eq.${rawVideo.id}&select=tema,categoria,hook_principal,hook_score,score_calidad,descripcion_objetivo`),\n  getOne(`assets?raw_video_id=eq.${rawVideo.id}&select=titulos,captions_ig,captions_tiktok,hashtags,hooks_alternativos,recomendacion_edicion`),\n  getOne(`brand_kit?client_id=eq.${rawVideo.client_id}&select=logo_url,primary_color,accent_color,handle_instagram,handle_tiktok,end_card_cta`),\n  this.helpers.httpRequest({\n    method: 'GET',\n    url: `${EDIT_SPEC_API_URL}/prompts/edit-director-system`,\n    json: true,\n  }),\n]);\n\nif (!transcript || !transcript.words || transcript.words.length === 0) {\n  throw new Error(`raw_video ${rawVideo.id} no tiene transcripción con timestamps por palabra todavía.`);\n}\nif (!analysis || !assets || !brandKit) {\n  throw new Error(`raw_video ${rawVideo.id} está marcado assets_ready pero falta analysis/assets/brand_kit en Supabase.`);\n}\n\n// Heurística de duración objetivo: ~85% del bruto, acotada a [15,60]s.\n// Punto de partida razonable -- el Edit Director puede ajustar los cortes\n// para acercarse, no tiene que calzar exacto.\nconst targetSec = Math.min(60, Math.max(15, Math.round(rawVideo.duration_sec * 0.85)));\n\nconst today = new Date().toISOString().slice(0, 10);\n// Sufijo numérico de 3 dígitos derivado del uuid, para no depender de un\n// contador aparte -- suficiente para no colisionar dentro del mismo día.\nconst idDigits = String(parseInt(rawVideo.id.replace(/-/g, '').slice(0, 6), 16) % 1000).padStart(3, '0');\nconst videoId = `VID-${today}-${idDigits}`;\n\n// MVP de este flujo: siempre instagram_reels. Multi-plataforma se resuelve\n// generando un edit_spec por plataforma cuando se conecte la Capa 6.\nconst platform = 'instagram_reels';\n\nconst sourceVideoUrl = `${SUPABASE_URL}/storage/v1/object/public/raw/${rawVideo.client_id}/${rawVideo.storage_path}`;\n\nconst wordsFormatted = transcript.words\n  .map((w) => `[${w.start.toFixed(2)}-${w.end.toFixed(2)}] ${w.word}`)\n  .join(' ');\n\nconst userPrompt = [\n  '## Datos fijos (copiar tal cual en el JSON de salida)',\n  `video_id: ${videoId}`,\n  `client_id: ${rawVideo.client_id}`,\n  `raw_video_id: ${rawVideo.id}`,\n  `platform: ${platform}`,\n  `source_video.url: ${sourceVideoUrl}`,\n  `source_video.duration_sec: ${rawVideo.duration_sec}`,\n  `duration.target_sec: ${targetSec}`,\n  `branding.logo_url: ${brandKit.logo_url}`,\n  `branding.primary_color: ${brandKit.primary_color}`,\n  `branding.accent_color: ${brandKit.accent_color}`,\n  `branding.handle: ${brandKit.handle_instagram}`,\n  'meta.created_by: llm_edit_director',\n  `meta.created_at: ${new Date().toISOString()}`,\n  'meta.version: 1',\n  '',\n  '## Análisis previo',\n  `tema: ${analysis.tema}`,\n  `categoria: ${analysis.categoria}`,\n  `hook_principal detectado: ${analysis.hook_principal}`,\n  `hook_score previo: ${analysis.hook_score}/10`,\n  `score_calidad previo: ${analysis.score_calidad}/10`,\n  '',\n  '## Hooks alternativos ya generados (podés usarlos o reescribir el propio)',\n  JSON.stringify(assets.hooks_alternativos || []),\n  '',\n  '## Transcripción completa con timestamps por palabra (línea de tiempo del video FUENTE)',\n  wordsFormatted,\n].join('\\n');\n\nreturn [{\n  json: {\n    raw_video: rawVideo,\n    video_id: videoId,\n    platform,\n    target_sec: targetSec,\n    source_video_url: sourceVideoUrl,\n    attempt: 1,\n    system_prompt: promptRes.text,\n    user_prompt: userPrompt,\n  },\n}];\n"
+        "jsCode": "const cfg = $('0. Config').first().json;\n/**\n * Nodo n8n: \"2-3. Traer contexto + armar prompt Edit Director\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Input: un item de raw_videos (status='assets_ready'), proveniente del\n * loop \"Procesar de a uno\".\n *\n * Hace las 4 lecturas de Supabase relacionadas al video (transcript,\n * analysis, assets, brand_kit) + trae el system prompt ya armado desde\n * edit-spec-api, y arma el user prompt espec?fico de este video.\n *\n * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, EDIT_SPEC_API_URL\n */\nconst rawVideo = $json;\n\nconst SUPABASE_URL = cfg.SUPABASE_URL;\nconst EDIT_SPEC_API_URL = cfg.EDIT_SPEC_API_URL;\nconst SUPABASE_HEADERS = {\n  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,\n};\n\nasync function getOne(query) {\n  const rows = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `${SUPABASE_URL}/rest/v1/${query}`,\n    headers: SUPABASE_HEADERS,\n    json: true,\n  });\n  return Array.isArray(rows) ? rows[0] : rows;\n}\n\nconst [transcript, analysis, assets, brandKit, promptRes] = await Promise.all([\n  getOne(`transcripts?raw_video_id=eq.${rawVideo.id}&select=text_full,words,language`),\n  getOne(`analyses?raw_video_id=eq.${rawVideo.id}&select=tema,categoria,hook_principal,hook_score,score_calidad,descripcion_objetivo`),\n  getOne(`assets?raw_video_id=eq.${rawVideo.id}&select=titulos,captions_ig,captions_tiktok,hashtags,hooks_alternativos,recomendacion_edicion`),\n  getOne(`brand_kit?client_id=eq.${rawVideo.client_id}&select=logo_url,primary_color,accent_color,handle_instagram,handle_tiktok,end_card_cta`),\n  this.helpers.httpRequest({\n    method: 'GET',\n    url: `${EDIT_SPEC_API_URL}/prompts/edit-director-system`,\n    json: true,\n  }),\n]);\n\nif (!transcript || !transcript.words || transcript.words.length === 0) {\n  throw new Error(`raw_video ${rawVideo.id} no tiene transcripci?n con timestamps por palabra todav?a.`);\n}\nif (!analysis || !assets || !brandKit) {\n  throw new Error(`raw_video ${rawVideo.id} est? marcado assets_ready pero falta analysis/assets/brand_kit en Supabase.`);\n}\n\n// Heur?stica de duraci?n objetivo: ~85% del bruto, acotada a [15,60]s.\n// Punto de partida razonable -- el Edit Director puede ajustar los cortes\n// para acercarse, no tiene que calzar exacto.\nconst targetSec = Math.min(60, Math.max(15, Math.round(rawVideo.duration_sec * 0.85)));\n\nconst today = new Date().toISOString().slice(0, 10);\n// Sufijo num?rico de 3 d?gitos derivado del uuid, para no depender de un\n// contador aparte -- suficiente para no colisionar dentro del mismo d?a.\nconst idDigits = String(parseInt(rawVideo.id.replace(/-/g, '').slice(0, 6), 16) % 1000).padStart(3, '0');\nconst videoId = `VID-${today}-${idDigits}`;\n\n// MVP de este flujo: siempre instagram_reels. Multi-plataforma se resuelve\n// generando un edit_spec por plataforma cuando se conecte la Capa 6.\nconst platform = 'instagram_reels';\n\nconst sourceVideoUrl = `${SUPABASE_URL}/storage/v1/object/public/raw/${rawVideo.client_id}/${rawVideo.storage_path}`;\n\nconst wordsFormatted = transcript.words\n  .map((w) => `[${w.start.toFixed(2)}-${w.end.toFixed(2)}] ${w.word}`)\n  .join(' ');\n\nconst userPrompt = [\n  '## Datos fijos (copiar tal cual en el JSON de salida)',\n  `video_id: ${videoId}`,\n  `client_id: ${rawVideo.client_id}`,\n  `raw_video_id: ${rawVideo.id}`,\n  `platform: ${platform}`,\n  `source_video.url: ${sourceVideoUrl}`,\n  `source_video.duration_sec: ${rawVideo.duration_sec}`,\n  `duration.target_sec: ${targetSec}`,\n  `branding.logo_url: ${brandKit.logo_url}`,\n  `branding.primary_color: ${brandKit.primary_color}`,\n  `branding.accent_color: ${brandKit.accent_color}`,\n  `branding.handle: ${brandKit.handle_instagram}`,\n  'meta.created_by: llm_edit_director',\n  `meta.created_at: ${new Date().toISOString()}`,\n  'meta.version: 1',\n  '',\n  '## An?lisis previo',\n  `tema: ${analysis.tema}`,\n  `categoria: ${analysis.categoria}`,\n  `hook_principal detectado: ${analysis.hook_principal}`,\n  `hook_score previo: ${analysis.hook_score}/10`,\n  `score_calidad previo: ${analysis.score_calidad}/10`,\n  '',\n  '## Hooks alternativos ya generados (pod?s usarlos o reescribir el propio)',\n  JSON.stringify(assets.hooks_alternativos || []),\n  '',\n  '## Transcripci?n completa con timestamps por palabra (l?nea de tiempo del video FUENTE)',\n  wordsFormatted,\n].join('\\n');\n\nreturn [{\n  json: {\n    raw_video: rawVideo,\n    video_id: videoId,\n    platform,\n    target_sec: targetSec,\n    source_video_url: sourceVideoUrl,\n    attempt: 1,\n    system_prompt: promptRes.text,\n    user_prompt: userPrompt,\n  },\n}];\n"
       },
       "id": "5eebf199-48a0-4867-97f5-a1692646f540",
       "name": "2-3. Traer contexto + armar prompt Edit Director",
@@ -92,12 +92,13 @@
       "position": [
         -380,
         -80
-      ]
+      ],
+      "sourceFile": "04-preparar-contexto.js"
     },
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "/**\n * Nodo n8n: \"4. Llamar LLM (Edit Director)\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Se reutiliza para el primer intento Y para cada reintento de reparación\n * (el nodo \"Repair loop\" reescribe system_prompt/user_prompt y vuelve a\n * conectar acá). No sabe ni le importa si es intento 1 o 3 -- solo llama\n * al LLM con lo que tenga en el item.\n *\n * Env vars usadas: ANTHROPIC_API_KEY, ANTHROPIC_VERSION, EDIT_DIRECTOR_MODEL\n */\nconst ANTHROPIC_API_KEY = $env.ANTHROPIC_API_KEY;\nconst ANTHROPIC_VERSION = $env.ANTHROPIC_VERSION || '2023-06-01';\nconst MODEL = $env.EDIT_DIRECTOR_MODEL;\n\nconst response = await this.helpers.httpRequest({\n  method: 'POST',\n  url: 'https://api.anthropic.com/v1/messages',\n  headers: {\n    'x-api-key': ANTHROPIC_API_KEY,\n    'anthropic-version': ANTHROPIC_VERSION,\n    'content-type': 'application/json',\n  },\n  body: {\n    model: MODEL,\n    max_tokens: 4096,\n    // Más determinístico en los reintentos de reparación que en el\n    // primer intento (menos margen creativo cuando ya sabemos qué falló).\n    temperature: $json.attempt > 1 ? 0.2 : 0.4,\n    system: $json.system_prompt,\n    messages: [{ role: 'user', content: $json.user_prompt }],\n  },\n  json: true,\n});\n\nconst rawText = (response.content || []).map((block) => block.text || '').join('');\nconst cleaned = rawText\n  .trim()\n  .replace(/^```json\\s*/i, '')\n  .replace(/^```\\s*/i, '')\n  .replace(/```\\s*$/i, '');\n\nlet editSpecCandidate = null;\nlet parseOk = true;\nlet parseErrorMessage = null;\n\ntry {\n  editSpecCandidate = JSON.parse(cleaned);\n} catch (err) {\n  parseOk = false;\n  parseErrorMessage = err.message;\n}\n\nreturn [{\n  json: {\n    ...$json,\n    llm_raw_text: rawText,\n    parse_ok: parseOk,\n    edit_spec_candidate: editSpecCandidate,\n    parse_error_message: parseErrorMessage,\n  },\n}];\n"
+        "jsCode": "const cfg = $('0. Config').first().json;\n/**\n * Nodo n8n: \"4. Llamar LLM (Edit Director)\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Se reutiliza para el primer intento Y para cada reintento de reparaci?n\n * (el nodo \"Repair loop\" reescribe system_prompt/user_prompt y vuelve a\n * conectar ac?). No sabe ni le importa si es intento 1 o 3 -- solo llama\n * al LLM con lo que tenga en el item.\n *\n * Campos de 0. Config: ANTHROPIC_API_KEY, ANTHROPIC_VERSION, EDIT_DIRECTOR_MODEL\n */\nconst ANTHROPIC_API_KEY = cfg.ANTHROPIC_API_KEY;\nconst ANTHROPIC_VERSION = cfg.ANTHROPIC_VERSION || '2023-06-01';\nconst MODEL = cfg.EDIT_DIRECTOR_MODEL;\n\nconst response = await this.helpers.httpRequest({\n  method: 'POST',\n  url: 'https://api.anthropic.com/v1/messages',\n  headers: {\n    'x-api-key': ANTHROPIC_API_KEY,\n    'anthropic-version': ANTHROPIC_VERSION,\n    'content-type': 'application/json',\n  },\n  body: {\n    model: MODEL,\n    max_tokens: 4096,\n    // M?s determin?stico en los reintentos de reparaci?n que en el\n    // primer intento (menos margen creativo cuando ya sabemos qu? fall?).\n    temperature: $json.attempt > 1 ? 0.2 : 0.4,\n    system: $json.system_prompt,\n    messages: [{ role: 'user', content: $json.user_prompt }],\n  },\n  json: true,\n});\n\nconst rawText = (response.content || []).map((block) => block.text || '').join('');\nconst cleaned = rawText\n  .trim()\n  .replace(/^```json\\s*/i, '')\n  .replace(/^```\\s*/i, '')\n  .replace(/```\\s*$/i, '');\n\nlet editSpecCandidate = null;\nlet parseOk = true;\nlet parseErrorMessage = null;\n\ntry {\n  editSpecCandidate = JSON.parse(cleaned);\n} catch (err) {\n  parseOk = false;\n  parseErrorMessage = err.message;\n}\n\nreturn [{\n  json: {\n    ...$json,\n    llm_raw_text: rawText,\n    parse_ok: parseOk,\n    edit_spec_candidate: editSpecCandidate,\n    parse_error_message: parseErrorMessage,\n  },\n}];\n"
       },
       "id": "143d8c0c-3568-4d39-a693-3dc96fcddb86",
       "name": "4. Llamar LLM (Edit Director)",
@@ -106,12 +107,13 @@
       "position": [
         -140,
         -80
-      ]
+      ],
+      "sourceFile": "05-llamar-llm.js"
     },
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "/**\n * Nodo n8n: \"5-6. Validar edit_spec\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Si el LLM devolvió algo que ni siquiera parsea como JSON, no llama al\n * servicio de validación -- arma directamente el mismo shape de error que\n * devolvería, para que el resto del flujo no tenga que distinguir \"no\n * parseó\" de \"parseó pero es inválido\".\n *\n * Env vars usadas: EDIT_SPEC_API_URL\n */\nconst EDIT_SPEC_API_URL = $env.EDIT_SPEC_API_URL;\n\nlet validation;\n\nif (!$json.parse_ok) {\n  validation = {\n    valid: false,\n    errors: [{\n      path: '(root)',\n      message: `La respuesta del LLM no es JSON válido: ${$json.parse_error_message}`,\n    }],\n  };\n} else {\n  validation = await this.helpers.httpRequest({\n    method: 'POST',\n    url: `${EDIT_SPEC_API_URL}/validate`,\n    body: { edit_spec: $json.edit_spec_candidate },\n    json: true,\n  });\n}\n\nreturn [{ json: { ...$json, validation } }];\n"
+        "jsCode": "const cfg = $('0. Config').first().json;\n/**\n * Nodo n8n: \"5-6. Validar edit_spec\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Si el LLM devolvi? algo que ni siquiera parsea como JSON, no llama al\n * servicio de validaci?n -- arma directamente el mismo shape de error que\n * devolver?a, para que el resto del flujo no tenga que distinguir \"no\n * parse?\" de \"parse? pero es inv?lido\".\n *\n * Campos de 0. Config: EDIT_SPEC_API_URL\n */\nconst EDIT_SPEC_API_URL = cfg.EDIT_SPEC_API_URL;\n\nlet validation;\n\nif (!$json.parse_ok) {\n  validation = {\n    valid: false,\n    errors: [{\n      path: '(root)',\n      message: `La respuesta del LLM no es JSON v?lido: ${$json.parse_error_message}`,\n    }],\n  };\n} else {\n  validation = await this.helpers.httpRequest({\n    method: 'POST',\n    url: `${EDIT_SPEC_API_URL}/validate`,\n    body: { edit_spec: $json.edit_spec_candidate },\n    json: true,\n  });\n}\n\nreturn [{ json: { ...$json, validation } }];\n"
       },
       "id": "38dad4e4-c516-4a39-927d-2769ba56b440",
       "name": "5-6. Validar edit_spec",
@@ -120,7 +122,8 @@
       "position": [
         100,
         -80
-      ]
+      ],
+      "sourceFile": "06-validar-edit-spec.js"
     },
     {
       "parameters": {
@@ -158,7 +161,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "/**\n * Nodo n8n: \"7. Guardar edit_spec en Supabase\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n * Solo se ejecuta en la rama \"válido\" del IF.\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n  Prefer: 'return=representation',\n};\n\nconst inserted = await this.helpers.httpRequest({\n  method: 'POST',\n  url: `${SUPABASE_URL}/rest/v1/edit_specs`,\n  headers: SUPABASE_HEADERS,\n  body: {\n    raw_video_id: $json.raw_video.id,\n    template_id: $json.validation.data.template_id,\n    spec_json: $json.validation.data,\n    schema_version: $json.validation.data.schema_version,\n    version: 1,\n    status: 'ready',\n    validation_status: 'valid',\n    repair_attempts: $json.attempt - 1,\n  },\n  json: true,\n});\n\nreturn [{ json: { ...$json, edit_spec_id: inserted[0].id } }];\n"
+        "jsCode": "const cfg = $('0. Config').first().json;\n/**\n * Nodo n8n: \"7. Guardar edit_spec en Supabase\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n * Solo se ejecuta en la rama \"v?lido\" del IF.\n *\n * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst SUPABASE_URL = cfg.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n  Prefer: 'return=representation',\n};\n\nconst inserted = await this.helpers.httpRequest({\n  method: 'POST',\n  url: `${SUPABASE_URL}/rest/v1/edit_specs`,\n  headers: SUPABASE_HEADERS,\n  body: {\n    raw_video_id: $json.raw_video.id,\n    template_id: $json.validation.data.template_id,\n    spec_json: $json.validation.data,\n    schema_version: $json.validation.data.schema_version,\n    version: 1,\n    status: 'ready',\n    validation_status: 'valid',\n    repair_attempts: $json.attempt - 1,\n  },\n  json: true,\n});\n\nreturn [{ json: { ...$json, edit_spec_id: inserted[0].id } }];\n"
       },
       "id": "31422f8d-acfb-4032-97bd-b36bdc647aa2",
       "name": "7. Guardar edit_spec en Supabase",
@@ -167,12 +170,13 @@
       "position": [
         600,
         -260
-      ]
+      ],
+      "sourceFile": "08-guardar-edit-spec.js"
     },
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "/**\n * Nodo n8n: \"8. Actualizar estado -> edit_spec_ready\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n};\n\nawait this.helpers.httpRequest({\n  method: 'PATCH',\n  url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${$json.raw_video.id}`,\n  headers: SUPABASE_HEADERS,\n  body: { status: 'edit_spec_ready' },\n  json: true,\n});\n\nreturn [{ json: $json }];\n"
+        "jsCode": "const cfg = $('0. Config').first().json;\n/**\n * Nodo n8n: \"8. Actualizar estado -> edit_spec_ready\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst SUPABASE_URL = cfg.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n};\n\nawait this.helpers.httpRequest({\n  method: 'PATCH',\n  url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${$json.raw_video.id}`,\n  headers: SUPABASE_HEADERS,\n  body: { status: 'edit_spec_ready' },\n  json: true,\n});\n\nreturn [{ json: $json }];\n"
       },
       "id": "cf601071-58ed-4536-a5f2-6e697211e94f",
       "name": "8. Actualizar estado -> edit_spec_ready",
@@ -181,11 +185,12 @@
       "position": [
         840,
         -260
-      ]
+      ],
+      "sourceFile": "09-actualizar-estado-ready.js"
     },
     {
       "parameters": {
-        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "chatId": "={{ $('0. Config').first().json.TELEGRAM_CHAT_ID }}",
         "text": "=✅ edit_spec listo -- {{ $json.video_id }} ({{ $json.platform }}) queda en estado edit_spec_ready, esperando render con personal_brand_clean. Intentos usados: {{ $json.attempt }}.",
         "additionalFields": {}
       },
@@ -233,7 +238,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "/**\n * Nodo n8n: \"Repair loop: construir prompt de reparación\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Solo se ejecuta en la rama \"inválido + quedan intentos\" del segundo IF.\n * Su output vuelve a conectarse al nodo \"4. Llamar LLM (Edit Director)\",\n * cerrando el ciclo del repair loop.\n *\n * Env vars usadas: EDIT_SPEC_API_URL\n */\nconst EDIT_SPEC_API_URL = $env.EDIT_SPEC_API_URL;\n\nconst repairPrompt = await this.helpers.httpRequest({\n  method: 'POST',\n  url: `${EDIT_SPEC_API_URL}/repair-prompt`,\n  body: {\n    edit_spec: $json.edit_spec_candidate,\n    errors: $json.validation.errors,\n  },\n  json: true,\n});\n\nreturn [{\n  json: {\n    ...$json,\n    attempt: $json.attempt + 1,\n    system_prompt: repairPrompt.system,\n    user_prompt: repairPrompt.user,\n  },\n}];\n"
+        "jsCode": "const cfg = $('0. Config').first().json;\n/**\n * Nodo n8n: \"Repair loop: construir prompt de reparaci?n\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Solo se ejecuta en la rama \"inv?lido + quedan intentos\" del segundo IF.\n * Su output vuelve a conectarse al nodo \"4. Llamar LLM (Edit Director)\",\n * cerrando el ciclo del repair loop.\n *\n * Campos de 0. Config: EDIT_SPEC_API_URL\n */\nconst EDIT_SPEC_API_URL = cfg.EDIT_SPEC_API_URL;\n\nconst repairPrompt = await this.helpers.httpRequest({\n  method: 'POST',\n  url: `${EDIT_SPEC_API_URL}/repair-prompt`,\n  body: {\n    edit_spec: $json.edit_spec_candidate,\n    errors: $json.validation.errors,\n  },\n  json: true,\n});\n\nreturn [{\n  json: {\n    ...$json,\n    attempt: $json.attempt + 1,\n    system_prompt: repairPrompt.system,\n    user_prompt: repairPrompt.user,\n  },\n}];\n"
       },
       "id": "4893b8b7-ceec-471c-9291-6cd4d77c3a25",
       "name": "Repair loop: construir prompt de reparación",
@@ -242,12 +247,13 @@
       "position": [
         600,
         60
-      ]
+      ],
+      "sourceFile": "12-repair-loop.js"
     },
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "/**\n * Nodo n8n: \"Marcar failed_edit_spec_generation (agotados los intentos)\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Se ejecuta cuando se agotaron los 3 intentos y el edit_spec sigue\n * inválido. Guarda el último intento fallido para auditoría (nunca se\n * borran los intentos fallidos, ver sistema-fabrica-reels-nexoia.md) y\n * deja el video en un estado que un humano tiene que revisar a mano.\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n  Prefer: 'return=representation',\n};\n\nawait this.helpers.httpRequest({\n  method: 'PATCH',\n  url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${$json.raw_video.id}`,\n  headers: SUPABASE_HEADERS,\n  body: { status: 'failed_edit_spec_generation' },\n  json: true,\n});\n\nawait this.helpers.httpRequest({\n  method: 'POST',\n  url: `${SUPABASE_URL}/rest/v1/edit_specs`,\n  headers: SUPABASE_HEADERS,\n  body: {\n    raw_video_id: $json.raw_video.id,\n    template_id: 'personal_brand_clean',\n    spec_json: $json.edit_spec_candidate,\n    version: 1,\n    status: 'draft',\n    validation_status: 'invalid',\n    validation_errors: $json.validation.errors,\n    repair_attempts: $json.attempt,\n  },\n  json: true,\n});\n\nreturn [{ json: $json }];\n"
+        "jsCode": "const cfg = $('0. Config').first().json;\n/**\n * Nodo n8n: \"Marcar failed_edit_spec_generation (agotados los intentos)\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Se ejecuta cuando se agotaron los 3 intentos y el edit_spec sigue\n * inv?lido. Guarda el ?ltimo intento fallido para auditor?a (nunca se\n * borran los intentos fallidos, ver sistema-fabrica-reels-nexoia.md) y\n * deja el video en un estado que un humano tiene que revisar a mano.\n *\n * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst SUPABASE_URL = cfg.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n  Prefer: 'return=representation',\n};\n\nawait this.helpers.httpRequest({\n  method: 'PATCH',\n  url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${$json.raw_video.id}`,\n  headers: SUPABASE_HEADERS,\n  body: { status: 'failed_edit_spec_generation' },\n  json: true,\n});\n\nawait this.helpers.httpRequest({\n  method: 'POST',\n  url: `${SUPABASE_URL}/rest/v1/edit_specs`,\n  headers: SUPABASE_HEADERS,\n  body: {\n    raw_video_id: $json.raw_video.id,\n    template_id: 'personal_brand_clean',\n    spec_json: $json.edit_spec_candidate,\n    version: 1,\n    status: 'draft',\n    validation_status: 'invalid',\n    validation_errors: $json.validation.errors,\n    repair_attempts: $json.attempt,\n  },\n  json: true,\n});\n\nreturn [{ json: $json }];\n"
       },
       "id": "89ff9395-fda1-4d0c-8f6b-d85095ae218d",
       "name": "Marcar failed_edit_spec_generation",
@@ -256,11 +262,12 @@
       "position": [
         600,
         240
-      ]
+      ],
+      "sourceFile": "13-marcar-fallido.js"
     },
     {
       "parameters": {
-        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "chatId": "={{ $('0. Config').first().json.TELEGRAM_CHAT_ID }}",
         "text": "=❌ No se pudo generar un edit_spec válido para raw_video {{ $json.raw_video.id }} después de {{ $json.attempt }} intentos.\nÚltimos errores:\n{{ JSON.stringify($json.validation.errors, null, 2) }}\nRevisar manualmente en Supabase (edit_specs, validation_status='invalid').",
         "additionalFields": {}
       },
@@ -272,6 +279,66 @@
         840,
         240
       ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "config-1-supabase-url",
+              "name": "SUPABASE_URL",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-2-supabase-service-role-key",
+              "name": "SUPABASE_SERVICE_ROLE_KEY",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-3-anthropic-api-key",
+              "name": "ANTHROPIC_API_KEY",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-4-anthropic-version",
+              "name": "ANTHROPIC_VERSION",
+              "value": "2023-06-01",
+              "type": "string"
+            },
+            {
+              "id": "config-5-edit-director-model",
+              "name": "EDIT_DIRECTOR_MODEL",
+              "value": "claude-sonnet-4-20250514",
+              "type": "string"
+            },
+            {
+              "id": "config-6-telegram-chat-id",
+              "name": "TELEGRAM_CHAT_ID",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-7-edit-spec-api-url",
+              "name": "EDIT_SPEC_API_URL",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "config-capa3-edit-director-workflow-json",
+      "name": "0. Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -900,
+        0
+      ]
     }
   ],
   "connections": {
@@ -279,7 +346,7 @@
       "main": [
         [
           {
-            "node": "1. Detectar videos listos (assets_ready)",
+            "node": "0. Config",
             "type": "main",
             "index": 0
           }
@@ -438,6 +505,17 @@
         [
           {
             "node": "Procesar de a uno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "0. Config": {
+      "main": [
+        [
+          {
+            "node": "1. Detectar videos listos (assets_ready)",
             "type": "main",
             "index": 0
           }

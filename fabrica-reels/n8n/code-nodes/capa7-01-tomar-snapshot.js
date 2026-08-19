@@ -1,30 +1,31 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "1. Tomar snapshot y guardar"
  * Tipo: Code (JavaScript, "Run Once for Each Item")
  *
  * Llama a metrics-api para la ventana correspondiente, hace un chequeo
  * de plausibilidad, y guarda en post_metrics. Si el provider no tiene
- * ciertos campos (ej. saves/retención en TikTok), se guardan como NULL,
+ * ciertos campos (ej. saves/retenci?n en TikTok), se guardan como NULL,
  * nunca como 0 -- la diferencia importa para el scoring (Capa 8): NULL
- * redistribuye peso, 0 sería "lo midieron y dio cero", que es otra cosa.
+ * redistribuye peso, 0 ser?a "lo midieron y dio cero", que es otra cosa.
  *
- * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
+ * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
  * METRICS_API_URL, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
  */
-const SUPABASE_URL = $env.SUPABASE_URL;
+const SUPABASE_URL = cfg.SUPABASE_URL;
 const SUPABASE_HEADERS = {
-  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,
+  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,
   'Content-Type': 'application/json',
   Prefer: 'return=representation',
 };
-const METRICS_API_URL = $env.METRICS_API_URL;
+const METRICS_API_URL = cfg.METRICS_API_URL;
 
 const item = $json;
 
 // Idempotencia defensiva: aunque el nodo 0 ya filtra, una carrera entre
-// dos ciclos podría duplicar -- el índice único de la migración es la
-// última línea de defensa, esto evita gastar la llamada al provider de más.
+// dos ciclos podr?a duplicar -- el ?ndice ?nico de la migraci?n es la
+// ?ltima l?nea de defensa, esto evita gastar la llamada al provider de m?s.
 const already = await this.helpers.httpRequest({
   method: 'GET',
   url: `${SUPABASE_URL}/rest/v1/post_metrics?publication_id=eq.${item.publication_id}&snapshot_window=eq.${item.window}&select=id`,
@@ -68,9 +69,9 @@ if (!snapshot.ok) {
   if (snapshot.retryable) {
     return [{ json: { ...item, outcome: 'retry_next_cycle', error: snapshot.error_message } }];
   }
-  // Fallo terminal del provider (ej. "publicación removida"): se guarda
+  // Fallo terminal del provider (ej. "publicaci?n removida"): se guarda
   // igual una fila con source='failed' para no reintentar esta ventana
-  // para siempre y dejar rastro de qué pasó.
+  // para siempre y dejar rastro de qu? pas?.
   await this.helpers.httpRequest({
     method: 'POST',
     url: `${SUPABASE_URL}/rest/v1/post_metrics`,
@@ -136,10 +137,10 @@ await this.helpers.httpRequest({
 if (looksImplausible) {
   await this.helpers.httpRequest({
     method: 'POST',
-    url: `https://api.telegram.org/bot${$env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+    url: `https://api.telegram.org/bot${cfg.TELEGRAM_BOT_TOKEN}/sendMessage`,
     body: {
-      chat_id: $env.TELEGRAM_CHAT_ID,
-      text: `⚠️ Métricas con valores poco plausibles para publication ${item.publication_id} (${item.window}) -- revisar manualmente.\nraw: ${JSON.stringify(snapshot).slice(0, 300)}`,
+      chat_id: cfg.TELEGRAM_CHAT_ID,
+      text: `?? M?tricas con valores poco plausibles para publication ${item.publication_id} (${item.window}) -- revisar manualmente.\nraw: ${JSON.stringify(snapshot).slice(0, 300)}`,
     },
     json: true,
   });

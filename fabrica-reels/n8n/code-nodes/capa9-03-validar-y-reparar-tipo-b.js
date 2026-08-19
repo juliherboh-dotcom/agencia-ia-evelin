@@ -1,11 +1,12 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "3. Validar y reparar Tipo B"
  * Tipo: Code (JavaScript, "Run Once for Each Item")
  * Maximo 3 intentos totales por edit_spec (inicial + 2 reparaciones).
- * Env: EDIT_SPEC_API_URL, ANTHROPIC_API_KEY, ANTHROPIC_VERSION,
+ * Config: EDIT_SPEC_API_URL, ANTHROPIC_API_KEY, ANTHROPIC_VERSION,
  *      VARIANT_DIRECTOR_MODEL o EDIT_DIRECTOR_MODEL
  */
-const API = $env.EDIT_SPEC_API_URL;
+const API = cfg.EDIT_SPEC_API_URL;
 const variants = $json.variant_batch.variants;
 const repairAudit = [];
 
@@ -41,12 +42,12 @@ for (let index = 0; index < variants.length; index += 1) {
     const llm = await this.helpers.httpRequest({
       method: 'POST', url: 'https://api.anthropic.com/v1/messages',
       headers: {
-        'x-api-key': $env.ANTHROPIC_API_KEY,
-        'anthropic-version': $env.ANTHROPIC_VERSION || '2023-06-01',
+        'x-api-key': cfg.ANTHROPIC_API_KEY,
+        'anthropic-version': cfg.ANTHROPIC_VERSION || '2023-06-01',
         'content-type': 'application/json',
       },
       body: {
-        model: $env.VARIANT_DIRECTOR_MODEL || $env.EDIT_DIRECTOR_MODEL,
+        model: cfg.VARIANT_DIRECTOR_MODEL || cfg.EDIT_DIRECTOR_MODEL,
         max_tokens: 6000, temperature: 0.2, system: repair.system,
         messages: [{ role: 'user', content: repair.user }],
       },

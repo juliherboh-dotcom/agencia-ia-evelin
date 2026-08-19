@@ -1,19 +1,20 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "0. Sweep renders vencidos (timeout)"
  * Tipo: Code (JavaScript, "Run Once for All Items")
  *
- * Red de seguridad del patrón async: si renderService se cae a mitad de
+ * Red de seguridad del patr?n async: si renderService se cae a mitad de
  * un render (o nunca llega a llamar al webhook de resultado por lo que
  * sea), esto evita que el video quede "colgado" en rendering para
  * siempre. Corre en cada ciclo del Schedule Trigger, en paralelo a la
  * rama que dispara renders nuevos.
  *
- * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+ * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  */
-const SUPABASE_URL = $env.SUPABASE_URL;
+const SUPABASE_URL = cfg.SUPABASE_URL;
 const SUPABASE_HEADERS = {
-  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,
+  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,
   'Content-Type': 'application/json',
 };
 
@@ -37,7 +38,7 @@ for (const render of stuck) {
     headers: SUPABASE_HEADERS,
     body: {
       status: 'failed',
-      error_message: `Timeout: sin respuesta de render service después de ${TIMEOUT_MINUTES} minutos`,
+      error_message: `Timeout: sin respuesta de render service despu?s de ${TIMEOUT_MINUTES} minutos`,
       stage: 'render',
       updated_at: new Date().toISOString(),
     },

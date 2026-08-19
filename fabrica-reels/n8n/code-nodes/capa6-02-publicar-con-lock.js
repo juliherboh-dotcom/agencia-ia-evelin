@@ -1,25 +1,26 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "2. Publicar (con lock)"
  * Tipo: Code (JavaScript, "Run Once for Each Item")
  *
- * Reclama un lock atómico sobre la fila de `publications` antes de hacer
+ * Reclama un lock at?mico sobre la fila de `publications` antes de hacer
  * nada (idempotencia + evita publicar dos veces el mismo render si dos
  * ciclos del schedule se solapan), llama a publish-api, y guarda el
  * resultado. Reintentos con backoff exponencial simple para errores
  * transitorios (rate limit, red).
  *
- * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
+ * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
  * PUBLISH_API_URL, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
  */
-const SUPABASE_URL = $env.SUPABASE_URL;
+const SUPABASE_URL = cfg.SUPABASE_URL;
 const SUPABASE_HEADERS = {
-  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,
+  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,
   'Content-Type': 'application/json',
   Prefer: 'return=representation',
 };
-const PUBLISH_API_URL = $env.PUBLISH_API_URL;
-const TELEGRAM_BOT_TOKEN = $env.TELEGRAM_BOT_TOKEN;
+const PUBLISH_API_URL = cfg.PUBLISH_API_URL;
+const TELEGRAM_BOT_TOKEN = cfg.TELEGRAM_BOT_TOKEN;
 
 const MAX_ATTEMPTS = 3;
 const WORKER_ID = `n8n-capa6-${$execution.id}`;
@@ -34,8 +35,8 @@ const sendTelegram = async (chatId, text) => this.helpers.httpRequest({
 });
 
 // 1. Reclamar el lock -- PATCH condicional: solo pega si locked_at sigue
-// NULL. Si la respuesta viene vacía, alguien más ya lo tomó -- se aborta
-// sin tocar nada más.
+// NULL. Si la respuesta viene vac?a, alguien m?s ya lo tom? -- se aborta
+// sin tocar nada m?s.
 const claimed = await this.helpers.httpRequest({
   method: 'PATCH',
   url: `${SUPABASE_URL}/rest/v1/publications?id=eq.${pub.id}&locked_at=is.null`,
@@ -49,9 +50,9 @@ if (!Array.isArray(claimed) || claimed.length === 0) {
 }
 
 // 2. Idempotencia real: si por lo que sea esta fila ya tiene
-// external_post_id, ya se publicó -- no se vuelve a llamar al proveedor
+// external_post_id, ya se public? -- no se vuelve a llamar al proveedor
 // aunque el lock se haya podido tomar (ej. un estado inconsistente
-// después de un fallo a mitad de camino).
+// despu?s de un fallo a mitad de camino).
 const current = claimed[0];
 if (current.external_post_id) {
   await this.helpers.httpRequest({
@@ -88,7 +89,7 @@ if (!render || render.status !== 'done' || !account || account.status !== 'activ
     headers: SUPABASE_HEADERS,
     body: {
       status: 'failed',
-      error_message: !render || render.status !== 'done' ? 'El render asociado ya no está disponible' : 'La cuenta se desconectó después de programar la publicación',
+      error_message: !render || render.status !== 'done' ? 'El render asociado ya no est? disponible' : 'La cuenta se desconect? despu?s de programar la publicaci?n',
       locked_at: null,
       locked_by: null,
       updated_at: new Date().toISOString(),
@@ -115,7 +116,7 @@ const job = {
   account_external_id: account.external_account_id,
   video_url: render.public_url,
   caption: pub.caption_used,
-  scheduled_at: null, // publicación inmediata: n8n ya esperó hasta scheduled_at antes de tomar esta fila
+  scheduled_at: null, // publicaci?n inmediata: n8n ya esper? hasta scheduled_at antes de tomar esta fila
 };
 
 let result;
@@ -149,30 +150,14 @@ if (result.ok && (result.status === 'published' || result.status === 'scheduled'
     json: true,
   });
 
-  // Ajuste de Capa 7-8: sin esto, raw_videos.status se quedaba pegado en
-  // 'approved_for_publish' para siempre incluso después de publicar de
-  // verdad -- Capa 7 no lo necesita para su propio trigger (usa
-  // publications.status), pero cualquier vista/reporte que mire
-  // raw_videos.status sí. Solo se marca en 'published' real, no en
-  // 'scheduled' (todavía no salió al aire).
-  if (result.status === 'published') {
-    await this.helpers.httpRequest({
-      method: 'PATCH',
-      url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${pub.raw_video_id}`,
-      headers: SUPABASE_HEADERS,
-      body: { status: 'published' },
-      json: true,
-    });
-  }
-
   const chatIdRows = await this.helpers.httpRequest({
     method: 'GET',
     url: `${SUPABASE_URL}/rest/v1/clients?id=eq.${pub.client_id}&select=telegram_chat_id`,
     headers: SUPABASE_HEADERS,
     json: true,
   });
-  const chatId = (chatIdRows[0] && chatIdRows[0].telegram_chat_id) || $env.TELEGRAM_CHAT_ID;
-  const label = result.status === 'published' ? '🚀 Publicado' : '🗓️ Programado';
+  const chatId = (chatIdRows[0] && chatIdRows[0].telegram_chat_id) || cfg.TELEGRAM_CHAT_ID;
+  const label = result.status === 'published' ? '?? Publicado' : '??? Programado';
   await sendTelegram(chatId, `${label} en ${pub.platform} -- ID del proveedor: ${result.provider_post_id}`);
 
   return [{ json: { publication_id: pub.id, outcome: result.status } }];
@@ -207,8 +192,8 @@ if (isTerminal) {
     headers: SUPABASE_HEADERS,
     json: true,
   });
-  const chatId = (chatIdRows[0] && chatIdRows[0].telegram_chat_id) || $env.TELEGRAM_CHAT_ID;
-  await sendTelegram(chatId, `❌ No se pudo publicar en ${pub.platform} después de ${nextAttempts} intentos.\nError: ${result.error_message}`);
+  const chatId = (chatIdRows[0] && chatIdRows[0].telegram_chat_id) || cfg.TELEGRAM_CHAT_ID;
+  await sendTelegram(chatId, `? No se pudo publicar en ${pub.platform} despu?s de ${nextAttempts} intentos.\nError: ${result.error_message}`);
 }
 
 return [{ json: { publication_id: pub.id, outcome: isTerminal ? 'failed' : 'retry_scheduled', attempt: nextAttempts } }];

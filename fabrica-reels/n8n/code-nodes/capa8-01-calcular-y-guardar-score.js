@@ -1,27 +1,28 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "1. Calcular y guardar score"
  * Tipo: Code (JavaScript, "Run Once for Each Item")
  *
- * 1) Recalcula el benchmark de cuenta+plataforma+ventana (rolling últimas
- *    50 muestras, excluyendo la propia publicación para no sesgarlo).
+ * 1) Recalcula el benchmark de cuenta+plataforma+ventana (rolling ?ltimas
+ *    50 muestras, excluyendo la propia publicaci?n para no sesgarlo).
  * 2) Pide el score a metrics-api.
  * 3) Guarda la fila en `scores`.
  * 4) Si el video cruza el umbral de ganador por primera vez, actualiza
  *    raw_videos y deja `variant_generation_status='ready'` para Capa 9.
- * 5) Si el mismo raw_video tiene score en más de una plataforma para
- *    esta ventana, calcula también el score consolidado.
+ * 5) Si el mismo raw_video tiene score en m?s de una plataforma para
+ *    esta ventana, calcula tambi?n el score consolidado.
  *
- * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
+ * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
  * METRICS_API_URL, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
  */
-const SUPABASE_URL = $env.SUPABASE_URL;
+const SUPABASE_URL = cfg.SUPABASE_URL;
 const SUPABASE_HEADERS = {
-  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,
+  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,
   'Content-Type': 'application/json',
   Prefer: 'return=representation',
 };
-const METRICS_API_URL = $env.METRICS_API_URL;
+const METRICS_API_URL = cfg.METRICS_API_URL;
 
 const snap = $json;
 const MIN_SAMPLES_REQUIRED = 5;
@@ -112,8 +113,8 @@ await this.helpers.httpRequest({
 });
 
 // 4. Actualizar raw_video con el mejor score visto hasta ahora. Una vez
-// ganador, se queda ganador -- una ventana posterior más floja no le
-// saca el título (el "pico" es la señal que importa para variantes).
+// ganador, se queda ganador -- una ventana posterior m?s floja no le
+// saca el t?tulo (el "pico" es la se?al que importa para variantes).
 const rawVideos = await this.helpers.httpRequest({
   method: 'GET',
   url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${snap.raw_video_id}&select=id,best_score,variant_generation_status,client_id`,
@@ -154,11 +155,11 @@ if (rawVideo) {
       headers: SUPABASE_HEADERS,
       json: true,
     });
-    const chatId = (clients[0] && clients[0].telegram_chat_id) || $env.TELEGRAM_CHAT_ID;
-    const label = scoreResult.classification === 'super_ganador' ? '🏆 SUPER GANADOR' : '🎉 Ganador';
+    const chatId = (clients[0] && clients[0].telegram_chat_id) || cfg.TELEGRAM_CHAT_ID;
+    const label = scoreResult.classification === 'super_ganador' ? '?? SUPER GANADOR' : '?? Ganador';
     await this.helpers.httpRequest({
       method: 'POST',
-      url: `https://api.telegram.org/bot${$env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+      url: `https://api.telegram.org/bot${cfg.TELEGRAM_BOT_TOKEN}/sendMessage`,
       body: {
         chat_id: chatId,
         text: `${label} detectado -- score ${scoreResult.score}/100 (${snap.snapshot_window}, ${snap.platform}). Listo para generar variantes en Capa 9.`,
@@ -168,7 +169,7 @@ if (rawVideo) {
   }
 }
 
-// 5. Score consolidado si hay más de una plataforma para este raw_video+ventana.
+// 5. Score consolidado si hay m?s de una plataforma para este raw_video+ventana.
 const platformScores = await this.helpers.httpRequest({
   method: 'GET',
   url: `${SUPABASE_URL}/rest/v1/scores?raw_video_id=eq.${snap.raw_video_id}&window=eq.${snap.snapshot_window}&platform=neq.consolidated&select=platform,score_rendimiento,publication_id`,

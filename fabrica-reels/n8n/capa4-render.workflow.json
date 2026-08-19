@@ -24,7 +24,7 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "/**\n * Nodo n8n: \"0. Sweep renders vencidos (timeout)\"\n * Tipo: Code (JavaScript, \"Run Once for All Items\")\n *\n * Red de seguridad del patrón async: si renderService se cae a mitad de\n * un render (o nunca llega a llamar al webhook de resultado por lo que\n * sea), esto evita que el video quede \"colgado\" en rendering para\n * siempre. Corre en cada ciclo del Schedule Trigger, en paralelo a la\n * rama que dispara renders nuevos.\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n};\n\nconst TIMEOUT_MINUTES = 10;\nconst MAX_RENDER_ATTEMPTS = 3;\nconst cutoff = new Date(Date.now() - TIMEOUT_MINUTES * 60 * 1000).toISOString();\n\nconst stuck = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `${SUPABASE_URL}/rest/v1/renders?status=in.(queued,rendering)&created_at=lt.${encodeURIComponent(cutoff)}&select=id,raw_video_id,attempt,created_at`,\n  headers: SUPABASE_HEADERS,\n  json: true,\n});\n\nconst results = [];\n\nfor (const render of stuck) {\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/renders?id=eq.${render.id}`,\n    headers: SUPABASE_HEADERS,\n    body: {\n      status: 'failed',\n      error_message: `Timeout: sin respuesta de render service después de ${TIMEOUT_MINUTES} minutos`,\n      stage: 'render',\n      updated_at: new Date().toISOString(),\n    },\n    json: true,\n  });\n\n  const nextStatus = render.attempt < MAX_RENDER_ATTEMPTS ? 'edit_spec_ready' : 'failed_render_timeout';\n\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${render.raw_video_id}`,\n    headers: SUPABASE_HEADERS,\n    body: { status: nextStatus },\n    json: true,\n  });\n\n  results.push({ render_id: render.id, raw_video_id: render.raw_video_id, next_status: nextStatus });\n}\n\nreturn results.map((r) => ({ json: r }));\n"
+        "jsCode": "const cfg = $('0. Config').first().json;\n/**\n * Nodo n8n: \"0. Sweep renders vencidos (timeout)\"\n * Tipo: Code (JavaScript, \"Run Once for All Items\")\n *\n * Red de seguridad del patr?n async: si renderService se cae a mitad de\n * un render (o nunca llega a llamar al webhook de resultado por lo que\n * sea), esto evita que el video quede \"colgado\" en rendering para\n * siempre. Corre en cada ciclo del Schedule Trigger, en paralelo a la\n * rama que dispara renders nuevos.\n *\n * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst SUPABASE_URL = cfg.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n};\n\nconst TIMEOUT_MINUTES = 10;\nconst MAX_RENDER_ATTEMPTS = 3;\nconst cutoff = new Date(Date.now() - TIMEOUT_MINUTES * 60 * 1000).toISOString();\n\nconst stuck = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `${SUPABASE_URL}/rest/v1/renders?status=in.(queued,rendering)&created_at=lt.${encodeURIComponent(cutoff)}&select=id,raw_video_id,attempt,created_at`,\n  headers: SUPABASE_HEADERS,\n  json: true,\n});\n\nconst results = [];\n\nfor (const render of stuck) {\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/renders?id=eq.${render.id}`,\n    headers: SUPABASE_HEADERS,\n    body: {\n      status: 'failed',\n      error_message: `Timeout: sin respuesta de render service despu?s de ${TIMEOUT_MINUTES} minutos`,\n      stage: 'render',\n      updated_at: new Date().toISOString(),\n    },\n    json: true,\n  });\n\n  const nextStatus = render.attempt < MAX_RENDER_ATTEMPTS ? 'edit_spec_ready' : 'failed_render_timeout';\n\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${render.raw_video_id}`,\n    headers: SUPABASE_HEADERS,\n    body: { status: nextStatus },\n    json: true,\n  });\n\n  results.push({ render_id: render.id, raw_video_id: render.raw_video_id, next_status: nextStatus });\n}\n\nreturn results.map((r) => ({ json: r }));\n"
       },
       "id": "9da01ef8-c7ec-4c7b-a593-333d09d18b63",
       "name": "0. Sweep renders vencidos (timeout)",
@@ -33,12 +33,13 @@
       "position": [
         -1120,
         -160
-      ]
+      ],
+      "sourceFile": "capa4-00-sweep-renders-vencidos.js"
     },
     {
       "parameters": {
         "method": "GET",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/raw_videos",
+        "url": "={{ $('0. Config').first().json.SUPABASE_URL }}/rest/v1/raw_videos",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -61,11 +62,11 @@
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+              "value": "={{ $('0. Config').first().json.SUPABASE_SERVICE_ROLE_KEY }}"
             },
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+              "value": "=Bearer {{ $('0. Config').first().json.SUPABASE_SERVICE_ROLE_KEY }}"
             }
           ]
         },
@@ -97,7 +98,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "/**\n * Nodo n8n: \"2. Traer edit_spec listo para renderizar\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst rawVideo = $json;\n\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n};\n\nconst rows = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `${SUPABASE_URL}/rest/v1/edit_specs?raw_video_id=eq.${rawVideo.id}&status=eq.ready&order=version.desc&limit=1&select=id,spec_json`,\n  headers: SUPABASE_HEADERS,\n  json: true,\n});\n\nconst editSpec = rows[0];\nif (!editSpec) {\n  throw new Error(`raw_video ${rawVideo.id} está en edit_spec_ready pero no se encontró un edit_specs.status='ready' -- revisar Capa 3.`);\n}\n\nreturn [{\n  json: {\n    raw_video: rawVideo,\n    edit_spec_id: editSpec.id,\n    spec_json: editSpec.spec_json,\n  },\n}];\n"
+        "jsCode": "const cfg = $('0. Config').first().json;\n/**\n * Nodo n8n: \"2. Traer edit_spec listo para renderizar\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst rawVideo = $json;\n\nconst SUPABASE_URL = cfg.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,\n};\n\nconst rows = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `${SUPABASE_URL}/rest/v1/edit_specs?raw_video_id=eq.${rawVideo.id}&status=eq.ready&order=version.desc&limit=1&select=id,spec_json`,\n  headers: SUPABASE_HEADERS,\n  json: true,\n});\n\nconst editSpec = rows[0];\nif (!editSpec) {\n  throw new Error(`raw_video ${rawVideo.id} est? en edit_spec_ready pero no se encontr? un edit_specs.status='ready' -- revisar Capa 3.`);\n}\n\nreturn [{\n  json: {\n    raw_video: rawVideo,\n    edit_spec_id: editSpec.id,\n    spec_json: editSpec.spec_json,\n  },\n}];\n"
       },
       "id": "b5ee9847-2b08-4db8-b1ac-d5a6cea341a6",
       "name": "2. Traer edit_spec listo",
@@ -106,12 +107,13 @@
       "position": [
         -600,
         140
-      ]
+      ],
+      "sourceFile": "capa4-02-traer-edit-spec-ready.js"
     },
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "/**\n * Nodo n8n: \"3-4. Disparar render en render service y actualizar estado\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Llama a POST /render (patrón async: renderService responde de inmediato\n * con un `outcome`, ver comentario en renderService.ts). Este nodo nunca\n * espera a que termine el render -- el resultado real llega después por\n * el webhook \"Recibir resultado de render\".\n *\n * Env vars usadas: RENDER_SERVICE_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst RENDER_SERVICE_URL = $env.RENDER_SERVICE_URL;\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n};\n\nconst MAX_ATTEMPTS = 3;\nconst currentAttempts = $json.raw_video.render_attempts || 0;\n\nconst updateRawVideo = async (fields) => {\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${$json.raw_video.id}`,\n    headers: SUPABASE_HEADERS,\n    body: fields,\n    json: true,\n  });\n};\n\nlet response;\ntry {\n  response = await this.helpers.httpRequest({\n    method: 'POST',\n    url: `${RENDER_SERVICE_URL}/render`,\n    body: { edit_spec_id: $json.edit_spec_id },\n    json: true,\n  });\n} catch (err) {\n  // render service caído / no accesible por red -- reintento acotado.\n  const nextAttempts = currentAttempts + 1;\n  await updateRawVideo({\n    render_attempts: nextAttempts,\n    status: nextAttempts >= MAX_ATTEMPTS ? 'failed_render_dispatch' : 'edit_spec_ready',\n  });\n  return [{ json: { ...$json, dispatch_ok: false, outcome: 'render_service_unreachable', error: String(err) } }];\n}\n\nif (response.outcome === 'queued' || response.outcome === 'already_in_progress') {\n  await updateRawVideo({ status: 'rendering', render_attempts: 0 });\n  return [{ json: { ...$json, dispatch_ok: true, outcome: response.outcome, render_id: response.render_id } }];\n}\n\nif (response.outcome === 'already_done') {\n  // Idempotencia real: si ya estaba renderizado, saltamos directo al\n  // estado final sin pasar por 'rendering' ni esperar ningún webhook.\n  await updateRawVideo({ status: 'rendered_pending_review' });\n  return [{\n    json: {\n      ...$json,\n      dispatch_ok: true,\n      outcome: 'already_done',\n      render_id: response.render_id,\n      public_url: response.public_url,\n    },\n  }];\n}\n\nif (response.outcome === 'invalid_edit_spec') {\n  // No tiene sentido reintentar solo -- hace falta que Capa 3 regenere el edit_spec.\n  await updateRawVideo({ status: 'failed_render_validation', render_attempts: currentAttempts + 1 });\n  return [{ json: { ...$json, dispatch_ok: false, outcome: 'invalid_edit_spec', errors: response.errors } }];\n}\n\n// not_found, internal_error, missing_input: casos inesperados -- se tratan\n// igual que un fallo transitorio, con reintento acotado.\nconst nextAttempts = currentAttempts + 1;\nawait updateRawVideo({\n  render_attempts: nextAttempts,\n  status: nextAttempts >= MAX_ATTEMPTS ? 'failed_render_dispatch' : 'edit_spec_ready',\n});\nreturn [{ json: { ...$json, dispatch_ok: false, outcome: response.outcome, error: response.message } }];\n"
+        "jsCode": "const cfg = $('0. Config').first().json;\n/**\n * Nodo n8n: \"3-4. Disparar render en render service y actualizar estado\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n *\n * Llama a POST /render (patr?n async: renderService responde de inmediato\n * con un `outcome`, ver comentario en renderService.ts). Este nodo nunca\n * espera a que termine el render -- el resultado real llega despu?s por\n * el webhook \"Recibir resultado de render\".\n *\n * Campos de 0. Config: RENDER_SERVICE_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY\n */\nconst RENDER_SERVICE_URL = cfg.RENDER_SERVICE_URL;\nconst SUPABASE_URL = cfg.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n};\n\nconst MAX_ATTEMPTS = 3;\nconst currentAttempts = $json.raw_video.render_attempts || 0;\n\nconst updateRawVideo = async (fields) => {\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${$json.raw_video.id}`,\n    headers: SUPABASE_HEADERS,\n    body: fields,\n    json: true,\n  });\n};\n\nlet response;\ntry {\n  response = await this.helpers.httpRequest({\n    method: 'POST',\n    url: `${RENDER_SERVICE_URL}/render`,\n    body: { edit_spec_id: $json.edit_spec_id },\n    json: true,\n  });\n} catch (err) {\n  // render service ca?do / no accesible por red -- reintento acotado.\n  const nextAttempts = currentAttempts + 1;\n  await updateRawVideo({\n    render_attempts: nextAttempts,\n    status: nextAttempts >= MAX_ATTEMPTS ? 'failed_render_dispatch' : 'edit_spec_ready',\n  });\n  return [{ json: { ...$json, dispatch_ok: false, outcome: 'render_service_unreachable', error: String(err) } }];\n}\n\nif (response.outcome === 'queued' || response.outcome === 'already_in_progress') {\n  await updateRawVideo({ status: 'rendering', render_attempts: 0 });\n  return [{ json: { ...$json, dispatch_ok: true, outcome: response.outcome, render_id: response.render_id } }];\n}\n\nif (response.outcome === 'already_done') {\n  // Idempotencia real: si ya estaba renderizado, saltamos directo al\n  // estado final sin pasar por 'rendering' ni esperar ning?n webhook.\n  await updateRawVideo({ status: 'rendered_pending_review' });\n  return [{\n    json: {\n      ...$json,\n      dispatch_ok: true,\n      outcome: 'already_done',\n      render_id: response.render_id,\n      public_url: response.public_url,\n    },\n  }];\n}\n\nif (response.outcome === 'invalid_edit_spec') {\n  // No tiene sentido reintentar solo -- hace falta que Capa 3 regenere el edit_spec.\n  await updateRawVideo({ status: 'failed_render_validation', render_attempts: currentAttempts + 1 });\n  return [{ json: { ...$json, dispatch_ok: false, outcome: 'invalid_edit_spec', errors: response.errors } }];\n}\n\n// not_found, internal_error, missing_input: casos inesperados -- se tratan\n// igual que un fallo transitorio, con reintento acotado.\nconst nextAttempts = currentAttempts + 1;\nawait updateRawVideo({\n  render_attempts: nextAttempts,\n  status: nextAttempts >= MAX_ATTEMPTS ? 'failed_render_dispatch' : 'edit_spec_ready',\n});\nreturn [{ json: { ...$json, dispatch_ok: false, outcome: response.outcome, error: response.message } }];\n"
       },
       "id": "846de0b0-ea89-41f9-b905-34ee6dce04a5",
       "name": "3-4. Disparar render y actualizar estado",
@@ -120,7 +122,8 @@
       "position": [
         -360,
         140
-      ]
+      ],
+      "sourceFile": "capa4-03-disparar-render.js"
     },
     {
       "parameters": {
@@ -142,7 +145,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "/**\n * Nodo n8n: \"5. Procesar resultado de render\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n * Disparado por el Webhook \"Recibir resultado de render\".\n *\n * AJUSTE DE CAPA 5: este nodo ya NO manda el mensaje interactivo de\n * revisión (con botones aprobar/rechazar/etc.) -- esa responsabilidad\n * pasó al poller propio de Capa 5\n * (capa5-00-enviar-revisiones-pendientes.js), que es quien de verdad\n * posee el flujo de revisión. Acá solo se actualiza el estado y, si el\n * render FALLÓ, se avisa -- un fallo de render es un tema operativo de\n * Capa 4, no un tema editorial de Capa 5.\n *\n * Env vars usadas: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,\n * TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID\n */\nconst payload = $json.body || $json;\n\nconst SUPABASE_URL = $env.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n};\n\nif (payload.status === 'done') {\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${payload.raw_video_id}`,\n    headers: SUPABASE_HEADERS,\n    body: { status: 'rendered_pending_review' },\n    json: true,\n  });\n  return [{ json: { ...payload, handled: true } }];\n}\n\nconst failedStatus = payload.stage === 'upload' ? 'failed_upload' : 'failed_render';\n\nawait this.helpers.httpRequest({\n  method: 'PATCH',\n  url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${payload.raw_video_id}`,\n  headers: SUPABASE_HEADERS,\n  body: { status: failedStatus },\n  json: true,\n});\n\nconst text = [\n  `❌ Falló el render -- raw_video ${payload.raw_video_id}`,\n  `Etapa: ${payload.stage === 'upload' ? 'subida a Storage' : 'render con Remotion'}`,\n  `Error: ${payload.error}`,\n].join('\\n');\n\n// Llamada directa a la Bot API de Telegram (no nodo nativo) -- el botón\n// \"retr:<raw_video_id>\" lo procesa el router de Capa 5\n// (capa5-02-rutear-interaccion.js), que es quien escucha callback_query\n// desde este punto en adelante.\nawait this.helpers.httpRequest({\n  method: 'POST',\n  url: `https://api.telegram.org/bot${$env.TELEGRAM_BOT_TOKEN}/sendMessage`,\n  body: {\n    chat_id: $env.TELEGRAM_CHAT_ID,\n    text,\n    reply_markup: { inline_keyboard: [[{ text: '🔁 Reintentar', callback_data: `retr:${payload.raw_video_id}` }]] },\n  },\n  json: true,\n});\n\nreturn [{ json: { ...payload, handled: true, failed_status: failedStatus } }];\n"
+        "jsCode": "const cfg = $('0. Config').first().json;\n/**\n * Nodo n8n: \"5. Procesar resultado de render\"\n * Tipo: Code (JavaScript, \"Run Once for Each Item\")\n * Disparado por el Webhook \"Recibir resultado de render\".\n *\n * AJUSTE DE CAPA 5: este nodo ya NO manda el mensaje interactivo de\n * revisi?n (con botones aprobar/rechazar/etc.) -- esa responsabilidad\n * pas? al poller propio de Capa 5\n * (capa5-00-enviar-revisiones-pendientes.js), que es quien de verdad\n * posee el flujo de revisi?n. Ac? solo se actualiza el estado y, si el\n * render FALL?, se avisa -- un fallo de render es un tema operativo de\n * Capa 4, no un tema editorial de Capa 5.\n *\n * Campos de 0. Config: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,\n * TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID\n */\nconst payload = $json.body || $json;\n\nconst SUPABASE_URL = cfg.SUPABASE_URL;\nconst SUPABASE_HEADERS = {\n  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,\n  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,\n  'Content-Type': 'application/json',\n};\n\nif (payload.status === 'done') {\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${payload.raw_video_id}`,\n    headers: SUPABASE_HEADERS,\n    body: { status: 'rendered_pending_review' },\n    json: true,\n  });\n  return [{ json: { ...payload, handled: true } }];\n}\n\nconst failedStatus = payload.stage === 'upload' ? 'failed_upload' : 'failed_render';\n\nawait this.helpers.httpRequest({\n  method: 'PATCH',\n  url: `${SUPABASE_URL}/rest/v1/raw_videos?id=eq.${payload.raw_video_id}`,\n  headers: SUPABASE_HEADERS,\n  body: { status: failedStatus },\n  json: true,\n});\n\nconst text = [\n  `? Fall? el render -- raw_video ${payload.raw_video_id}`,\n  `Etapa: ${payload.stage === 'upload' ? 'subida a Storage' : 'render con Remotion'}`,\n  `Error: ${payload.error}`,\n].join('\\n');\n\n// Llamada directa a la Bot API de Telegram (no nodo nativo) -- el bot?n\n// \"retr:<raw_video_id>\" lo procesa el router de Capa 5\n// (capa5-02-rutear-interaccion.js), que es quien escucha callback_query\n// desde este punto en adelante.\nawait this.helpers.httpRequest({\n  method: 'POST',\n  url: `https://api.telegram.org/bot${cfg.TELEGRAM_BOT_TOKEN}/sendMessage`,\n  body: {\n    chat_id: cfg.TELEGRAM_CHAT_ID,\n    text,\n    reply_markup: { inline_keyboard: [[{ text: '?? Reintentar', callback_data: `retr:${payload.raw_video_id}` }]] },\n  },\n  json: true,\n});\n\nreturn [{ json: { ...payload, handled: true, failed_status: failedStatus } }];\n"
       },
       "id": "b01b289b-b13c-405c-94df-dcb0bff193a1",
       "name": "5. Procesar resultado de render",
@@ -151,6 +154,88 @@
       "position": [
         -860,
         320
+      ],
+      "sourceFile": "capa4-05-procesar-resultado-render.js"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "config-1-supabase-url",
+              "name": "SUPABASE_URL",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-2-supabase-service-role-key",
+              "name": "SUPABASE_SERVICE_ROLE_KEY",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-3-telegram-bot-token",
+              "name": "TELEGRAM_BOT_TOKEN",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-4-telegram-chat-id",
+              "name": "TELEGRAM_CHAT_ID",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-5-render-service-url",
+              "name": "RENDER_SERVICE_URL",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "config-capa4-render-workflow-json",
+      "name": "0. Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1180,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "route-0-1-rutear-disparador",
+              "leftValue": "={{ !!($json.body || $json.callback_query || $json.message || $json.update_id) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "route-0-1-rutear-disparador",
+      "name": "0.1 Rutear disparador",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        160
       ]
     }
   ],
@@ -159,12 +244,7 @@
       "main": [
         [
           {
-            "node": "0. Sweep renders vencidos (timeout)",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "1. Detectar raw_videos edit_spec_ready",
+            "node": "0. Config",
             "type": "main",
             "index": 0
           }
@@ -220,7 +300,41 @@
       "main": [
         [
           {
+            "node": "0. Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "0. Config": {
+      "main": [
+        [
+          {
+            "node": "0.1 Rutear disparador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "0.1 Rutear disparador": {
+      "main": [
+        [
+          {
             "node": "5. Procesar resultado de render",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "0. Sweep renders vencidos (timeout)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "1. Detectar raw_videos edit_spec_ready",
             "type": "main",
             "index": 0
           }

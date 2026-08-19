@@ -1,19 +1,20 @@
+const cfg = $('0. Config').first().json;
 /**
  * Nodo n8n: "3-4. Disparar render en render service y actualizar estado"
  * Tipo: Code (JavaScript, "Run Once for Each Item")
  *
- * Llama a POST /render (patrón async: renderService responde de inmediato
+ * Llama a POST /render (patr?n async: renderService responde de inmediato
  * con un `outcome`, ver comentario en renderService.ts). Este nodo nunca
- * espera a que termine el render -- el resultado real llega después por
+ * espera a que termine el render -- el resultado real llega despu?s por
  * el webhook "Recibir resultado de render".
  *
- * Env vars usadas: RENDER_SERVICE_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+ * Campos de 0. Config: RENDER_SERVICE_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  */
-const RENDER_SERVICE_URL = $env.RENDER_SERVICE_URL;
-const SUPABASE_URL = $env.SUPABASE_URL;
+const RENDER_SERVICE_URL = cfg.RENDER_SERVICE_URL;
+const SUPABASE_URL = cfg.SUPABASE_URL;
 const SUPABASE_HEADERS = {
-  apikey: $env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${$env.SUPABASE_SERVICE_ROLE_KEY}`,
+  apikey: cfg.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,
   'Content-Type': 'application/json',
 };
 
@@ -39,7 +40,7 @@ try {
     json: true,
   });
 } catch (err) {
-  // render service caído / no accesible por red -- reintento acotado.
+  // render service ca?do / no accesible por red -- reintento acotado.
   const nextAttempts = currentAttempts + 1;
   await updateRawVideo({
     render_attempts: nextAttempts,
@@ -55,7 +56,7 @@ if (response.outcome === 'queued' || response.outcome === 'already_in_progress')
 
 if (response.outcome === 'already_done') {
   // Idempotencia real: si ya estaba renderizado, saltamos directo al
-  // estado final sin pasar por 'rendering' ni esperar ningún webhook.
+  // estado final sin pasar por 'rendering' ni esperar ning?n webhook.
   await updateRawVideo({ status: 'rendered_pending_review' });
   return [{
     json: {

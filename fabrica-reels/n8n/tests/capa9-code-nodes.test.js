@@ -7,8 +7,9 @@ const codeDir = path.join(__dirname, '..', 'code-nodes');
 
 async function runNode(filename, { json = {}, env = {}, httpRequest }) {
   const source = fs.readFileSync(path.join(codeDir, filename), 'utf8');
-  const fn = new Function('$json', '$env', `return (async function () {\n${source}\n}).call(this);`);
-  return fn.call({ helpers: { httpRequest } }, json, env);
+  const fn = new Function('$json', '$', `return (async function () {\n${source}\n}).call(this);`);
+  const $ = () => ({ first: () => ({ json: env }) });
+  return fn.call({ helpers: { httpRequest } }, json, $);
 }
 
 const env = {

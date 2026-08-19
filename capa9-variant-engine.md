@@ -195,3 +195,17 @@ invalidas, reparacion/revalidacion y las escrituras exactas (2 `edit_specs`,
   `edit_specs.id`/`generation_key`.
 - Validez estructural no garantiza calidad editorial; la revision humana de
   Capa 5 sigue siendo obligatoria.
+
+## Configuración en n8n Community (sin variables de entorno de servidor)
+
+Después de importar `capa9-variant-engine.workflow.json`, abre el nodo `0. Config` y completa sus campos manualmente. Los secretos se entregan vacíos; no los guardes en archivos versionados.
+
+- `SUPABASE_URL`: URL base del proyecto Supabase (por ejemplo, `https://<proyecto>.supabase.co`).
+- `SUPABASE_SERVICE_ROLE_KEY`: clave `service_role` de Supabase.
+- `ANTHROPIC_API_KEY`: API key de Anthropic.
+- `ANTHROPIC_VERSION`: versión de la API de Anthropic; dejar `2023-06-01` salvo cambio explícito.
+- `EDIT_DIRECTOR_MODEL`: modelo Anthropic del Edit Director; queda precargado como `claude-sonnet-4-20250514`.
+- `VARIANT_DIRECTOR_MODEL`: modelo Anthropic del Variant Director; queda precargado como `claude-sonnet-4-20250514`.
+- `TELEGRAM_BOT_TOKEN`: token del bot de Telegram.
+- `TELEGRAM_CHAT_ID`: chat ID de Telegram usado como destino de respaldo para alertas.
+- `EDIT_SPEC_API_URL`: URL base alcanzable del servicio edit-spec-api, sin barra final.
