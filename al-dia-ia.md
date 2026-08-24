@@ -37,3 +37,31 @@ Cada semana se agrega una sección nueva al final. No se borran las anteriores.
   Fuente: https://techcrunch.com/2026/08/11/general-catalyst-leads-1-1b-round-into-2-month-old-river-ai/
 - **OpenAI y Anthropic lanzaron cada uno una "compañía de despliegue" con fondos de private equity** ("The Deployment Company" de OpenAI y "Ode with Anthropic"): equipos de ingenieros de elite que se meten dentro de empresas grandes a implementar soluciones de IA directamente en sus flujos de trabajo — señal de que las labs ya no solo venden acceso al modelo, sino la implementación completa.
   Fuente: https://techcrunch.com/2026/08/12/openai-backed-thrive-holdings-raises-2b-to-bring-ai-to-the-enterprise/
+
+## Semana del 2026-08-24
+
+### 🎯 Benjamín Cordero esta semana
+
+- **Imperio Agéntico ganó el #1 en la categoría Tech de los Skool Games** — sigue siendo, en cifras de la propia plataforma, la comunidad de IA en español más activa medida por engagement, no solo la más grande.
+  Fuente: https://www.skool.com/imperio/about
+- **Su canal de YouTube subió contenido sobre las herramientas más nuevas del momento**, incluyendo un video sobre "Fable 5.0" (el modelo de Claude recién salido) enfocado en cómo evitar que consuma tokens de más, y otro sobre cómo armar páginas web animadas "de US$10.000" usando Claude Design — mantiene el patrón de "herramienta nueva + cómo monetizarla ya".
+  Fuente: https://www.youtube.com/@bencord/videos
+- **También subió "NO vendas servicios de IA (haz ESTO en su lugar)" y "Creé un Asistente Virtual en WhatsApp en Menos de 1 Hora"** — refuerza otra vez su mensaje central: vender sistemas ya instalados en vez de consultoría genérica de IA.
+  Fuente: https://www.youtube.com/@bencord/videos
+- **Sigue activo en Instagram (@bencorde, ~260K seguidores)** con el mismo formato de reels cortos "mira esta IA / así se usa" que lo hizo viral.
+  Fuente: https://www.instagram.com/bencorde/
+
+**Para saber tanto como él:** Benjamín reacciona rápido a cada lanzamiento de modelo grande (esta semana, Fable 5.0 de Anthropic) convirtiéndolo en contenido práctico en menos de días — la velocidad de reacción es parte de su ventaja, no solo el contenido en sí.
+
+### 🌐 Lo esencial de la semana en IA (panorama general, no solo pyme)
+
+- **OpenAI admitió públicamente que Astra, uno de sus próximos modelos, podría cruzar el umbral "Critical" de capacidad cibernética de su Preparedness Framework**, y por eso frenó temporalmente el ritmo de escalamiento para reforzar monitoreo, alineación y seguridad — la primera vez que una lab grande reconoce en público que un modelo propio se acerca a ese nivel de riesgo.
+  Fuente: https://openai.com/index/pacing-model-development-cyber-capabilities/
+- **OpenAI lanzó ChatGPT for Teens** (versión para adolescentes, con barreras específicas contra roleplay romántico, contenido de riesgo y sustitución de relaciones reales) y previsualizó **"Ultrafast mode"** para GPT-5.6 Sol, que corre hasta 14 veces más rápido (750 tokens/segundo, sobre chips de Cerebras) — velocidad de respuesta como nuevo frente de competencia, no solo inteligencia del modelo.
+  Fuente: https://openai.com/index/chatgpt-for-teens/ y https://techcrunch.com/2026/08/13/openai-introduces-ultrafast-a-new-mode-that-makes-gpt-5-6-sol-work-at-14x-the-speed/
+- **ChatGPT Ads se expandió a 31 países de Europa** (Alemania, Francia, España, Italia y otros), su mayor expansión hasta la fecha — los anuncios solo se muestran a usuarios gratis/Go; Plus, Pro y Enterprise siguen sin publicidad. OpenAI empieza a monetizar con anuncios dentro del chat, no solo con suscripciones.
+  Fuente: https://openai.com/index/chatgpt-ads-expands-across-europe/
+- **Wispr (dictado por voz con IA) levantó US$280 millones en Serie B** a una valorización de US$2.000 millones, liderada por Menlo Ventures, para expandirse más allá de la transcripción hacia reuniones y toma de notas — otra señal de que "voz + IA" sigue atrayendo capital fuerte.
+  Fuente: https://techcrunch.com/2026/08/17/wispr-raises-280m-at-2b-valuation-as-it-looks-beyond-dictation/
+- **Starcloud, que construye centros de datos en órbita para correr inferencia de IA en satélites, sumó una extensión de US$250 millones** a su ronda Serie A (valorización de US$2.300 millones) — la infraestructura de cómputo para IA ya se está llevando literalmente al espacio.
+  Fuente: https://techcrunch.com/2026/08/21/starcloud-raises-200-million-for-orbital-data-centers-as-launch-options-dry-up/
