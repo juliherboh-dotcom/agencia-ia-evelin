@@ -194,3 +194,79 @@
 - Qué se probaría: mostrar cómo se ven hoy los anuncios dentro de ChatGPT en un país donde ya está activo (con capturas reales) y explicar qué tendría que tener lista una pyme (ficha de producto, catálogo, descripción de marca) para cuando llegue la opción a Chile.
 - Resultado esperado: dejar a la audiencia con una checklist simple de "prepárate ahora" en vez de un anuncio de algo lejano.
 - Objeción típica: "eso todavía no existe acá, para qué me preocupo ahora" → responder que las pymes que ya tienen su presencia digital ordenada (Google, redes, catálogo) son justamente las que después pueden subirse rápido a cualquier canal nuevo, sin partir de cero.
+
+## Semana del 2026-08-24
+
+### 1. Meta AI se convierte en "analista de marketing" gratis para pymes (ads, analytics y reportes)
+**Fuente:** https://smallbiztrends.com/meta-ai-adds-small-business-tools-for-ads-analytics-and-reports/
+**Qué es:** Desde el 20 de agosto de 2026, Meta empezó a desplegar en meta.ai y en sus apps móvil/escritorio la posibilidad de que un negocio conecte Meta AI directamente con sus cuentas de Instagram/Facebook, sus campañas de Meta Ads y Google Workspace (Gmail, Docs, Sheets). Con eso, el dueño puede pedirle que analice qué contenido funcionó mejor el mes pasado, revise 90 días de resultados de publicidad, compare su cuenta con marcas similares y arme un reporte o presentación automáticamente. Por ahora es gratis, con un plan pago (Meta One) para mayor uso.
+**Ángulo para Nexo.IA:** Video "Le pedí a Meta que me hiciera el informe mensual de redes que antes le pagábamos a alguien".
+- Contexto del problema: la mayoría de las pymes chilenas no revisa sus métricas de Instagram/Facebook Ads más que "por arriba" (likes, algún comentario) porque arma un reporte serio toma tiempo que no tienen.
+- Qué se probaría: conectar Meta AI a la cuenta real de un negocio y pedirle en vivo el reporte mensual completo (qué publicación funcionó mejor, en qué se está gastando mal la plata de Ads, cómo se compara con la competencia del rubro).
+- Resultado esperado: mostrar el reporte generado en minutos y contrastarlo con lo que costaría contratar a alguien para hacerlo a mano cada mes.
+- Objeción típica: "esto ya lo hace cualquier community manager" → mostrar que no reemplaza la estrategia ni la creatividad, pero sí el trabajo repetitivo de bajar números y armar el PDF/reporte, que es lo que más tiempo consume.
+
+### 2. OpenAI suma a Synchrony para que ChatGPT ofrezca financiamiento y ofertas dentro del chat de compra
+**Fuente:** https://www.postradar.co.uk/2026/08/synchrony-openai-agentic-commerce-deal-adds-chatgpt-shopping-plugin/
+**Qué es:** El 17 de agosto de 2026, Synchrony (una financiera grande de EE.UU.) anunció una alianza con OpenAI para llevar financiamiento, promociones y programas de lealtad al "compra dentro de ChatGPT" (Instant Checkout / Agentic Commerce Protocol). En la práctica, un usuario que le pide a ChatGPT que le compre algo puede ver de una vez ofertas, cuotas y descuentos de comercios asociados, sin salir del chat.
+**Ángulo para Nexo.IA:** Video "Comprar con cuotas dentro de un chat con IA ya es real — así se prepara una pyme chilena para cuando llegue".
+- Contexto del problema: las pymes chilenas con venta online piensan el "medio de pago" solo como Webpay/Transbank en su propio sitio, sin considerar que las compras cada vez van a empezar directo dentro de un chat de IA.
+- Qué se probaría: explicar con un ejemplo simple (una pyme de retail) qué tendría que tener lista su ficha de producto y sus datos de pago/stock para poder aparecer algún día en una compra asistida por IA.
+- Resultado esperado: dejar una checklist corta de "orden mínimo" que sirve hoy para buscadores y mañana para agentes de compra.
+- Objeción típica: "eso es en Estados Unidos, en Chile ni Webpay tiene esto" → responder que preparar catálogo y datos ordenados no depende de qué plataforma de pago exista en Chile, y que quien lo tenga listo antes gana cuando llegue.
+
+### 3. DashAI: la Universidad de Chile lanza una IA gratuita, sin código y pensada para pymes
+**Fuente:** https://www.latercera.com/pulso/noticia/dashai-inteligencia-artificial-desarrollada-en-chile-supera-las-20000-descargas-y-espera-apoyar-a-pymes-en-el-manejo-de-datos/
+**Qué es:** DashAI, desarrollada por la Facultad de Ciencias Físicas y Matemáticas de la U. de Chile junto al CENIA, ya supera las 20.000 descargas. Es un programa gratuito que se instala en el computador (no es una web), permite cargar una planilla de Excel, revisar la calidad de los datos, generar gráficos y entrenar modelos de predicción sin saber programar — y como corre localmente, los datos nunca salen del computador del usuario. Sus creadores apuntan explícitamente a que lo usen pymes para manejo de datos.
+**Ángulo para Nexo.IA:** Video "Probé la IA gratuita que hizo la Universidad de Chile para pymes — ¿le gana a pagar una suscripción gringa?".
+- Contexto del problema: muchos dueños de pyme desconfían de subir sus datos de ventas o clientes a herramientas de IA extranjeras, y no saben que existe una alternativa chilena, gratuita y que no envía nada a la nube.
+- Qué se probaría: instalar DashAI en vivo, cargar una planilla real de ventas de un negocio chileno y generar un gráfico o predicción simple (ej. qué mes va a vender más) sin escribir una línea de código.
+- Resultado esperado: mostrar el resultado funcionando y ser honesto sobre sus límites (es más básico que herramientas pagas, pero es gratis y 100% chileno).
+- Objeción típica: "si es gratis y de universidad, debe ser malo o abandonado" → mostrar el respaldo real (CENIA, U. de Chile, más de 20 mil descargas) y que sigue en desarrollo activo.
+
+### 4. Suben en GitHub las APIs open source que le dan WhatsApp a los bots de negocio (Evolution API, WAHA, Baileys)
+**Fuente:** https://github.com/EvolutionAPI/evolution-api
+**Qué es:** Evolution API (con más de 9.000 estrellas) y proyectos hermanos como WAHA y Baileys son librerías gratuitas que conectan WhatsApp con herramientas como n8n para armar bots de atención o ventas sin depender de la API oficial (más cara y con más trámites) de Meta. Son, literalmente, el motor que muchas agencias de automatización —incluida la lógica detrás de Nexo.IA— usan por dentro para prender un bot de WhatsApp.
+**Ángulo para Nexo.IA:** Video "Así se ve 'por dentro' el bot de WhatsApp que le armamos a un cliente — no es magia, es esto".
+- Contexto del problema: cuando un dueño de pyme ve un bot de WhatsApp respondiendo solo, cree que es una caja negra carísima o que necesita contratar un equipo de programadores.
+- Qué se probaría: mostrar (en pantalla, sin exponer datos de clientes) la conexión real entre WhatsApp y un flujo de automatización, explicando en palabras simples qué hace cada pieza.
+- Resultado esperado: desmitificar el proceso y dejar claro que lo caro no es "la tecnología" sino diseñar bien el flujo para el negocio específico.
+- Objeción típica: "entonces lo puedo armar yo mismo gratis" → responder con honestidad: las piezas son gratis, pero configurarlas bien, mantenerlas y evitar que WhatsApp banee el número es el trabajo real que se paga.
+
+### 5. Reporte global: 99% de las empresas planea usar IA agéntica, pero solo 9-14% la tiene funcionando de verdad
+**Fuente:** https://aninews.in/news/business/99-of-companies-plan-agentic-ai-but-only-9-14-put-it-into-production-due-to-lack-of-visible-change-report20260819155015/
+**Qué es:** Un reporte publicado el 19 de agosto de 2026 muestra que, aunque casi todas las empresas dicen que van a implementar agentes de IA, solo entre un 9% y un 14% realmente los tiene corriendo en producción de forma estable — a esta brecha la llaman el "Death Valley" (valle de la muerte) entre la prueba piloto y el uso real.
+**Ángulo para Nexo.IA:** Video "Mito vs. realidad: '¿Todas las empresas ya tienen IA funcionando?' — no, y acá está el dato".
+- Contexto del problema: el bombardeo de contenido sobre IA hace creer a un dueño de pyme que "se quedó atrás" porque todo el mundo ya la tiene funcionando, generando ansiedad más que acción.
+- Qué se probaría: contrastar el dato del reporte (menos del 15% lo logra) con la experiencia real de implementar un solo flujo bien hecho para un cliente, mostrando cuánto tiempo y ajuste tomó llegar a que funcionara solo, sin supervisión.
+- Resultado esperado: bajar la ansiedad ("no estás atrás, la mayoría tampoco lo logró") y a la vez mostrar por qué un proceso acompañado (no un piloto improvisado) es lo que cruza esa brecha.
+- Objeción típica: "entonces para qué invertir si la mayoría fracasa" → aclarar que el reporte habla de intentos por cuenta propia sin acompañamiento, no de que la tecnología no sirva.
+
+### 6. Termómetro Pyme agosto 2026: la caída de ventas llega a 67%, el peor nivel del año
+**Fuente:** https://radionuevomundo.cl/2026/08/caida-de-ventas-en-las-pymes-llega-a-67-en-agosto-su-nivel-mas-alto-del-ano/
+**Qué es:** La última medición del Termómetro Pyme (encuesta a más de 20.000 empresas de la comunidad PROPYME) muestra que un 67% de las pymes chilenas reportó caída de ventas en agosto de 2026, el nivel más alto del año, y que un 74% está usando plata personal para sostener el negocio. La zona Centro Sur es la más golpeada.
+**Ángulo para Nexo.IA:** Video "Los números de las pymes chilenas están mal esta semana — por qué justo ahora es cuando más conviene automatizar (y no gastar en más publicidad)".
+- Contexto del problema: cuando bajan las ventas, el instinto de muchos dueños es gastar más en publicidad o contratar más gente, justo cuando menos plata sobra para eso.
+- Qué se probaría: mostrar con un caso ficticio pero realista cuánto se recupera (en horas y en ventas no perdidas) automatizando lo básico —responder rápido, no perder leads, cobrar a tiempo— antes de gastar un peso extra en marketing.
+- Resultado esperado: dejar clara la diferencia entre "gastar para vender más" y "dejar de perder lo que ya casi vendías" como primera prioridad en un momento de vacas flacas.
+- Objeción típica: "no tengo plata para invertir en automatización ahora" → mostrar que el costo de un flujo básico (WhatsApp, seguimiento de cobranza) es bajo comparado con lo que se pierde hoy por no responder a tiempo, según el mismo dato de caída de ventas.
+
+### 7. n8n autohospedado sale hasta 97% más barato que Zapier a mayor volumen
+**Fuente:** https://aimultiple.com/no-code-ai-agent-builders
+**Qué es:** Comparativas independientes de 2026 muestran que, a volúmenes altos de automatizaciones mensuales, correr n8n en un servidor propio ("self-hosted") puede costar hasta un 97% menos que pagar Zapier, y que Make.com sigue siendo hasta un 82% más barato que Zapier en volúmenes medios (alrededor de 5.000 ejecuciones al mes). Zapier, en cambio, es el que más apps conecta (más de 7.000).
+**Ángulo para Nexo.IA:** Video "Le mostré a un dueño de pyme cuánto le sale automatizar con Zapier vs. con lo que usamos nosotros — la diferencia sorprende".
+- Contexto del problema: muchos dueños de pyme prueban primero Zapier porque es lo que más se nombra en internet, y cuando su negocio crece, la cuenta mensual se dispara sin que se den cuenta por qué.
+- Qué se probaría: tomar un flujo real (ej. cotizaciones automáticas) y calcular en vivo su costo mensual en Zapier versus en una automatización autohospedada con n8n, al mismo volumen de uso.
+- Resultado esperado: mostrar la diferencia real en pesos chilenos al mes y en qué momento (volumen) conviene migrar de una a otra.
+- Objeción típica: "lo barato sale caro, seguro n8n se cae o es más inestable" → aclarar que la diferencia de precio no es de calidad sino de modelo de negocio (pagar por uso en la nube vs. tener servidor propio con mantenimiento incluido en el servicio que ofrece la agencia).
+
+### 📌 Prioridades de Evelin sobre esta semana
+
+- **#1 (Meta AI analista de marketing):** confirmado, Evelin lo quiere **integrar** — no solo como contenido, sino probarlo/usarlo de verdad en la operación de Nexo.IA (reportes de clientes, gestión de sus propias redes, etc.).
+- **#3 (DashAI):** confirmado como contenido.
+- **#4 (Evolution API / WAHA / Baileys):** confirmado. Evelin lo quiere dejar guardado acá en el repo como referencia técnica ("vía") por si en algún momento arma un agente propio con esto. Pidió además que el ángulo de contenido sea **crítico/disruptivo**, no solo explicativo.
+  - **Pregunta de Evelin: ¿esta vía no necesita verificación de Meta?** Respuesta corta: correcto, no la necesita — Evolution API, WAHA y Baileys no pasan por la API oficial de WhatsApp Business Platform de Meta (la que sí exige verificación de negocio, documentos legales y aprobación de plantillas de mensaje). En vez de eso, automatizan el mismo protocolo de WhatsApp Web que usa tu celular al escanear el QR en whatsapp.com/web, así que basta con vincular un número normal o de WhatsApp Business App — sin pasar por ningún proceso de aprobación de Meta.
+  - **El costo de eso:** es una zona gris frente a los Términos de Servicio de WhatsApp. Meta no la autoriza oficialmente, así que el número corre el riesgo real de ser **baneado sin aviso**, sobre todo con volumen alto, mensajes a gente que no dio opt-in, comportamiento tipo spam, o un número nuevo sin "calentar". La vía oficial (Cloud API con verificación de Meta) es más lenta de configurar pero no tiene ese riesgo.
+  - **Ángulo disruptivo sugerido:** "El bot de WhatsApp 'gratis' que nadie te dice que puede dejarte sin tu número de un día para otro". Contexto: la mayoría de los videos sobre bots de WhatsApp muestran lo fácil y barato que es armarlos con estas herramientas, pero omiten que no es la vía oficial de Meta. Qué se probaría: explicar en cámara la diferencia entre la vía "gratis" (WhatsApp Web automatizado) y la vía oficial (Business Platform con verificación), con el riesgo real de cada una. Resultado esperado: posicionar a Nexo.IA como la agencia que es transparente con el cliente sobre este riesgo, en vez de vender solo "barato y rápido". Objeción típica: "entonces mejor pago la vía oficial siempre" → aclarar que para un MVP o un volumen bajo la vía no oficial puede tener sentido, pero un negocio que vive de ese número necesita entender el trade-off antes de decidir, no después de un baneo.
+- **#5 (Death Valley, 99%/9-14%) vs #4:** no me quedó clara la relación que querías entre el hallazgo #5 y el #4 — ¿el dato del 99%/9-14% lo quieres usar como parte del mismo video/ángulo del bot de WhatsApp (ej. "la mayoría tampoco logra tener un agente funcionando de verdad"), o son dos piezas de contenido separadas? Avísame y lo dejo anotado bien.
+- **#7 (n8n autohospedado):** confirmado como contenido, foco en el ahorro de costos vs. Zapier.
