@@ -270,3 +270,69 @@
   - **Ángulo disruptivo sugerido:** "El bot de WhatsApp 'gratis' que nadie te dice que puede dejarte sin tu número de un día para otro". Contexto: la mayoría de los videos sobre bots de WhatsApp muestran lo fácil y barato que es armarlos con estas herramientas, pero omiten que no es la vía oficial de Meta. Qué se probaría: explicar en cámara la diferencia entre la vía "gratis" (WhatsApp Web automatizado) y la vía oficial (Business Platform con verificación), con el riesgo real de cada una. Resultado esperado: posicionar a Nexo.IA como la agencia que es transparente con el cliente sobre este riesgo, en vez de vender solo "barato y rápido". Objeción típica: "entonces mejor pago la vía oficial siempre" → aclarar que para un MVP o un volumen bajo la vía no oficial puede tener sentido, pero un negocio que vive de ese número necesita entender el trade-off antes de decidir, no después de un baneo.
 - **#5 (Death Valley, 99%/9-14%) vs #4:** no me quedó clara la relación que querías entre el hallazgo #5 y el #4 — ¿el dato del 99%/9-14% lo quieres usar como parte del mismo video/ángulo del bot de WhatsApp (ej. "la mayoría tampoco logra tener un agente funcionando de verdad"), o son dos piezas de contenido separadas? Avísame y lo dejo anotado bien.
 - **#7 (n8n autohospedado):** confirmado como contenido, foco en el ahorro de costos vs. Zapier.
+
+
+## Semana del 2026-08-31
+
+### 1. Meta empieza a cobrar por tokens sus agentes de IA en WhatsApp, Instagram y Messenger
+**Fuente:** https://enterprisedna.co/resources/news/meta-business-agent-billing-august-1-token-pricing-2026/
+**Qué es:** Desde el 1 de agosto de 2026, Meta Business Agent dejó de ser gratis: cobra 2 USD por cada millón de tokens (unos 4-5 centavos de dólar por mensaje, porque un mensaje típico consume entre 20.000 y 25.000 tokens), en WhatsApp, Messenger e Instagram. Y no es lo único: desde el 1 de octubre de 2026, Meta además retoma el cobro por los mensajes de servicio dentro de la ventana de 24 horas, algo que era gratis desde noviembre de 2024 — y ese cobro aplica sin importar si responde un humano, una IA de un tercero (como los bots armados con Evolution API/n8n) o el propio agente de Meta.
+**Ángulo para Nexo.IA:** Video "A partir de ahora, tu bot de WhatsApp le cuesta plata a Meta te des cuenta o no — así se calcula".
+- Contexto del problema: la mayoría de los dueños de pyme cree que "tener IA en WhatsApp" es gratis para siempre, porque hasta ahora lo fue (o porque usan una vía no oficial). Este cambio de cobro pasa casi sin ruido y puede llegar como sorpresa en la boleta.
+- Qué se probaría: hacer el cálculo en vivo con un ejemplo real — cuántos mensajes recibe al mes un negocio chileno tipo, y cuánto le costaría bajo el agente nativo de Meta versus bajo un flujo propio (n8n/Evolution API) versus contratar una agencia que ya tiene esto optimizado.
+- Resultado esperado: dejar clara la diferencia de costos entre las tres vías y por qué, a partir de octubre, "responder rápido" en WhatsApp deja de ser gratis para cualquier negocio, tenga o no un bot.
+- Objeción típica: "entonces mejor dejo de usar IA y respondo yo mismo" → aclarar que el mensaje de servicio se cobra igual sea humano o IA quien responda desde octubre, así que el costo no se evita, solo se elige quién absorbe el tiempo: la persona o el flujo automatizado.
+
+### 2. La IA para automatizar procesos se abarata fuerte: Gemini 3.7 Flash y GPT-5.6 Luna bajan de precio
+**Fuente:** https://www.datapath.ai/blog/gemini-37-flash-agosto-2026-agentes-ia-precio
+**Qué es:** Google lanzó Gemini 3.7 Flash a 0,75 USD por millón de tokens de entrada (precio de lanzamiento vigente hasta fin de 2026) y con mejoras específicas en automatización de procesos de negocio. Casi en paralelo, OpenAI recortó el precio de GPT-5.6 Luna en un 80% (de 1 a 0,20 USD por millón de tokens de entrada), apenas 21 días después de su lanzamiento. Son las dos IA más grandes del mercado bajando precio a la vez, en la misma semana en que Meta empieza a cobrar más caro por el lado de WhatsApp (hallazgo #1).
+**Ángulo para Nexo.IA:** Video "Mientras WhatsApp te empieza a cobrar más, la IA que mueve tus automatizaciones se puso más barata — así compensa una cosa a la otra".
+- Contexto del problema: un dueño de pyme que se entera del cobro de Meta (hallazgo #1) puede asustarse y pensar que automatizar con IA se está poniendo caro en general.
+- Qué se probaría: separar los dos costos (el "mensajero" que es WhatsApp/Meta, y el "cerebro" que es el modelo de IA detrás del flujo) y mostrar que el segundo, que suele ser la parte más grande de la cuenta, bajó de precio esta misma semana.
+- Resultado esperado: dejar tranquilo al público de que el costo total de tener un bot bien armado sigue siendo bajo, y que quien diseña bien el flujo (eligiendo el modelo correcto) es quien más se beneficia de estas bajadas de precio.
+- Objeción típica: "yo no sé elegir qué modelo de IA usar, todos suenan igual" → responder que exactamente ese es el trabajo de una agencia: elegir y actualizar el motor por dentro sin que el cliente tenga que enterarse de nombres de modelos.
+
+### 3. Informe NubeCommerce 2026: el 56,3% de las tiendas online chilenas ya usa IA como "segundo empleado"
+**Fuente:** https://ecosistemastartup.com/retailers-chilenos-aceleran-ia-en-ventas-56-ya-la-usa-en-ecommerce/
+**Qué es:** El informe NubeCommerce 2026 de Tiendanube, con más de 2.000 negocios chilenos encuestados, muestra que el 56,3% de las tiendas online del país ya usa IA activamente, sobre todo para optimizar fichas de producto y generar contenido visual y de texto. El dato clave: el 70,5% de las pymes digitales en Chile las administra una sola persona, y el country manager de Tiendanube Chile describe la IA como el "segundo empleado" que resuelve el problema más urgente de esos dueños, que es la falta de tiempo. El informe también anticipa una "segunda ola": comercio agéntico, con sistemas que ya no solo redactan sino que ejecutan la venta solos.
+**Ángulo para Nexo.IA:** Video "Si tu tienda online la manejas tú solo, ya vas atrasado respecto al 56% que usa IA — pero no como crees".
+- Contexto del problema: muchos dueños de pyme que llevan su tienda online solos sienten que no tienen tiempo ni cabeza para "meterle IA", cuando en realidad ya más de la mitad del rubro la está usando justo para liberar tiempo.
+- Qué se probaría: mostrar en vivo cuánto tiempo toma hoy escribir a mano una ficha de producto (fotos, descripción, SEO) versus generarla con IA y solo revisarla, con un producto real de un negocio chileno.
+- Resultado esperado: dejar el mensaje de que la IA en ecommerce no es "vender más con magia" sino recuperar horas de la semana, algo directamente relevante para quien administra solo su tienda.
+- Objeción típica: "yo prefiero escribir mis propias descripciones, se pierde lo personal" → mostrar que la IA da un primer borrador que el dueño edita y personaliza, no reemplaza su voz, solo ahorra la hoja en blanco.
+
+### 4. Cierra HOY (31 de agosto) la postulación al Premio Chile PotencIA 2026
+**Fuente:** https://www.premiochilepotencia.cl/
+**Qué es:** El Premio Chile PotencIA 2026, de Fundación País Digital y el Ministerio de Ciencia, premia a empresas —incluidas pymes— que ya tienen una solución de IA implementada y en uso real por al menos 6 meses (no pilotos ni proyectos sin desplegar). El plazo de postulación, 100% digital, vence justo hoy, 31 de agosto de 2026.
+**Ángulo para Nexo.IA:** Post/story urgente "Si tienes un cliente con una automatización de IA funcionando hace más de 6 meses, hoy es el último día para postularlo a este premio nacional".
+- Contexto del problema: muchas pymes que ya lograron una automatización real y estable (ej. un bot de WhatsApp funcionando hace meses) ni se enteran de que existen premios y visibilidad gratuita para eso, porque no se sienten "empresa de tecnología".
+- Qué se probaría: usar este cierre de plazo como gancho de urgencia para contenido reactivo (formato historia/urgente), explicando en 60 segundos los requisitos mínimos y por qué aplica incluso un negocio chico.
+- Resultado esperado: independiente de si alguien alcanza a postular hoy, dejar sembrada la idea de que "tener una automatización real y estable" es algo que se puede mostrar y premiar, no solo un gasto operativo escondido.
+- Objeción típica: "mi negocio es muy chico para un premio así" → aclarar que el criterio es que la solución esté funcionando de verdad hace 6 meses, no el tamaño de la empresa.
+
+### 5. Digitaliza tu Pyme 2026: 100 mil cupos de IA gratis, pero el 70% de las pymes chilenas sigue en nivel inicial de madurez digital
+**Fuente:** https://www.cooperativa.cl/noticias/economia/pymes/como-postular-a-digitaliza-tu-pyme-cursos-gratuitos-de-ia-para-100/2026-06-05/124842.html
+**Qué es:** El programa "Digitaliza tu Pyme 2026" (Subsecretaría de Economía, CENIA y SOFOFA Capital Humano) ofrece capacitación gratuita en IA generativa a unos 100.000 emprendedores a través del plan "Hazlo con IA". El dato duro detrás: de más de 40.000 diagnósticos digitales ya hechos en el programa, el 70% de las mipymes está en nivel Inicial o Novato de madurez digital, y solo un 14% en nivel Avanzado o Experto.
+**Ángulo para Nexo.IA:** Video "El Estado va a capacitar a 100 mil pymes en IA este año — pero el problema real no es no saber usarla".
+- Contexto del problema: el discurso público sobre estos programas suena a "falta de conocimiento", cuando la brecha real muchas veces es tiempo y estructura, no falta de cursos.
+- Qué se probaría: contrastar el dato (70% en nivel inicial pese a la oferta de capacitación gratuita) con la experiencia de un cliente de Nexo.IA que no aprendió a "usar IA" sino que delegó la automatización a alguien más, y comparar resultados.
+- Resultado esperado: posicionar la capacitación y la automatización tercerizada como complementarias, no competencia: aprender a usar IA ayuda, pero no reemplaza tener un sistema ya armado y funcionando.
+- Objeción típica: "entonces para qué pago una agencia si el curso es gratis" → responder que el curso enseña a usar herramientas sueltas; una agencia entrega el sistema completo ya integrado al negocio, ahorrando el tiempo de aprender y armarlo por cuenta propia.
+
+### 6. Se empieza a hablar de que "los agentes de IA le están comiendo el mercado al software por suscripción" (SaaS)
+**Fuente:** https://news.ycombinator.com/item?id=46268452
+**Qué es:** Un hilo popular de Hacker News esta semana discute cómo, en vez de pagar una suscripción mensual fija por un software con decenas de funciones que nunca se usan todas, cada vez más negocios (sobre todo pequeños) están optando por un agente de IA que hace una sola tarea puntual, cobrando por uso en vez de por mes.
+**Ángulo para Nexo.IA:** Video "Deja de pagar 15 suscripciones de software que casi no usas — así se ve reemplazar 3 de ellas con un solo flujo de IA".
+- Contexto del problema: muchas pymes acumulan suscripciones (CRM, agendamiento, encuestas, generador de reportes) que suman un gasto fijo mensual alto, usando solo un 10% de cada herramienta.
+- Qué se probaría: sumar en cámara el costo mensual real de 3-4 suscripciones típicas de un negocio chileno y compararlo con el costo de un flujo de automatización a medida que cubra esas mismas tareas puntuales.
+- Resultado esperado: mostrar en pesos chilenos el ahorro potencial y dejar claro que la automatización no es "un gasto más" sino, en varios casos, un reemplazo de gastos que ya existen.
+- Objeción típica: "las suscripciones ya las tengo integradas, cambiar da paja" → reconocer el costo de cambio, pero mostrar que no hace falta borrar todo de una vez: se puede reemplazar una suscripción a la vez, empezando por la más cara o la menos usada.
+
+### 7. Cashfree lanza "Relay", un agente de IA que automatiza cobros y pagos para pequeños negocios
+**Fuente:** https://ibsintelligence.com/ibsi-news/cashfrees-relay-brings-ai-agents-to-smb-payment-operations/
+**Qué es:** Cashfree Payments (India) llevó esta semana a disponibilidad general "Relay", un "super agente" de IA que se hace cargo de tareas repetitivas de pagos —reintentar cobros fallidos, recuperar carritos abandonados, confirmar pagos contra entrega, gestionar suscripciones y disputas— ejecutando la acción directamente, no solo avisando al dueño. Según Cashfree, una pyme promedio gasta 60 horas a la semana en operaciones de pago, y Relay busca bajar eso a menos de 45 minutos. Es India, no Chile, pero la lógica —dejar que un agente de IA persiga los pagos atrasados en vez de una persona— es exactamente el tipo de problema que hoy tienen las pymes chilenas con caída de ventas y cobranza lenta (ver hallazgo de la semana pasada sobre el Termómetro Pyme).
+**Ángulo para Nexo.IA:** Video "En India ya lanzaron un 'cobrador' de IA para pymes — así se vería la versión para un negocio chileno".
+- Contexto del problema: cobrar a tiempo es uno de los dolores más silenciosos de una pyme chilena (facturas pendientes, clientes que no pagan, seguimiento manual que nadie tiene tiempo de hacer bien), y rara vez se piensa en automatizarlo con IA porque suena "muy financiero" o "muy corporativo".
+- Qué se probaría: diseñar un mini-flujo simple (recordatorio automático de pago por WhatsApp a los X días de vencida una factura, con escalamiento si no responde) y mostrar cómo se vería para un negocio chileno típico.
+- Resultado esperado: dejar instalada la idea de que "cobranza" es un candidato tan válido para automatizar como "atención al cliente", y que no hace falta un producto gringo o indio para lograrlo, se puede armar a medida.
+- Objeción típica: "eso de cobrar con un bot se siente frío o agresivo con el cliente" → mostrar que el tono del mensaje se puede diseñar (recordatorio amable, no amenazante) y que, bien hecho, cobra más rápido sin gastar el capital social de una llamada incómoda del dueño.
