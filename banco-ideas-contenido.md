@@ -336,3 +336,68 @@
 - Qué se probaría: diseñar un mini-flujo simple (recordatorio automático de pago por WhatsApp a los X días de vencida una factura, con escalamiento si no responde) y mostrar cómo se vería para un negocio chileno típico.
 - Resultado esperado: dejar instalada la idea de que "cobranza" es un candidato tan válido para automatizar como "atención al cliente", y que no hace falta un producto gringo o indio para lograrlo, se puede armar a medida.
 - Objeción típica: "eso de cobrar con un bot se siente frío o agresivo con el cliente" → mostrar que el tono del mensaje se puede diseñar (recordatorio amable, no amenazante) y que, bien hecho, cobra más rápido sin gastar el capital social de una llamada incómoda del dueño.
+
+## Semana del 2026-09-07
+
+### 1. GPT-6 Astra: OpenAI lanza su modelo "hacia la AGI" con precio para empresas
+**Fuente:** https://www.infobae.com/tecno/2026/09/06/gpt-6-astra-precios-planes-y-como-acceder-al-nuevo-modelo-de-openai/
+**Qué es:** Esta semana OpenAI lanzó GPT-6 Astra, presentado como un hito hacia la "inteligencia artificial general". Para empresas, el plan Business Standard cuesta USD 20 por usuario al mes (anual) o USD 25 (mensual), y el Premium USD 100-125 por usuario al mes; por API, USD 10 por millón de tokens de entrada y USD 50 por millón de salida. OpenAI lo posiciona para automatizar investigación de mercado/competencia y actualizar CRMs sin trabajo manual.
+**Ángulo para Nexo.IA:** Video "Salió la IA que promete ser 'inteligencia general' — esto es lo que realmente puede hacer por una pyme chilena, sin el hype".
+- Contexto del problema: cada lanzamiento "histórico" de un modelo genera titulares grandilocuentes (AGI, "lo más potente de la historia") que confunden más de lo que ayudan a un dueño de pyme que solo quiere saber si le sirve.
+- Qué se probaría: tomar una tarea real y aburrida de una pyme (actualizar una base de clientes, investigar 5 competidores) y correrla con GPT-6 Astra en vivo, cronometrando cuánto tiempo ahorra versus hacerlo a mano.
+- Resultado esperado: mostrar que el valor no está en la etiqueta "AGI" sino en tareas puntuales bien delegadas, y que pagar 20-25 USD al mes por usuario tiene sentido solo si hay un proceso claro detrás, no por tener "la IA más nueva".
+- Objeción típica: "para qué pago la versión más cara si el ChatGPT gratis ya me sirve" → mostrar en la práctica dónde se nota la diferencia (tareas largas, con varios pasos y datos del negocio) y dónde no vale la pena pagar de más.
+
+### 2. Google conecta Gemini al Perfil de Negocio: nacen los "Business Notebooks"
+**Fuente:** https://blog.google/intl/es-419/actualizaciones-de-producto/informacion/ahorra-tiempo-y-haz-crecer-tu-negocio-con-las-nuevas-herramientas-de-gemini/
+**Qué es:** Google empezó a lanzar a nivel global la conexión directa entre el Perfil de Negocio en Google (el que aparece en Maps y Búsqueda) y la app de Gemini, dándole a la IA acceso a reseñas de clientes, preguntas frecuentes y datos de rendimiento del negocio. Junto con esto llegan los "Business Notebooks", un espacio para centralizar toda la información de un negocio (documentos, sitio web, perfil de Google) en un solo lugar que la IA puede consultar.
+**Ángulo para Nexo.IA:** Video "Google le dio acceso directo a tus reseñas y tu ficha de Maps a su IA — así se ve responder reseñas y dudas de clientes sin escribir una palabra".
+- Contexto del problema: la mayoría de las pymes chilenas tiene su Perfil de Negocio en Google abandonado —reseñas sin responder, preguntas de clientes sin contestar, horarios desactualizados— porque nadie tiene tiempo de administrarlo.
+- Qué se probaría: conectar el Perfil de Negocio real de un cliente a Gemini y generar en vivo respuestas a reseñas pendientes y preguntas frecuentes, mostrando el antes/después de la ficha.
+- Resultado esperado: dejar claro que "tener tu ficha de Google al día" ahora es una tarea de 10 minutos con IA y no un pendiente eterno, y que eso impacta directo en si un cliente nuevo elige o no el negocio al buscarlo en Maps.
+- Objeción típica: "yo ya reviso mis reseñas cuando puedo" → mostrar el costo invisible de responder tarde (reseñas de dos semanas sin respuesta bajan la confianza) versus una respuesta automática y personalizada el mismo día.
+
+### 3. Más de 5.000 líderes de IA llegan a Santiago: Congreso América Digital 2026
+**Fuente:** https://congreso.america-digital.com/
+**Qué es:** Los días 9 y 10 de septiembre se realiza en Espacio Riesco, Santiago, el 11° Congreso Latinoamericano de IA, Tecnología y Negocios América Digital, que reúne a más de 5.000 ejecutivos y líderes tecnológicos de más de 50 países, con más de 100 charlas y 200 empresas expositoras. Se proyecta un impacto económico de USD 500 millones para Chile.
+**Ángulo para Nexo.IA:** Post/reel reactivo "Esta semana el mundo de la IA se reúne en Santiago — pero ninguna de esas charlas te va a decir cómo automatizar TU pyme".
+- Contexto del problema: eventos así generan mucho ruido mediático sobre IA "a nivel país" que puede sentirse lejano o irrelevante para el dueño de una pyme que no va a pisar Espacio Riesco.
+- Qué se probaría: usar el evento como gancho de conversación (aprovechando el interés y las búsquedas de esos días) para contrastar el discurso "macro" de la IA con un caso concreto y chico: una automatización real hecha para un negocio chileno esta misma semana.
+- Resultado esperado: posicionar a Nexo.IA como el puente entre "la IA de las conferencias" y "la IA que realmente usa una pyme", capturando el interés del evento sin depender de asistir.
+- Objeción típica: "esos eventos son para empresas grandes, no para mí" → responder que la brecha es justo el punto: mientras las grandes discuten estrategia, las pymes pueden implementar automatizaciones concretas esta misma semana, sin esperar ninguna conferencia.
+
+### 4. Solo el 3,6% de las empresas chilenas logra escalar sus proyectos de IA
+**Fuente:** https://www.trendtic.cl/2026/09/solo-el-36-de-las-empresas-chilenas-logra-escalar-proyectos-de-ia-la-velocidad-organizacional-sera-la-nueva-ventaja-competitiva/
+**Qué es:** Según el Índice de Transformación Digital 2025 de la Cámara de Comercio de Santiago, el uso de IA en empresas chilenas pasó de 29% en 2023 a 54% en 2025, pero solo un 3,6% ha logrado escalar sus proyectos de IA de forma transversal y con retorno medible. Principales barreras: falta de gobernanza de datos (34,3%), cultura organizacional/resistencia al cambio (23,5%) y dificultad para integrar datos entre áreas (21,7%).
+**Ángulo para Nexo.IA:** Video "El 96% de las empresas en Chile que 'usa IA' en realidad no la está aprovechando — así se ve la diferencia".
+- Contexto del problema: muchas pymes creen que ya "hicieron la tarea" con IA porque alguien en el equipo usa ChatGPT de vez en cuando, sin darse cuenta de que eso está lejos de tener un proceso automatizado y medible.
+- Qué se probaría: contrastar en cámara "usar IA" (una persona copiando y pegando en ChatGPT) versus "tener un sistema" (un flujo automatizado que corre solo y entrega un resultado medible), usando las tres barreras del estudio como guía.
+- Resultado esperado: mostrar que estar en el 3,6% no depende del tamaño de la empresa sino de tener un proceso bien definido y datos ordenados, algo que una pyme chica puede lograr más rápido que una corporación grande y burocrática.
+- Objeción típica: "nosotros somos muy chicos para tener 'gobernanza de datos'" → aclarar que para una pyme eso se traduce en algo simple: tener la info del negocio en un solo lugar ordenado, no en una política corporativa compleja.
+
+### 5. VoiceStudio: la alternativa gratis y local a ElevenLabs se vuelve viral en GitHub
+**Fuente:** https://github.com/debpalash/VoiceStudio
+**Qué es:** VoiceStudio es un proyecto de código abierto que corre 100% en el computador (sin depender de la nube ni pagar suscripción) y permite clonar voces, doblar videos y transcribir audio en cientos de idiomas, la misma función que ofrece ElevenLabs por suscripción. Esta semana escaló al top de repositorios en tendencia de GitHub, superando las 16.000 estrellas.
+**Ángulo para Nexo.IA:** Video "Existe una herramienta gratis que clona tu voz y dobla tus videos — así se vería en un negocio chileno (sin ser programador)".
+- Contexto del problema: muchas pymes evitan hacer contenido en video (reels, tutoriales, publicidad) porque grabar audio limpio o hacer versiones en otro idioma toma tiempo y da vergüenza frente a cámara.
+- Qué se probaría: mostrar el proceso simplificado de tomar un audio corto de una persona real (con su permiso) y generar una versión limpia o doblada con esta tecnología, explicando qué parte requiere ayuda técnica y qué no.
+- Resultado esperado: bajarle el misterio a "clonación de voz" y mostrar que ya existe gratis, para que el público entienda que el freno no es la tecnología sino no tener quién se la instale y mantenga — ahí entra un partner técnico.
+- Objeción típica: "si es gratis, ¿para qué necesito una agencia?" → aclarar que "gratis" acá significa sin licencia, no sin trabajo: instalarlo, mantenerlo y conectarlo al flujo de contenido del negocio requiere configuración técnica que la mayoría de los dueños de pyme no tiene tiempo ni ganas de aprender.
+
+### 6. La nueva conversación en IA para negocios: dejar de "chatear" y pasar a tener un sistema
+**Fuente:** https://www.lilachbullock.com/ai-news-this-week-small-business-6-september-2026/
+**Qué es:** El resumen semanal de noticias de IA para pequeños negocios de esta semana marca un cambio de tono: ya no se habla de "asistentes de chat ingeniosos" sino de sistemas que investigan, deciden, redactan, enrutan, monitorean y actúan solos a través de todo el negocio (CRM, correo, documentos) mientras el dueño hace otra cosa, con la advertencia de mantener revisión humana para no publicar información errónea o filtrar datos sensibles.
+**Ángulo para Nexo.IA:** Video "La diferencia entre 'tener IA' y 'tener un sistema con IA' — y por qué la mayoría de las pymes se quedó en el primer paso".
+- Contexto del problema: para muchos dueños de pyme, "usar IA" significa tener una pestaña de ChatGPT abierta que consultan de vez en cuando, no un proceso que corre solo.
+- Qué se probaría: ilustrar con un ejemplo simple (seguimiento de una cotización) la diferencia entre pedirle a ChatGPT que redacte un mensaje cada vez, versus un sistema que detecta la cotización vencida, redacta y envía el recordatorio solo, y avisa al dueño solo si necesita su ok.
+- Resultado esperado: dejar clara la diferencia de valor entre una herramienta que hay que operar a mano cada vez y un sistema que corre solo, y por qué la segunda es la que realmente devuelve horas a la semana.
+- Objeción típica: "eso suena a que la IA va a hacer cosas sin que yo me entere" → explicar que un buen sistema siempre deja puntos de revisión humana definidos (aprobar antes de enviar algo sensible, por ejemplo), no actúa a ciegas.
+
+### 7. n8n suma un "constructor de automatizaciones" que arma flujos con lenguaje natural
+**Fuente:** https://blog.n8n.io/
+**Qué es:** n8n, la plataforma de automatización más usada para conectar apps y datos con IA (valorizada en más de USD 5.200 millones tras la inversión de SAP), incorporó un "AI Workflow Builder" que arma un borrador de flujo de automatización a partir de una instrucción escrita en lenguaje natural, bajando la barrera de entrada para quienes no saben programar.
+**Ángulo para Nexo.IA:** Video "Le pedí a una IA que me arme una automatización solo escribiendo lo que necesitaba — esto pasó".
+- Contexto del problema: muchos dueños de pyme asumen que "armar una automatización" requiere saber programar, y por eso ni siquiera exploran la idea de tener un flujo propio.
+- Qué se probaría: escribir en texto simple una necesidad real de un negocio chileno (ej. "cuando llega un pedido nuevo, avísame por WhatsApp y agrégalo a una planilla") y mostrar el borrador de flujo que genera la IA, y qué tan lejos queda ese borrador de un flujo listo para producción.
+- Resultado esperado: mostrar honestamente que estas herramientas bajan la barrera de entrada pero no eliminan la necesidad de alguien que revise, ajuste y mantenga el flujo funcionando de forma confiable.
+- Objeción típica: "entonces ya no necesito pagarle a nadie, lo hago yo con esto" → mostrar en vivo dónde el borrador automático falla o queda incompleto (manejo de errores, casos raros) para dejar claro qué parte del trabajo sigue siendo experta.
