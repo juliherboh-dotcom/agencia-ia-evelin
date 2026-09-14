@@ -401,3 +401,50 @@
 - Qué se probaría: escribir en texto simple una necesidad real de un negocio chileno (ej. "cuando llega un pedido nuevo, avísame por WhatsApp y agrégalo a una planilla") y mostrar el borrador de flujo que genera la IA, y qué tan lejos queda ese borrador de un flujo listo para producción.
 - Resultado esperado: mostrar honestamente que estas herramientas bajan la barrera de entrada pero no eliminan la necesidad de alguien que revise, ajuste y mantenga el flujo funcionando de forma confiable.
 - Objeción típica: "entonces ya no necesito pagarle a nadie, lo hago yo con esto" → mostrar en vivo dónde el borrador automático falla o queda incompleto (manejo de errores, casos raros) para dejar claro qué parte del trabajo sigue siendo experta.
+
+## Semana del 2026-09-14
+
+### 1. SmallBiz.ai: una plataforma gratis promete decirle a cada pyme qué automatizar y con qué herramienta, sin venderle software propio
+**Fuente:** https://www.prnewswire.com/news-releases/smallbizai-launches-to-help-small-businesses-turn-ai-into-more-sales-lower-costs-and-simpler-operations-302869738.html
+**Qué es:** CloudIntelligence.ai lanzó esta semana SmallBiz.ai, una base de conocimiento gratuita con más de 275 flujos de automatización para 500 tipos de negocio distinto, casi 5.000 guías/comparativas de herramientas y un chatbot que recomienda, para cada tarea puntual, la combinación más barata de herramientas existentes, open source o IA para resolverla — en vez de vender una suscripción propia más.
+**Ángulo para Nexo.IA:** Video "Le pedí a una IA gratuita que me dijera qué automatizar primero en mi pyme — así respondió, y esto le faltó".
+- Contexto del problema: la mayoría de los dueños de pyme no sabe por dónde empezar a automatizar ni qué herramienta conviene para su rubro específico, y termina sin hacer nada por parálisis de análisis.
+- Qué se probaría: meter un caso real de un negocio chileno en esta plataforma gratuita, ver qué flujo recomienda, y compararlo con lo que realmente necesitaría ese negocio (idioma, WhatsApp, boleta electrónica, etc.).
+- Resultado esperado: mostrar que estas herramientas genéricas dan una buena primera orientación gratis, pero se quedan cortas en el detalle local (impuestos chilenos, WhatsApp Business, jerga del rubro) que es justo donde entra un partner que conoce el contexto.
+- Objeción típica: "si ya existe algo gratis que me dice qué hacer, para qué pago una agencia" → mostrar la diferencia entre recibir una lista genérica de sugerencias y tener a alguien que las implementa, prueba y ajusta hasta que funcionan de verdad en tu negocio.
+
+### 2. Anthropic publica su reporte de mal uso de IA de septiembre: estafas y fraudes ya se automatizan con los mismos agentes que usan las empresas
+**Fuente:** https://www.anthropic.com/threat-intelligence-report-september-2026
+**Qué es:** El informe trimestral de Anthropic (publicado el 10 de septiembre) detalla casos reales donde actores maliciosos usaron IA para automatizar estafas, perfiles falsos y fraude a gran escala, usando exactamente las mismas capacidades "agenticas" (investigar, redactar, actuar solas) que las empresas usan para trabajo legítimo.
+**Ángulo para Nexo.IA:** Video "Los mismos agentes de IA que le ahorran tiempo a tu pyme, un estafador los está usando para engañar a tus clientes — así te cuidas".
+- Contexto del problema: a medida que la IA se vuelve más capaz de actuar sola, también se vuelve más fácil para un estafador automatizar mensajes falsos, perfiles de proveedores inventados o correos de "phishing" que suenan perfectamente redactados, algo que muchas pymes no tienen en el radar.
+- Qué se probaría: mostrar en cámara un ejemplo de mensaje de estafa "hecho con IA" (redacción impecable, sin errores de ortografía como antes delataban a los estafadores) y compararlo con las señales reales que sí delatan un fraude hoy.
+- Resultado esperado: dejar una checklist simple para que un dueño de pyme y su equipo verifiquen antes de pagar una factura, cambiar datos bancarios o confiar en un mensaje "urgente".
+- Objeción típica: "mi negocio es muy chico para que un estafador se moleste conmigo" → aclarar que hoy estos ataques son automatizados y masivos, no artesanales: no eligen a la víctima por tamaño, la IA les permite intentarlo con miles de negocios a la vez.
+
+### 3. Sercotec se suma a "Hazlo con IA": nace un MVP que agiliza el diagnóstico de las pymes que piden asesoría
+**Fuente:** https://www.sercotec.cl/programa-hazlo-con-ia-llega-a-sercotec-para-acercar-el-uso-de-la-inteligencia-artificial-a-las-pymes/
+**Qué es:** Sercotec firmó esta semana un convenio con CENIA y Futuro del Trabajo (SOFOFA Capital Humano) para sumarse al programa "Hazlo con IA", capacitando a sus propios ejecutivos y presentando un MVP que usa IA para agilizar el levantamiento de información de las pymes que piden asesoría, agilizando el diagnóstico. El MVP llegará próximamente a los Centros de Negocios de Sercotec en todo Chile.
+**Ángulo para Nexo.IA:** Post/reel "El Estado va a usar IA para diagnosticar más rápido a tu pyme si pides ayuda en Sercotec — así se vería ese mismo diagnóstico hecho por tu cuenta, hoy".
+- Contexto del problema: muchas pymes postergan pedir un diagnóstico o asesoría (en Sercotec o en cualquier lado) porque sienten que el proceso de "contar todo lo que hace mi negocio" es largo y tedioso.
+- Qué se probaría: recrear en simple una mini-versión de ese "levantamiento de información" (preguntas clave sobre ventas, procesos, dolores) usando IA en vivo con el dueño de un negocio real, y ver qué tan rápido queda un diagnóstico útil.
+- Resultado esperado: mostrar que ese primer diagnóstico —que antes tomaba una reunión larga— hoy se puede adelantar en minutos, dejando la asesoría humana (de Sercotec o de una agencia) para la parte que realmente importa: decidir qué hacer con esa información.
+- Objeción típica: "para eso mejor pido la ayuda gratis del Estado y no pago nada" → responder que ambas cosas se complementan: el programa público ayuda a diagnosticar y capacitar, pero la implementación y el mantenimiento de la automatización a medida sigue siendo un trabajo especializado que el programa no cubre.
+
+### 4. Agent-Reach: la herramienta gratis que le da a cualquier IA "ojos" para leer Twitter, Reddit, YouTube y más sin pagar APIs
+**Fuente:** https://github.com/Panniantong/Agent-Reach
+**Qué es:** Proyecto de código abierto que subió esta semana a más de 31.000 estrellas en GitHub (una de las herramientas de IA que más rápido está creciendo en 2026). Permite que un agente de IA lea y busque contenido en Twitter/X, Reddit, YouTube, LinkedIn, Instagram y más de una decena de plataformas más, sin pagar las APIs oficiales de cada red.
+**Ángulo para Nexo.IA:** Video "Así se ve un 'community manager' de IA que lee gratis lo que dicen de tu marca en todas las redes a la vez".
+- Contexto del problema: la mayoría de las pymes no tiene tiempo (ni a alguien dedicado) para revisar todos los días qué comentan los clientes sobre su marca o su rubro en distintas redes sociales, y se entera tarde de una queja o una tendencia.
+- Qué se probaría: armar un mini-flujo que use este tipo de herramienta para buscar menciones de una marca chilena real (o de su rubro) en varias redes a la vez y resumir los hallazgos en un mensaje diario.
+- Resultado esperado: mostrar cómo el "monitoreo de marca" que antes requería pagar una herramienta cara de redes sociales, hoy se puede armar con piezas gratuitas conectadas por alguien que sepa configurarlas.
+- Objeción típica: "yo ya reviso mis redes cuando tengo tiempo" → mostrar la diferencia entre revisar tu propia cuenta y enterarte de lo que se dice de tu marca en TODAS las redes, incluidas las que no manejas activamente.
+
+### 5. El Banco Central dice que el mundo crece "impulsado por la IA" — pero recorta la proyección de crecimiento de Chile para 2026
+**Fuente:** https://www.bcentral.cl/web/banco-central/contenido/-/detalle/prensa/nota-de-prensa/bcch-publica-ipom-septiembre-2026
+**Qué es:** El Informe de Política Monetaria (IPoM) de septiembre, publicado esta semana, señala que la actividad económica mundial sigue impulsada por el auge de la inteligencia artificial —sobre todo en EE.UU. y Asia—, mientras que el Banco Central redujo la proyección de crecimiento del PIB de Chile para 2026 a un rango de apenas 0,25%-0,75% (desde 1%-1,75% en junio), citando debilidad del gasto interno y menor producción minera.
+**Ángulo para Nexo.IA:** Video "El mundo crece gracias a la IA, pero a Chile casi no le está llegando ese impulso — por eso tu pyme no se puede dar el lujo de esperar".
+- Contexto del problema: cuando la economía se enfría, el reflejo típico de una pyme es "cuidar la plata" cancelando cualquier gasto que no sea 100% urgente, incluida la automatización, justo cuando más ayuda a bajar costos operativos.
+- Qué se probaría: contrastar el dato macro (el mundo crece con la IA, Chile crece casi nada) con un caso micro de un negocio chileno que usó automatización para sostener o mejorar su margen en un año más apretado, sin subir precios ni gastar más en personal.
+- Resultado esperado: reposicionar la automatización no como "un lujo para tiempos buenos" sino como una herramienta defensiva para tiempos flacos, mostrando ahorro concreto en horas o costos.
+- Objeción típica: "con la economía así, no es momento de invertir en nada nuevo" → responder que la automatización bien enfocada no es una inversión especulativa, es una forma de hacer más con el mismo equipo cuando contratar o crecer se vuelve más caro.
