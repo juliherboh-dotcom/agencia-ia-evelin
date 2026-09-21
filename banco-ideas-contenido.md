@@ -448,3 +448,59 @@
 - Qué se probaría: contrastar el dato macro (el mundo crece con la IA, Chile crece casi nada) con un caso micro de un negocio chileno que usó automatización para sostener o mejorar su margen en un año más apretado, sin subir precios ni gastar más en personal.
 - Resultado esperado: reposicionar la automatización no como "un lujo para tiempos buenos" sino como una herramienta defensiva para tiempos flacos, mostrando ahorro concreto en horas o costos.
 - Objeción típica: "con la economía así, no es momento de invertir en nada nuevo" → responder que la automatización bien enfocada no es una inversión especulativa, es una forma de hacer más con el mismo equipo cuando contratar o crecer se vuelve más caro.
+
+## Semana del 2026-09-21
+
+### 1. Meta lanza un MCP para que la IA arme sola una cuenta de WhatsApp Business
+**Fuente:** https://techcrunch.com/2026/09/15/meta-now-lets-ai-agents-handle-the-boring-parts-of-whatsapp-business-setup/
+**Qué es:** El 15 de septiembre Meta presentó "WhatsApp Business Tools MCP", un conector que permite que agentes como Claude, ChatGPT o Codex creen la cuenta de WhatsApp Business, verifiquen el número, la registren en la Cloud API y redacten las plantillas de mensajes a partir de una instrucción en lenguaje simple, en vez de saltar entre la Developer Console, el Business Manager y el editor de plantillas.
+**Ángulo para Nexo.IA:** Video "Le pedí a una IA que me configurara mi WhatsApp Business de negocio de principio a fin — así quedó".
+- Contexto del problema: muchos dueños de pyme abandonan a mitad de camino el trámite de habilitar WhatsApp Business con la API oficial porque el proceso técnico (verificación, plantillas, permisos) es confuso y no tiene relación con vender.
+- Qué se probaría: usar esta herramienta en vivo para dejar lista la cuenta de WhatsApp Business de un negocio real chileno y comparar cuánto tiempo toma versus hacerlo a mano siguiendo la documentación oficial.
+- Resultado esperado: mostrar que el trámite técnico ya no es la barrera — la barrera real pasa a ser decidir qué automatizar y mantenerlo funcionando, que es justo donde entra un partner.
+- Objeción típica: "si la IA ya hace la configuración, ya no necesito pagarle a nadie" → aclarar que Meta mismo dice que esto es para configuración y pruebas, no para el envío masivo en producción ni para diseñar el flujo de conversación que realmente convierte.
+
+### 2. Anthropic lanza "Claude for Small Business" y fusiona el chat con Cowork en un solo agente
+**Fuente:** https://ecosistemastartup.com/anthropic-integra-claude-cowork-en-el-chat-y-lanza-docs-y-slides/
+**Qué es:** El 15 de septiembre Anthropic lanzó Claude for Small Business, que se conecta directo con QuickBooks, PayPal, HubSpot, Canva, DocuSign, Google Workspace, Slack, Square y Stripe; un día después anunció que el chat normal y Cowork (su modo de trabajo de varios pasos) se fusionan en una sola experiencia, donde el propio modelo decide si basta una respuesta rápida o si hay que ejecutar una tarea larga.
+**Ángulo para Nexo.IA:** Video "Las mismas IA que usan las grandes empresas ahora se conectan directo a las herramientas que ya usa tu pyme (contabilidad, pagos, agenda) — así se ve en la práctica".
+- Contexto del problema: el diagnóstico que hace Anthropic es el mismo que ve Nexo.IA todos los días: la pyme prueba la IA en una ventana de chat suelta, pero nunca llega a integrarla con las herramientas donde realmente vive el negocio (cobros, agenda, contabilidad).
+- Qué se probaría: conectar una de estas integraciones (por ejemplo Stripe o Google Workspace) a un asistente de IA para un caso simple —armar un reporte de cobros pendientes o agendar seguimientos— y mostrar el resultado real, no la promesa de marketing.
+- Resultado esperado: dejar claro que el salto de valor no está en "tener un chat de IA más", sino en que ese chat pueda leer y actuar sobre tus datos reales del negocio.
+- Objeción típica: "yo ya tengo ChatGPT, para qué necesito otra IA conectada a mis sistemas" → explicar la diferencia entre una IA que solo conversa y una que puede efectivamente entrar a tu sistema de cobros o tu agenda y hacer algo por ti.
+
+### 3. ChatGPT Work suma un "Data agent" que arma dashboards del negocio solo con una conversación
+**Fuente:** https://www.unite.ai/openai-introduces-data-agent-in-chatgpt-work-to-analyze-company-data/
+**Qué es:** El 10 de septiembre OpenAI agregó a ChatGPT Work un "Data agent" que se conecta a las fuentes de datos aprobadas de la empresa, investiga qué cambió en las métricas del negocio y arma dashboards interactivos para compartir con el equipo, todo dirigido desde una conversación en lenguaje simple, sin escribir consultas ni aprender otra herramienta de análisis.
+**Ángulo para Nexo.IA:** Video "Le pedí a una IA que me armara un dashboard de ventas de mi pyme solo conversando con ella — sin planillas, sin Excel".
+- Contexto del problema: la mayoría de las pymes toma decisiones "a ojo" porque nadie tiene tiempo (ni sabe usar Excel avanzado o un BI) para bajar los datos de ventas, gastos o stock a un reporte que realmente sirva para decidir.
+- Qué se probaría: tomar datos reales y simples de un negocio chileno (ventas del mes, gastos, boletas) y pedirle a una IA que arme un resumen visual y responda preguntas de seguimiento sobre esos datos.
+- Resultado esperado: mostrar que hoy se puede tener un "analista de datos a demanda" sin contratar a nadie ni pagar un software de BI caro, para las preguntas del día a día.
+- Objeción típica: "mis datos están en papel/WhatsApp/una libreta, no en un sistema" → responder que el primer paso de cualquier automatización real es justamente ordenar esos datos en un solo lugar, y que ahí es donde ayuda un partner, no la herramienta de IA por sí sola.
+
+### 4. Expertos advierten que Chile tiene capacidades "incipientes" frente a los riesgos de ciberseguridad que trae la IA
+**Fuente:** https://www.df.cl/df-lab/tech-empresas/expertos-advierten-que-chile-tiene-capacidades-aun-incipientes-para
+**Qué es:** Un análisis publicado el 21 de septiembre en Diario Financiero advierte que el avance en capacidades y adopción de IA en Chile abrió la puerta a nuevas formas de ciberataque —incluida suplantación de identidad más sofisticada y sistemas autónomos que detectan y explotan vulnerabilidades con menos intervención humana— mientras la capacidad del país para responder a esos riesgos sigue siendo básica.
+**Ángulo para Nexo.IA:** Video "Chile está adoptando IA más rápido de lo que se está preparando para defenderse de ella — 3 cosas que tu pyme puede hacer esta semana".
+- Contexto del problema: las pymes están apuradas por sumar IA a la atención de clientes y la venta, pero casi ninguna se ha preguntado qué pasa si un atacante usa esa misma tecnología en su contra (un correo de "proveedor" perfectamente redactado, una llamada con voz clonada).
+- Qué se probaría: mostrar en cámara 2-3 señales concretas y simples que hoy delatan un intento de fraude con IA (verificación por un segundo canal, urgencia artificial, cambios de datos bancarios de último minuto) aplicadas a un caso ficticio pero realista de pyme chilena.
+- Resultado esperado: dejar un mini-protocolo aplicable esa misma semana, no solo la advertencia genérica de "cuidado con la IA".
+- Objeción típica: "eso les pasa a las empresas grandes, no a un negocio como el mío" → responder que el mismo artículo señala que el país entero, no solo las grandes empresas, tiene capacidades básicas frente a esto, y que los ataques automatizados no distinguen tamaño de negocio.
+
+### 5. Un estudio dice que solo el 3,6% de las empresas chilenas logra escalar sus proyectos de IA más allá del piloto
+**Fuente:** https://www.trendtic.cl/2026/09/solo-el-36-de-las-empresas-chilenas-logra-escalar-proyectos-de-ia-la-velocidad-organizacional-sera-la-nueva-ventaja-competitiva/
+**Qué es:** Un reporte citado esta semana por trendTIC muestra que, aunque la mayoría de las empresas chilenas ya probó algún proyecto de IA, apenas un 3,6% logra llevarlo más allá de la etapa de piloto y convertirlo en algo que realmente cambia cómo opera el negocio día a día.
+**Ángulo para Nexo.IA:** Video "El 96% de las empresas chilenas que 'ya probó IA' se quedó pegada en la prueba — por qué pasa esto y cómo no ser parte de esa estadística".
+- Contexto del problema: muchos dueños de pyme sienten que "ya hicieron la tarea" con la IA porque probaron ChatGPT una vez o hicieron un piloto con una agencia, sin darse cuenta de que quedarse en el piloto es, en la práctica, no haber avanzado nada.
+- Qué se probaría: comparar en pantalla un "piloto típico" (una automatización armada una vez y nunca revisada) contra un sistema que se mantiene, se ajusta con el tiempo y de verdad queda integrado al día a día del negocio.
+- Resultado esperado: que el dueño de pyme entienda que el valor no está en "implementar IA" como evento único, sino en el trabajo continuo de mantenimiento y ajuste que casi nadie hace.
+- Objeción típica: "nosotros ya tenemos un piloto funcionando, con eso basta" → mostrar con el dato (3,6%) que tener un piloto no es lo mismo que tener algo escalado, y que la diferencia entre ambos es justo el trabajo de acompañamiento que ofrece una agencia.
+
+### 6. 9 de cada 10 emprendedores chilenos ya usa IA en su negocio, según un nuevo estudio
+**Fuente:** https://ecosistemastartup.com/9-de-cada-10-emprendedores-en-chile-ya-usan-ia/
+**Qué es:** Un estudio de la consultora ChileConverge, difundido esta semana, encontró que 9 de cada 10 emprendedores chilenos ya usa alguna herramienta de IA en su pyme, y que el desafío ya no es convencerlos de probarla, sino acompañarlos con capacitación práctica para que la usen bien.
+**Ángulo para Nexo.IA:** Video "Casi todos los emprendedores chilenos ya 'usan IA' — pero eso no significa lo que tú crees. Aquí la diferencia real".
+- Contexto del problema: una cifra como "9 de cada 10 ya usa IA" puede sonar a que el mercado ya está saturado o que cualquiera puede hacerlo solo, cuando en la práctica la mayoría de esos emprendedores usa IA de forma muy básica (redactar un mensaje, generar una imagen) y no como un sistema que les ahorra horas reales.
+- Qué se probaría: encuestar o mostrar en cámara a 2-3 dueños de negocio real preguntándoles "¿cómo usas la IA en tu negocio hoy?" y contrastar sus respuestas (uso suelto) con lo que sería un uso sistematizado (automatización end-to-end).
+- Resultado esperado: reposicionar la conversación de "¿usas IA o no?" a "¿tu uso de IA te está devolviendo horas de verdad, o solo la usas de vez en cuando?".
+- Objeción típica: "yo ya uso IA todos los días, no necesito ayuda" → validar que probablemente ya está en el camino correcto, y ofrecer el siguiente paso natural: pasar de usarla manualmente a tener un sistema que la use por ti.
