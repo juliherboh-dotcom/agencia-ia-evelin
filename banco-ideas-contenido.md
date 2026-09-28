@@ -504,3 +504,59 @@
 - Qué se probaría: encuestar o mostrar en cámara a 2-3 dueños de negocio real preguntándoles "¿cómo usas la IA en tu negocio hoy?" y contrastar sus respuestas (uso suelto) con lo que sería un uso sistematizado (automatización end-to-end).
 - Resultado esperado: reposicionar la conversación de "¿usas IA o no?" a "¿tu uso de IA te está devolviendo horas de verdad, o solo la usas de vez en cuando?".
 - Objeción típica: "yo ya uso IA todos los días, no necesito ayuda" → validar que probablemente ya está en el camino correcto, y ofrecer el siguiente paso natural: pasar de usarla manualmente a tener un sistema que la use por ti.
+
+## Semana del 2026-09-28
+
+### 1. OpenAI lanza GPT-6 Sol y Luna: la IA "premium" para empresas baja de precio a la mitad
+**Fuente:** https://ecosistemastartup.com/openai-lanza-gpt-6-sol-y-luna-api-50-mas-barata/
+**Qué es:** El 22 de septiembre OpenAI lanzó GPT-6 Sol y Luna, dos modelos pensados para trabajo empresarial repetitivo, con precios de API hasta 50% o más bajos que sus equivalentes anteriores; una vocera de OpenAI confirmó que se trata de una baja de tarifa permanente, no promocional.
+**Ángulo para Nexo.IA:** Video "La excusa de 'la IA buena es muy cara para mi pyme' ya no aplica — mostramos cuánto cuesta hoy hacer lo que hace 6 meses no era viable".
+- Contexto del problema: muchos dueños de pyme probaron IA una vez, la encontraron cara o limitada para lo que necesitaban, y la descartaron sin volver a mirar los precios actuales.
+- Qué se probaría: tomar una tarea real y repetitiva de un negocio chileno (responder consultas frecuentes, clasificar boletas, resumir reseñas de clientes) y mostrar el costo mensual real de automatizarla con estos modelos, convertido a pesos chilenos.
+- Resultado esperado: que el costo se vea tan bajo que la conversación cambie de "no puedo pagarlo" a "por qué no lo tengo funcionando ya".
+- Objeción típica: "la IA barata rinde peor" → aclarar que estos modelos están hechos justo para tareas de alto volumen y bien definidas, no para reemplazar el criterio humano en decisiones complejas del negocio.
+
+### 2. Sofofa y Fundación Chile: la "trampa del statu quo" frena la IA en las empresas chilenas
+**Fuente:** https://www.df.cl/df-lab/tech-empresas/la-trampa-del-statu-quo-por-que-las-empresas-chilenas-no-logran-escalar-la
+**Qué es:** En una entrevista publicada el 24 de septiembre, Rosario Navarro (presidenta de la Sofofa) y Julio Pertuzé (presidente de Fundación Chile) explican que el freno a la IA en Chile no es la tecnología sino los hábitos y procesos internos de las organizaciones, y comparan el momento actual con la reingeniería de procesos de los años 90.
+**Ángulo para Nexo.IA:** Video "Por qué tu pyme puede tener IA instalada y seguir sin ver resultados — el problema casi nunca es la herramienta".
+- Contexto del problema: muchos dueños de negocio instalan una herramienta de IA (un chatbot, un asistente) pero la enchufan sobre el mismo proceso desordenado de siempre, y luego concluyen que "la IA no funciona para mi rubro".
+- Qué se probaría: tomar un proceso real de un negocio chileno (por ejemplo, cómo se atiende una consulta de un cliente de principio a fin) y mostrar la diferencia entre "pegarle IA encima" versus rediseñar el proceso completo alrededor de la IA.
+- Resultado esperado: que el dueño de pyme entienda que el salto de productividad no viene de la herramienta sola, sino de repensar cómo se hace el trabajo — que es justo el trabajo de un partner de automatización.
+- Objeción típica: "no tengo tiempo para rediseñar procesos, solo quiero que funcione" → responder que rediseñar no significa parar el negocio, sino ajustar un flujo puntual a la vez, empezando por el que más dolor genera.
+
+### 3. La banca empieza a estudiar usar IA para prestarle a pymes sin historial crediticio
+**Fuente:** https://www.autonomosyemprendedor.es/articulo/pymes/banca-estudia-usar-inteligencia-artificial-dar-prestamos-autonomos-historial-financiero/20260924150447055984.html
+**Qué es:** Medios especializados reportaron el 24 de septiembre que bancos están explorando modelos predictivos de IA para evaluar el riesgo de negocios jóvenes más allá de su historial financiero tradicional, abriendo una puerta de financiamiento a pymes que hoy quedan fuera por no tener trayectoria bancaria.
+**Ángulo para Nexo.IA:** Video "La IA podría ser la razón por la que tu pyme consiga un crédito que antes le habrían negado — así está cambiando el scoring bancario".
+- Contexto del problema: una enorme cantidad de pymes chilenas nuevas o informales quedan fuera del crédito bancario tradicional simplemente por no tener años de historial, aunque el negocio esté funcionando bien hoy.
+- Qué se probaría: explicar en simple qué datos alternativos podría mirar un modelo de IA (flujo de ventas, boletas electrónicas, actividad en redes) para evaluar a un negocio joven, con un caso hipotético pero realista de una pyme chilena.
+- Resultado esperado: que el dueño de pyme entienda que mantener sus datos de venta y actividad ordenados digitalmente hoy ya es "construir historial" para el futuro, aunque no sea con un banco tradicional.
+- Objeción típica: "esto es para bancos grandes, no me va a tocar a mí en el corto plazo" → aclarar que esto todavía está en fase de estudio, pero que ya existen fintechs y factoring que usan lógica similar, y vale la pena entender cómo funciona antes de necesitarlo.
+
+### 4. La IA ya se metió al comercio chileno más rápido que el miedo a que destruya empleos
+**Fuente:** https://www.df.cl/economia-y-politica/laboral-personas/la-inteligencia-artificial-acelera-su-entrada-al-comercio-en-chile-pero
+**Qué es:** Un indicador de la Cámara Nacional de Comercio (CNC) publicado el 22 de septiembre muestra que un 39,9% de las empresas encuestadas ya usa herramientas de IA —por encima del 34,2% que usa automatización de procesos y el 32,5% que tiene CRM— y que un 83,7% considera baja o nula la probabilidad de que la IA reemplace puestos de trabajo.
+**Ángulo para Nexo.IA:** Video "El dato que debería tranquilizar (y preocupar) a la vez a cualquier dueño de pyme sobre la IA y el empleo".
+- Contexto del problema: hay dos miedos opuestos dando vueltas en las pymes: "la IA me va a dejar sin trabajadores" y "si no meto IA ya, me voy a quedar atrás" — y el dato real cae justo en el medio.
+- Qué se probaría: mostrar con un ejemplo concreto cómo la IA en un negocio chileno típico no reemplaza a una persona completa, sino que le saca una tarea específica (transcribir, responder lo mismo mil veces) para que esa persona haga algo que sí requiere criterio humano.
+- Resultado esperado: bajarle el volumen al miedo del "reemplazo total" y subirle el volumen a la oportunidad real: usar la IA para que el mismo equipo rinda más, no para tener menos equipo.
+- Objeción típica: "si no reemplaza empleos, entonces no me ahorra plata" → aclarar que ahorrar horas de trabajo sí se traduce en plata (menos horas extra, más capacidad sin contratar), aunque nadie pierda el puesto.
+
+### 5. GitHub trending: "browser-use", el agente que navega páginas web como si fuera una persona
+**Fuente:** https://github.com/browser-use/browser-use
+**Qué es:** Uno de los proyectos de código abierto más populares del momento (más de 116 mil estrellas en GitHub): un agente de IA que abre un navegador, hace clic, llena formularios y completa tareas en sitios web exactamente como lo haría una persona, incluso en sistemas viejos que no tienen forma de conectarse por API.
+**Ángulo para Nexo.IA:** Video "Le mostré a una IA cómo se hace un trámite en un sitio web lento y feo (como el de un proveedor o un organismo público) — y lo aprendió a hacer sola".
+- Contexto del problema: muchas pymes chilenas dependen de portales web antiguos y sin API (proveedores, organismos públicos, sistemas de facturación) donde hoy la única opción es que una persona entre a mano, clic por clic, todas las semanas.
+- Qué se probaría: grabar en pantalla cómo se le puede "enseñar" a un agente de este tipo a repetir un trámite web sencillo y repetitivo, comparando el tiempo de la persona versus el del agente.
+- Resultado esperado: mostrar que la automatización ya no requiere que el proveedor tenga una API moderna — se puede automatizar prácticamente cualquier sitio web, por viejo que sea.
+- Objeción típica: "mis proveedores usan sistemas súper antiguos, a mí no me van a poder automatizar nada" → responder que es justo al revés: estos agentes existen precisamente para esos sistemas antiguos, no para los modernos que ya tienen API.
+
+### 6. GitHub trending: "Paperclip", una app para que un equipo completo administre sus agentes de IA en un solo lugar
+**Fuente:** https://github.com/paperclipai/paperclip
+**Qué es:** Otro proyecto que está subiendo con fuerza esta semana en GitHub (más de 91 mil estrellas, +3.000 en un solo día): una aplicación de código abierto para coordinar y supervisar distintos agentes de IA trabajando dentro de una empresa, en vez de que cada persona use su propio chat suelto sin control ni registro.
+**Ángulo para Nexo.IA:** Video "El problema no va a ser 'tener IA' en tu pyme, va a ser que cada uno la use por su cuenta y nadie sepa qué está haciendo cada agente".
+- Contexto del problema: a medida que más personas en un mismo negocio empiezan a usar IA por su cuenta (uno para redactar, otro para atender clientes, otro para reportes), se pierde visibilidad de qué está haciendo cada quien y con qué datos.
+- Qué se probaría: plantear un escenario simple de una pyme con 3-4 personas usando IA cada una a su manera, y mostrar qué preguntas básicas de control debería poder responder el dueño (quién usa qué, con qué información, qué tan seguido).
+- Resultado esperado: instalar la idea de que a partir de cierto tamaño, la pyme necesita una capa de orden sobre sus herramientas de IA, no solo la herramienta suelta — que es justo el rol de un partner como Nexo.IA.
+- Objeción típica: "somos chicos, no necesitamos 'gobernanza' de IA todavía" → responder que el momento de poner orden es antes de que se vuelva un problema (datos de clientes mal usados, respuestas inconsistentes), no después.
