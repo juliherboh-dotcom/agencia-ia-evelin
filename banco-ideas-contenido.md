@@ -560,3 +560,61 @@
 - Qué se probaría: plantear un escenario simple de una pyme con 3-4 personas usando IA cada una a su manera, y mostrar qué preguntas básicas de control debería poder responder el dueño (quién usa qué, con qué información, qué tan seguido).
 - Resultado esperado: instalar la idea de que a partir de cierto tamaño, la pyme necesita una capa de orden sobre sus herramientas de IA, no solo la herramienta suelta — que es justo el rol de un partner como Nexo.IA.
 - Objeción típica: "somos chicos, no necesitamos 'gobernanza' de IA todavía" → responder que el momento de poner orden es antes de que se vuelva un problema (datos de clientes mal usados, respuestas inconsistentes), no después.
+
+## Semana del 2026-10-05
+
+> Nota de investigación: esta semana varias fuentes (TLDR, Hacker News, Ben's Bites, TechCrunch, PYMNTS) estaban bloqueadas desde el entorno de investigación, así que los datos de los hallazgos 1, 2, 4 y 6 vienen de los resúmenes de búsqueda y conviene verificarlos en el link antes de citar cifras exactas en un video.
+
+### 1. Meta lleva su agente de IA "Muse" a las pequeñas empresas (con Shopify, Slack y Dropbox)
+**Fuente:** https://www.cnbc.com/2026/09/29/meta-launches-muse-for-small-business-zuckerberg-pushes-enterprise-ai.html
+**Qué es:** El 29 de septiembre Meta anunció Muse for Small Business: un agente de IA gratis (con límites de uso, y planes de pago para más) que se integra con herramientas como Shopify, Dropbox y Slack. Es el segundo gran actor, después de Anthropic, que lanza un agente pensado directamente para dueños de pequeños negocios.
+**Ángulo para Nexo.IA:** Video "Meta y Anthropic ya lanzaron agentes para pymes: ¿entonces para qué contratar a alguien que me automatice?"
+- Contexto del problema: el dueño de pyme ve noticias de que las grandes tecnológicas "ya resolvieron" la IA para negocios chicos y piensa que basta con abrir la herramienta gratis.
+- Qué se probaría: tomar un proceso real de un negocio chileno (ej. cotizaciones por WhatsApp o pedidos de una tienda Shopify) y mostrar qué parte resuelve la herramienta genérica y qué parte queda sin resolver (tus reglas, tus precios, tus proveedores, la facturación local).
+- Resultado esperado: que el dueño entienda que la herramienta es el ladrillo y que el valor está en conectarla bien a su forma de trabajar, que es el servicio de Nexo.IA.
+- Objeción típica: "si es gratis, lo hago yo solo" → sí, y para empezar es buena idea; el problema aparece cuando hay que conectar sistemas, definir reglas y mantenerlo funcionando sin que se rompa.
+
+### 2. Semana de la Pyme 2026 (13 al 16 de octubre): más de 200 actividades y una jornada de adopción digital e IA
+**Fuente:** https://www.pymenoticias.com/post/semana-pyme-chile-actividades-formalizacion-inteligencia-artificial
+**Qué es:** El Ministerio de Economía anunció más de 200 actividades en todo Chile entre el 13 y el 16 de octubre, con ferias, orientación gratuita para formalizar empresas y una jornada dedicada a digitalización e inteligencia artificial.
+**Ángulo para Nexo.IA:** Serie corta de 3 posts/reels "Qué llevarme de la Semana de la Pyme si quiero partir con IA" (antes, durante y después del evento).
+- Contexto del problema: muchos dueños de pyme van a ferias y charlas, se llenan de ideas y vuelven a la rutina sin implementar nada.
+- Qué se probaría: una checklist de 3 preguntas para llevar a cualquier charla de IA ("¿qué tarea mía se come más horas?", "¿qué dato necesito ordenar primero?", "¿cuánto cuesta no hacer nada?") y mostrar cómo se aplicaría a un negocio concreto.
+- Resultado esperado: posicionar a Evelin como la persona que traduce el ruido del evento en un primer paso concreto; además, buen momento para cobertura en vivo o stories.
+- Objeción típica: "estas jornadas son pura teoría" → mostrar que con una sola tarea elegida (ej. responder consultas frecuentes) se puede salir con algo funcionando en pocos días.
+
+### 3. GitHub trending: "Hindsight", memoria para agentes de IA que aprende de cada conversación
+**Fuente:** https://github.com/vectorize-io/hindsight
+**Qué es:** Proyecto de código abierto que lidera el trending semanal (+10.600 estrellas en la semana) y le da "memoria" a un agente de IA: recuerda lo conversado y aprende de interacciones anteriores en vez de partir de cero cada vez.
+**Ángulo para Nexo.IA:** Video "Por qué tu asistente de IA te trata como un cliente nuevo cada día (y cómo se arregla)".
+- Contexto del problema: quien ya usa ChatGPT o un bot de WhatsApp en su negocio sufre porque la IA olvida el contexto: preferencias del cliente, pedidos anteriores, cómo habla la marca.
+- Qué se probaría: mostrar lado a lado una atención de cliente con IA sin memoria vs. una que recuerda ("el mismo pedido de la semana pasada", "prefiere despacho en la tarde"), con un ejemplo de una pyme chilena.
+- Resultado esperado: que el dueño vea que la diferencia entre un bot molesto y uno útil es la memoria y los datos del cliente, no el modelo de IA.
+- Objeción típica: "guardar datos de mis clientes en una IA me da miedo" → hablar de qué se guarda, dónde, con qué permiso del cliente, y por qué se puede hacer de forma ordenada y acorde a la ley de datos personales.
+
+### 4. GitHub trending: "agency-agents", un equipo completo de agentes de IA con roles de agencia
+**Fuente:** https://github.com/msitarzewski/agency-agents
+**Qué es:** Un marco de código abierto (+1.800 estrellas esta semana) que organiza agentes de IA especializados por tarea de negocio, como si fueran los cargos de una agencia (ventas, marketing, soporte, etc.), en vez de un único asistente que hace todo.
+**Ángulo para Nexo.IA:** Video "Armé un mini-equipo de IA para una pyme: una 'persona' para ventas, otra para atención y otra para reportes".
+- Contexto del problema: el dueño usa una sola IA para todo y los resultados son mediocres; no sabe que dividir por roles mejora bastante la calidad.
+- Qué se probaría: definir 3 roles simples para un negocio chileno (ej. una peluquería o una ferretería) y mostrar qué tareas toma cada uno y qué revisa siempre un humano.
+- Resultado esperado: que se entienda la automatización como "armar equipo" y no como "comprar una herramienta mágica".
+- Objeción típica: "suena complicado y caro de mantener" → mostrar que se parte con un solo rol (el que más tiempo quita) y se agregan los otros solo si el primero funciona.
+
+### 5. Reddit/guías de dueños de pyme: "usan la IA mal y les cuesta más tiempo del que ahorran"
+**Fuente:** https://dev.to/akaranjkar08/how-to-automate-your-small-business-with-ai-in-2026-no-coding-required-165n
+**Qué es:** Las conversaciones de dueños de pequeños negocios en comunidades como Reddit coinciden en que los que sacan más provecho no "producen más", sino que dejan de hacer lo que no necesita su criterio (un ejemplo repetido: 45 minutos cada lunes juntando números de tres lugares en un resumen, automatizado en una tarde). La recomendación común: elegir un solo trabajo que se coma la semana y automatizarlo antes de sumar otra herramienta. (Fuente de apoyo tipo guía, no un hilo puntual de Reddit; tomar como tendencia general.)
+**Ángulo para Nexo.IA:** Video mito vs. realidad: "Mito: más herramientas de IA = más productividad. Realidad: una sola tarea bien automatizada vale más que diez apps".
+- Contexto del problema: el dueño prueba 5 herramientas de IA, se agota y concluye que "la IA no sirve para mi negocio".
+- Qué se probaría: mostrar el reporte semanal (ventas, stock o caja) que hoy se arma a mano y automatizarlo de punta a punta, cronometrando antes y después.
+- Resultado esperado: un caso con número real de horas ahorradas y una regla simple: "una tarea, una herramienta, un mes".
+- Objeción típica: "mi negocio es muy particular, no hay una receta" → justamente por eso se parte por la tarea más aburrida y repetitiva, que casi todos los negocios tienen.
+
+### 6. Crear el sitio web de una pyme gratis con IA: ¿llegará algo así a Chile?
+**Fuente:** https://www.latribuna.hn/2026/10/02/pymes-podran-crear-gratis-su-sitio-web-con-inteligencia-artificial/
+**Qué es:** Una nota del 2 de octubre informa de una iniciativa (en Honduras) para que pymes creen su sitio web gratis usando IA. No es de Chile, pero muestra la tendencia: la IA está bajando a cero el costo de tener presencia digital básica.
+**Ángulo para Nexo.IA:** Video "Hoy cualquiera puede tener una web gratis con IA. Entonces, ¿qué hace falta para que la web venda?".
+- Contexto del problema: dueños que creen que tener un sitio ya resuelve la captación de clientes, o que no lo tienen porque "es caro".
+- Qué se probaría: crear en vivo un sitio básico con IA para un negocio chileno y luego mostrar lo que falta: agendamiento, respuesta automática por WhatsApp, seguimiento de consultas.
+- Resultado esperado: pasar del "tener web" al "tener un sistema que atiende y convierte", conectando con la oferta de Nexo.IA.
+- Objeción típica: "si es gratis y automático, ¿para qué pagar a alguien?" → la web es la parte fácil; el valor está en lo que pasa después de que el cliente escribe.
