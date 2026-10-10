@@ -1,0 +1,370 @@
+{
+  "name": "Fabrica de Reels - Capa 3.5 - QA visual por corte",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 2
+            }
+          ]
+        }
+      },
+      "id": "ac1d9161-d2d1-4b54-90d5-72f1ddb79c14",
+      "name": "Cada 2 min",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('0. Config').first().json;\nconst h={apikey:cfg.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`};\nconst rows=await this.helpers.httpRequest({method:'GET',url:`${cfg.SUPABASE_URL}/rest/v1/edit_specs?status=eq.ready&validation_status=eq.valid&cut_qa_status=eq.pending&select=id,raw_video_id,client_id,spec_json,created_at&order=created_at.asc&limit=25`,headers:h,json:true}); return rows.map(row=>({json:row}));\n"
+      },
+      "id": "86d10305-8544-461d-8de8-af3eb3583547",
+      "name": "0. Detectar edit specs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        0
+      ],
+      "sourceFile": "capa3-5-00-detectar-edit-specs.js"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "52c20759-8c71-444d-88f2-caff4dc97706",
+      "name": "Procesar de a uno",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        512,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const cfg = $('0. Config').first().json;\nconst spec=$json,h={apikey:cfg.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,'Content-Type':'application/json',Prefer:'return=representation'};\nconst claim=await this.helpers.httpRequest({method:'PATCH',url:`${cfg.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${spec.id}&cut_qa_status=eq.pending`,headers:h,body:{cut_qa_status:'in_progress'},json:true}); if(!claim.length)return [];\nconst prompt=await this.helpers.httpRequest({method:'GET',url:`${cfg.EDIT_SPEC_API_URL}/prompts/cut-qa-system`,json:true}); const cuts=[];\nfor(const [cut_index,cut] of spec.spec_json.cuts.entries()){if(!cut.keep)continue; const d=cut.end-cut.start; const timestamps=[cut.start,cut.start+d*.33,cut.start+d*.66,Math.max(cut.start,cut.end-.04)]; const f=await this.helpers.httpRequest({method:'POST',url:`${cfg.EDIT_SPEC_API_URL}/video-frames`,body:{video_url:spec.spec_json.source_video.url,timestamps},json:true}); cuts.push({cut_index,timestamps,frames:f.frames});}\nconst content=[{type:'text',text:`Evalua todos los cortes. Timestamps fuente: ${JSON.stringify(cuts.map(c=>({cut_index:c.cut_index,timestamps:c.timestamps})))}`},...cuts.flatMap(c=>c.frames.map(f=>({type:'image',source:{type:'base64',media_type:f.media_type,data:f.data}})))];\nconst response=await this.helpers.httpRequest({method:'POST',url:'https://api.anthropic.com/v1/messages',headers:{'x-api-key':cfg.ANTHROPIC_API_KEY,'anthropic-version':cfg.ANTHROPIC_VERSION||'2023-06-01','content-type':'application/json'},body:{model:cfg.EDIT_DIRECTOR_MODEL,max_tokens:4000,temperature:0,system:prompt.text,messages:[{role:'user',content}]},json:true}); const text=(response.content||[]).map(b=>b.text||'').join('').trim().replace(/^```json\\s*|```$/gi,''); const parsed=JSON.parse(text);\nif(!Array.isArray(parsed.results)||parsed.results.length!==cuts.length)throw new Error('QA visual no devolvio un resultado por corte keep:true');\nconst expected=new Set(cuts.map(c=>c.cut_index)); for(const result of parsed.results){if(!expected.has(result.cut_index)||typeof result.ok!=='boolean')throw new Error('QA visual devolvio cut_index u ok invalido'); if(!result.ok&&(!Number.isFinite(result.flagged_frame_time)||!result.reason))throw new Error('Corte marcado sin timestamp o motivo');}\nreturn [{json:{spec,cuts,results:parsed.results}}];\n"
+      },
+      "id": "458c2343-276c-476d-9829-cab7748ee62e",
+      "name": "1. Extraer y evaluar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        64
+      ],
+      "sourceFile": "capa3-5-01-extraer-y-evaluar.js",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const cfg = $('0. Config').first().json;\nconst h={apikey:cfg.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,'Content-Type':'application/json'},now=new Date().toISOString(); const {spec,cuts,results}=$json;\nawait this.helpers.httpRequest({method:'POST',url:`${cfg.SUPABASE_URL}/rest/v1/cut_qa_results`,headers:h,body:results.map(r=>({edit_spec_id:spec.id,cut_index:r.cut_index,ok:r.ok,flagged_frame_time:r.flagged_frame_time,reason:r.reason,checked_at:now})),json:true}); const flagged=results.filter(r=>!r.ok); const status=flagged.length?'flagged':'passed';\nawait this.helpers.httpRequest({method:'PATCH',url:`${cfg.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${spec.id}`,headers:h,body:{cut_qa_status:status,cut_qa_checked_at:now},json:true});\nif(!flagged.length){await this.helpers.httpRequest({method:'PATCH',url:`${cfg.SUPABASE_URL}/rest/v1/raw_videos?id=eq.${spec.raw_video_id}`,headers:h,body:{status:'edit_spec_ready',cut_qa_feedback:null},json:true});return [{json:{edit_spec_id:spec.id,cut_qa_status:'passed'}}];}\nconst clients=await this.helpers.httpRequest({method:'GET',url:`${cfg.SUPABASE_URL}/rest/v1/clients?id=eq.${spec.client_id}&select=telegram_chat_id`,headers:h,json:true}); const chatId=clients[0]?.telegram_chat_id||cfg.TELEGRAM_CHAT_ID;\nfor(const r of flagged){const cut=cuts.find(c=>c.cut_index===r.cut_index);const frame=cut.frames.reduce((a,b)=>Math.abs(b.timestamp-r.flagged_frame_time)<Math.abs(a.timestamp-r.flagged_frame_time)?b:a);await this.helpers.httpRequest({method:'POST',url:`https://api.telegram.org/bot${cfg.TELEGRAM_BOT_TOKEN}/sendPhoto`,formData:{chat_id:String(chatId),caption:`Corte ${r.cut_index} - t=${r.flagged_frame_time}s: ${r.reason}`,photo:{value:Buffer.from(frame.data,'base64'),options:{filename:`cut-${r.cut_index}.jpg`,contentType:frame.media_type}}}});}\nawait this.helpers.httpRequest({method:'POST',url:`https://api.telegram.org/bot${cfg.TELEGRAM_BOT_TOKEN}/sendMessage`,body:{chat_id:chatId,text:`QA visual marco ${flagged.length} corte(s) del edit_spec ${spec.id}.`,reply_markup:{inline_keyboard:[[{text:'Aprobar igual',callback_data:`cqap:${spec.id}`},{text:'Pedir regenerar ese corte',callback_data:`cqrg:${spec.id}`}]]}},json:true}); return [{json:{edit_spec_id:spec.id,cut_qa_status:'flagged'}}];\n"
+      },
+      "id": "76ef11a0-305f-4b5d-bb9f-aafff1bb87dd",
+      "name": "2. Persistir y alertar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        64
+      ],
+      "sourceFile": "capa3-5-02-persistir-y-alertar.js",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cut-qa-decision",
+        "options": {}
+      },
+      "id": "d5dc8f05-dbad-4f1a-b377-b7aad02ea6ff",
+      "name": "Decision QA Telegram",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        256,
+        304
+      ],
+      "webhookId": "97471627-9c38-4994-ba75-897c43c18409"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const cfg = $('0. Config').first().json;\nconst u=$json.body||$json,cb=u.callback_query;if(!cb)return [{json:{skip:true}}];const [action,id]=(cb.data||'').split(':');if(!['cqap','cqrg'].includes(action))return [{json:{skip:true}}];const h={apikey:cfg.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,'Content-Type':'application/json'};\nconst rows=await this.helpers.httpRequest({method:'GET',url:`${cfg.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${id}&cut_qa_status=eq.flagged&select=id,raw_video_id,client_id`,headers:h,json:true});if(!rows.length)return [{json:{skip:true,reason:'already_decided'}}];\nconst reviewerId=String(cb.from?.id||'');const reviewers=await this.helpers.httpRequest({method:'GET',url:`${cfg.SUPABASE_URL}/rest/v1/reviewers?client_id=eq.${rows[0].client_id}&telegram_user_id=eq.${encodeURIComponent(reviewerId)}&active=eq.true&select=id`,headers:h,json:true});if(!reviewers.length){try{await this.helpers.httpRequest({method:'POST',url:`https://api.telegram.org/bot${cfg.TELEGRAM_BOT_TOKEN}/answerCallbackQuery`,body:{callback_query_id:cb.id,text:'Sin permiso para este cliente'},json:true});}catch{}return [{json:{skip:true,reason:'not_a_reviewer'}}];\nif(action==='cqap'){await this.helpers.httpRequest({method:'PATCH',url:`${cfg.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${id}`,headers:h,body:{cut_qa_status:'passed'},json:true});await this.helpers.httpRequest({method:'PATCH',url:`${cfg.SUPABASE_URL}/rest/v1/raw_videos?id=eq.${rows[0].raw_video_id}`,headers:h,body:{status:'edit_spec_ready'},json:true});}\nelse{const rr=await this.helpers.httpRequest({method:'GET',url:`${cfg.SUPABASE_URL}/rest/v1/cut_qa_results?edit_spec_id=eq.${id}&ok=eq.false&select=cut_index,flagged_frame_time,reason&order=checked_at.desc`,headers:h,json:true});const feedback=`QA visual rechazo cortes: ${JSON.stringify(rr)}`;await this.helpers.httpRequest({method:'PATCH',url:`${cfg.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${id}`,headers:h,body:{status:'rejected_cut_qa'},json:true});await this.helpers.httpRequest({method:'PATCH',url:`${cfg.SUPABASE_URL}/rest/v1/raw_videos?id=eq.${rows[0].raw_video_id}`,headers:h,body:{status:'assets_ready',cut_qa_feedback:feedback},json:true});}\nawait this.helpers.httpRequest({method:'POST',url:`https://api.telegram.org/bot${cfg.TELEGRAM_BOT_TOKEN}/answerCallbackQuery`,body:{callback_query_id:cb.id,text:action==='cqap'?'Aprobado para render':'Reencolado en Capa 3'},json:true});return [{json:{edit_spec_id:id,decision:action}}];\n"
+      },
+      "id": "bd74d955-46b6-4242-8cd8-62881923698d",
+      "name": "3. Procesar decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        304
+      ],
+      "sourceFile": "capa3-5-03-procesar-decision.js"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const cfg = $('0. Config').first().json;\nconst source=$json.spec||$json; const id=source.id||source.edit_spec_id;\nif(id)await this.helpers.httpRequest({method:'PATCH',url:`${cfg.SUPABASE_URL}/rest/v1/edit_specs?id=eq.${id}&cut_qa_status=eq.in_progress`,headers:{apikey:cfg.SUPABASE_SERVICE_ROLE_KEY,Authorization:`Bearer ${cfg.SUPABASE_SERVICE_ROLE_KEY}`,'Content-Type':'application/json'},body:{cut_qa_status:'pending'},json:true});\nreturn [{json:{edit_spec_id:id,status:'retry_pending',error:String($json.error?.message||$json.message||'Error de QA')}}];\n"
+      },
+      "id": "7495b591-0ac4-42db-bbb3-fc412a56c0be",
+      "name": "99. Liberar claim",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        192
+      ],
+      "sourceFile": "capa3-5-99-marcar-error.js"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "config-1-supabase-url",
+              "name": "SUPABASE_URL",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-2-supabase-service-role-key",
+              "name": "SUPABASE_SERVICE_ROLE_KEY",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-3-anthropic-api-key",
+              "name": "ANTHROPIC_API_KEY",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-4-anthropic-version",
+              "name": "ANTHROPIC_VERSION",
+              "value": "2023-06-01",
+              "type": "string"
+            },
+            {
+              "id": "config-5-edit-director-model",
+              "name": "EDIT_DIRECTOR_MODEL",
+              "value": "claude-sonnet-4-20250514",
+              "type": "string"
+            },
+            {
+              "id": "config-6-telegram-bot-token",
+              "name": "TELEGRAM_BOT_TOKEN",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-7-telegram-chat-id",
+              "name": "TELEGRAM_CHAT_ID",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "config-8-edit-spec-api-url",
+              "name": "EDIT_SPEC_API_URL",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "90d9c354-e361-4b8f-a6ce-9c7dc9c912bc",
+      "name": "0. Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "route-0-1-rutear-disparador",
+              "leftValue": "={{ !!($json.body || $json.callback_query || $json.message || $json.update_id) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7e397fae-6466-4c64-a391-85f910ce289f",
+      "name": "0.1 Rutear disparador",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        448,
+        160
+      ]
+    }
+  ],
+  "connections": {
+    "Cada 2 min": {
+      "main": [
+        [
+          {
+            "node": "0. Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "0. Detectar edit specs": {
+      "main": [
+        [
+          {
+            "node": "Procesar de a uno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar de a uno": {
+      "main": [
+        [],
+        [
+          {
+            "node": "1. Extraer y evaluar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Extraer y evaluar": {
+      "main": [
+        [
+          {
+            "node": "2. Persistir y alertar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "99. Liberar claim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Persistir y alertar": {
+      "main": [
+        [
+          {
+            "node": "Procesar de a uno",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "99. Liberar claim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decision QA Telegram": {
+      "main": [
+        [
+          {
+            "node": "0. Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "99. Liberar claim": {
+      "main": [
+        [
+          {
+            "node": "Procesar de a uno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "0. Config": {
+      "main": [
+        [
+          {
+            "node": "0.1 Rutear disparador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "0.1 Rutear disparador": {
+      "main": [
+        [
+          {
+            "node": "3. Procesar decision",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "0. Detectar edit specs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "pinData": {},
+  "meta": {
+    "id": "b8A5MAUv4Eno2XI8",
+    "isArchived": false,
+    "createdAt": "2026-08-28T15:05:05.807Z",
+    "updatedAt": "2026-08-28T15:05:05.807Z",
+    "tags": [],
+    "exportedAt": "2026-10-10T01:06:33.109Z",
+    "source": "https://botcontable.duckdns.org",
+    "sha256_nodes_connections": "70b16d87556357264a3c8fda8f7152ef571883f1490c01e06174de28ab62f4b4",
+    "redactado": false
+  }
+}

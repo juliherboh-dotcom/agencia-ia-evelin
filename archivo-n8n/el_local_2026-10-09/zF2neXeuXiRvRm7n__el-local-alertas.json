@@ -1,0 +1,942 @@
+{
+  "name": "El Local — Alertas",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2400,
+        480
+      ],
+      "id": "86d35990-aeaa-4479-81a1-046a075d4718",
+      "name": "Telegram Trigger",
+      "webhookId": "PENDIENTE_SE_GENERA_AL_ACTIVAR",
+      "credentials": {
+        "telegramApi": {
+          "id": "p9oPIxxgrQGH464M",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3f7c1a10-0000-4000-8000-000000000101",
+              "leftValue": "={{ $json.message.photo }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -2176,
+        480
+      ],
+      "id": "963b75d2-5ebd-42b0-a34d-d124965e90c9",
+      "name": "¿Es foto o texto?"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.photo[$json.message.photo.length - 1].file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1952,
+        192
+      ],
+      "id": "ce0053e5-7aa6-44a7-802f-935793a5e410",
+      "name": "Descargar Foto (Telegram)",
+      "webhookId": "PENDIENTE_SE_GENERA_AL_ACTIVAR",
+      "credentials": {
+        "telegramApi": {
+          "id": "p9oPIxxgrQGH464M",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "boletas local ",
+        "driveId": {
+          "__rl": true,
+          "value": "1dR8ZBFj7x1p20p9wNR5QbLzJ6XPPYOe0",
+          "mode": "id"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1hFSVBDWONDF_U3OV00blB-kN08EfKxkm",
+          "mode": "list",
+          "cachedResultName": "boletas local ",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1hFSVBDWONDF_U3OV00blB-kN08EfKxkm"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "position": [
+        -1280,
+        96
+      ],
+      "id": "c1faedc7-8822-4bee-9196-6f9004b91f29",
+      "name": "Subir foto a Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "kKmbI2Irgumi6X0h",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const trigger = $('Telegram Trigger').first().json;\nconst chatId = trigger.message.chat.id;\n\nconst binaryKeys = Object.keys($input.first().binary || {});\nconst binaryProp = binaryKeys[0] || 'data';\nconst buffer = await this.helpers.getBinaryDataBuffer(0, binaryProp);\nconst b64 = buffer.toString('base64');\n\nconst prompt = `Analiza esta foto de una boleta o factura de compra a proveedor para un almacen/local (El Local). Devolve SOLO un JSON con esta forma exacta, sin texto extra ni markdown:\n{\n  \"no_legible\": false,\n  \"proveedor\": \"string\",\n  \"fecha\": \"YYYY-MM-DD o vacio si no se lee con confianza\",\n  \"items\": [\n    { \"producto\": \"string\", \"cantidad\": number, \"precio_unitario\": number }\n  ]\n}\nSi la imagen no es una boleta/factura de compra, esta borrosa, o no podes leer con confianza el proveedor y al menos un producto con cantidad y precio unitario, responde EXACTAMENTE:\n{ \"no_legible\": true }\nNo inventes ni asumas valores que no se leen claramente en la imagen. Es preferible marcar no_legible que adivinar un dato.`;\n\nconst body = {\n  model: 'claude-sonnet-5',\n  max_tokens: 1024,\n  messages: [{\n    role: 'user',\n    content: [\n      { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: b64 } },\n      { type: 'text', text: prompt }\n    ]\n  }]\n};\n\nreturn [{ json: { chat_id: chatId, body } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1728,
+        288
+      ],
+      "id": "59970f2b-74df-4871-bc26-8a016b57d9e7",
+      "name": "Preparar body Claude"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "position": [
+        -1504,
+        288
+      ],
+      "id": "895cc744-88ce-41f8-81db-c0a67fc4ce6c",
+      "name": "Llamar Claude",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mumQzwI0U47mpDUW",
+          "name": "Header Auth account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const resp = $input.first().json;\nconst chatId = $('Preparar body Claude').first().json.chat_id;\n\ntry {\n  const text = resp.content[0].text.replace(/```json|```/g, '').trim();\n  const obj = JSON.parse(text);\n  return [{ json: { ok: true, chat_id: chatId, ...obj } }];\n} catch (e) {\n  return [{ json: { ok: false, err: e.message, chat_id: chatId } }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1280,
+        288
+      ],
+      "id": "dcd99ac1-7fdb-4a4d-9519-384a19647fb5",
+      "name": "Parsear respuesta Claude"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -1056,
+        192
+      ],
+      "id": "f97e2f2e-908b-460f-bf28-b922e5f3214a",
+      "name": "Merge foto + Drive"
+    },
+    {
+      "parameters": {
+        "jsCode": "// NOTA: verificar en el editor de n8n que 'Merge foto + Drive' efectivamente combino por posicion\n// (un solo item con datos de Claude + un solo item con datos de Drive). Si n8n trae mas de un input\n// por rama, ajustar el modo del nodo Merge antes de activar (ver n8n_estandares.md).\nconst claude = $('Parsear respuesta Claude').first().json;\nconst drive = $('Subir foto a Drive').first().json;\nconst chatId = claude.chat_id;\n\nconst driveLink = drive.webViewLink || drive.webContentLink || '';\n\nfunction filaInvalida(motivo) {\n  return [{ json: { valido: false, chat_id: chatId, motivo, canal: 'foto' } }];\n}\n\nif (!claude.ok) return filaInvalida('Respuesta de Claude no se pudo interpretar: ' + claude.err);\nif (claude.no_legible) return filaInvalida('Foto no legible o no es una boleta de compra');\nif (!claude.proveedor || !Array.isArray(claude.items) || claude.items.length === 0) {\n  return filaInvalida('Faltan datos clave (proveedor o items) en lo extraido');\n}\n\nconst hoy = new Date().toISOString().slice(0, 10);\nconst fecha = claude.fecha && /^\\d{4}-\\d{2}-\\d{2}$/.test(claude.fecha) ? claude.fecha : hoy;\n\nconst filas = [];\nfor (const it of claude.items) {\n  const cantidad = Number(it.cantidad);\n  const precio = Number(it.precio_unitario);\n  if (!it.producto || !(cantidad > 0) || !(precio > 0)) {\n    return filaInvalida('Item con datos incompletos o no numericos: ' + JSON.stringify(it));\n  }\n  filas.push({\n    json: {\n      valido: true,\n      chat_id: chatId,\n      Fecha: fecha,\n      Proveedor: claude.proveedor,\n      Producto: it.producto,\n      Cantidad: cantidad,\n      'Precio Unitario': precio,\n      Total: cantidad * precio,\n      'Canal (foto/texto)': 'foto',\n      'Con boleta (Si/No)': 'Si',\n      'Link foto/boleta': driveLink\n    }\n  });\n}\nreturn filas;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -832,
+        192
+      ],
+      "id": "eedb1ad8-1171-4e8d-8ca0-601c418cdfec",
+      "name": "Armar filas Compras (foto)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3f7c1a10-0000-4000-8000-000000000102",
+              "leftValue": "={{ $json.valido }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -608,
+        192
+      ],
+      "id": "de9b3181-c989-42b2-ad1d-47b9017ef2f8",
+      "name": "¿Datos válidos? (foto)"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ql4c8li8qItHwXv-LD51y733A23PWrN72LGDrb6uhWc",
+          "mode": "id",
+          "cachedResultName": "El Local - Registro de Compras"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1457260755,
+          "mode": "list",
+          "cachedResultName": "COMPRAS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ql4c8li8qItHwXv-LD51y733A23PWrN72LGDrb6uhWc/edit#gid=1457260755"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Proveedor",
+              "displayName": "Proveedor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Producto",
+              "displayName": "Producto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cantidad",
+              "displayName": "Cantidad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Precio Unitario",
+              "displayName": "Precio Unitario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total",
+              "displayName": "Total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Canal (foto/texto)",
+              "displayName": "Canal (foto/texto)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Con boleta (Si/No)",
+              "displayName": "Con boleta (Si/No)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link foto/boleta",
+              "displayName": "Link foto/boleta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "position": [
+        -384,
+        96
+      ],
+      "id": "5d5d27a8-9f36-45fd-98c0-2bbf80b9e1de",
+      "name": "Append row in sheet (foto)",
+      "credentials": {
+        "googleApi": {
+          "id": "WTTfXKZL1xaEHWXP",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "=Compra registrada ✓ {{$json.Proveedor}} - {{$json.Producto}} x{{$json.Cantidad}} - Total ${{$json.Total}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        0
+      ],
+      "id": "d63d1d52-2348-4682-9d15-cf09c037634a",
+      "name": "Confirmar registro (foto)",
+      "webhookId": "PENDIENTE_SE_GENERA_AL_ACTIVAR",
+      "credentials": {
+        "telegramApi": {
+          "id": "p9oPIxxgrQGH464M",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "=No pude leer bien esa foto ({{$json.motivo}}). Mandala de nuevo con mas luz/enfoque, o escribi el dato a mano (ej: Proveedor, producto, cantidad, precio c/u).",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -384,
+        288
+      ],
+      "id": "f904bece-558e-49c0-add2-a1b33debc278",
+      "name": "Pedir foto más clara",
+      "webhookId": "PENDIENTE_SE_GENERA_AL_ACTIVAR",
+      "credentials": {
+        "telegramApi": {
+          "id": "p9oPIxxgrQGH464M",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const err = $input.first().json;\nconsole.log('Error guardando compra (foto) en Sheets:', JSON.stringify(err));\nreturn [{ json: { ...err } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        192
+      ],
+      "id": "71ba161f-c337-4865-a5eb-b291fc1182e4",
+      "name": "Log error Sheets (foto)"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Armar filas Compras (foto)').first().json.chat_id }}",
+        "text": "No pude guardar tu compra en la planilla por un error tecnico. Avisale a Juliana — la foto no se perdio, pero esta compra no quedo registrada todavia.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        192
+      ],
+      "id": "7373d569-415d-4656-892c-013198945e31",
+      "name": "Avisar error guardado (foto)",
+      "webhookId": "PENDIENTE_SE_GENERA_AL_ACTIVAR",
+      "credentials": {
+        "telegramApi": {
+          "id": "p9oPIxxgrQGH464M",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const trigger = $json;\nconst chatId = trigger.message.chat.id;\nconst texto = (trigger.message.text || '').trim();\n\nfunction filaInvalida(motivo) {\n  return [{ json: { valido: false, chat_id: chatId, motivo, canal: 'texto' } }];\n}\n\nconst partes = texto.split(',').map(p => p.trim()).filter(p => p.length > 0);\nif (partes.length < 4) {\n  return filaInvalida('Formato de texto no reconocido (se esperan 4 datos separados por coma: proveedor, producto, cantidad, precio)');\n}\n\nconst [proveedor, producto, cantidadStr, precioStr] = partes;\nconst cantidad = Number(cantidadStr.replace(/[^0-9.]/g, ''));\nconst precio = Number(precioStr.replace(/[^0-9.]/g, ''));\n\nif (!proveedor || !producto || !(cantidad > 0) || !(precio > 0)) {\n  return filaInvalida('Cantidad o precio no son numeros validos, o falta proveedor/producto');\n}\n\nconst hoy = new Date().toISOString().slice(0, 10);\n\nreturn [{\n  json: {\n    valido: true,\n    chat_id: chatId,\n    Fecha: hoy,\n    Proveedor: proveedor,\n    Producto: producto,\n    Cantidad: cantidad,\n    'Precio Unitario': precio,\n    Total: cantidad * precio,\n    'Canal (foto/texto)': 'texto',\n    'Con boleta (Si/No)': 'No',\n    'Link foto/boleta': ''\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1952,
+        672
+      ],
+      "id": "d94b21ea-291e-4a63-a54b-478dba55b7f1",
+      "name": "Parsear texto compra"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3f7c1a10-0000-4000-8000-000000000103",
+              "leftValue": "={{ $json.valido }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1728,
+        672
+      ],
+      "id": "29aa25fc-7b38-4118-afd4-05f5623383fb",
+      "name": "¿Datos válidos? (texto)"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ql4c8li8qItHwXv-LD51y733A23PWrN72LGDrb6uhWc",
+          "mode": "list",
+          "cachedResultName": "El Local - Registro de Compras",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ql4c8li8qItHwXv-LD51y733A23PWrN72LGDrb6uhWc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1457260755,
+          "mode": "list",
+          "cachedResultName": "COMPRAS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ql4c8li8qItHwXv-LD51y733A23PWrN72LGDrb6uhWc/edit#gid=1457260755"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Proveedor",
+              "displayName": "Proveedor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Producto",
+              "displayName": "Producto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cantidad",
+              "displayName": "Cantidad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Precio Unitario",
+              "displayName": "Precio Unitario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total",
+              "displayName": "Total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Canal (foto/texto)",
+              "displayName": "Canal (foto/texto)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Con boleta (Si/No)",
+              "displayName": "Con boleta (Si/No)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link foto/boleta",
+              "displayName": "Link foto/boleta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "position": [
+        -1504,
+        576
+      ],
+      "id": "b0b26011-242f-4b67-b369-69d266e66d10",
+      "name": "Append row in sheet (texto)",
+      "credentials": {
+        "googleApi": {
+          "id": "WTTfXKZL1xaEHWXP",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "=Compra registrada ✓ {{$json.Proveedor}} - {{$json.Producto}} x{{$json.Cantidad}} - Total ${{$json.Total}} (sin boleta)",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1280,
+        480
+      ],
+      "id": "70d85aec-d5a6-4297-bf50-cba20e79cb95",
+      "name": "Confirmar registro (texto)",
+      "webhookId": "PENDIENTE_SE_GENERA_AL_ACTIVAR",
+      "credentials": {
+        "telegramApi": {
+          "id": "p9oPIxxgrQGH464M",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "=No entendi ese formato ({{$json.motivo}}). Mandalo asi: Proveedor, producto, cantidad, precio c/u — ej: Mama, cubos, 10, 250",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1504,
+        768
+      ],
+      "id": "39ee3894-b174-4549-ba76-1e9731d1e9ef",
+      "name": "Pedir formato correcto",
+      "webhookId": "PENDIENTE_SE_GENERA_AL_ACTIVAR",
+      "credentials": {
+        "telegramApi": {
+          "id": "p9oPIxxgrQGH464M",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const err = $input.first().json;\nconsole.log('Error guardando compra (texto) en Sheets:', JSON.stringify(err));\nreturn [{ json: { ...err } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1280,
+        672
+      ],
+      "id": "a512a839-bf10-43f7-89a4-31247e82310a",
+      "name": "Log error Sheets (texto)"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Parsear texto compra').first().json.chat_id }}",
+        "text": "No pude guardar tu compra en la planilla por un error tecnico. Avisale a Juliana — este dato no quedo registrado todavia.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1056,
+        672
+      ],
+      "id": "5f5e84bf-0ca2-491e-8616-0b3b2e85d7cb",
+      "name": "Avisar error guardado (texto)",
+      "webhookId": "PENDIENTE_SE_GENERA_AL_ACTIVAR",
+      "credentials": {
+        "telegramApi": {
+          "id": "p9oPIxxgrQGH464M",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "¿Es foto o texto?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es foto o texto?": {
+      "main": [
+        [
+          {
+            "node": "Descargar Foto (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Parsear texto compra",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar Foto (Telegram)": {
+      "main": [
+        [
+          {
+            "node": "Subir foto a Drive",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Preparar body Claude",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Subir foto a Drive": {
+      "main": [
+        [
+          {
+            "node": "Merge foto + Drive",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Preparar body Claude": {
+      "main": [
+        [
+          {
+            "node": "Llamar Claude",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Llamar Claude": {
+      "main": [
+        [
+          {
+            "node": "Parsear respuesta Claude",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear respuesta Claude": {
+      "main": [
+        [
+          {
+            "node": "Merge foto + Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge foto + Drive": {
+      "main": [
+        [
+          {
+            "node": "Armar filas Compras (foto)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Armar filas Compras (foto)": {
+      "main": [
+        [
+          {
+            "node": "¿Datos válidos? (foto)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Datos válidos? (foto)": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet (foto)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pedir foto más clara",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet (foto)": {
+      "main": [
+        [
+          {
+            "node": "Confirmar registro (foto)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log error Sheets (foto)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log error Sheets (foto)": {
+      "main": [
+        [
+          {
+            "node": "Avisar error guardado (foto)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear texto compra": {
+      "main": [
+        [
+          {
+            "node": "¿Datos válidos? (texto)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Datos válidos? (texto)": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet (texto)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pedir formato correcto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet (texto)": {
+      "main": [
+        [
+          {
+            "node": "Confirmar registro (texto)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log error Sheets (texto)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log error Sheets (texto)": {
+      "main": [
+        [
+          {
+            "node": "Avisar error guardado (texto)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "pinData": {},
+  "meta": {
+    "id": "zF2neXeuXiRvRm7n",
+    "isArchived": true,
+    "createdAt": "2026-07-29T23:12:16.546Z",
+    "updatedAt": "2026-10-10T00:29:20.000Z",
+    "tags": [],
+    "exportedAt": "2026-10-10T01:06:33.109Z",
+    "source": "https://botcontable.duckdns.org",
+    "sha256_nodes_connections": "4b1c2c6c5966c7c83f585b64d36664f9431702224135d51351a887132bca8525",
+    "redactado": false
+  }
+}

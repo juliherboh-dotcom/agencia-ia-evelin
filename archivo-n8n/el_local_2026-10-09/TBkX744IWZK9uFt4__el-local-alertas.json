@@ -1,0 +1,370 @@
+{
+  "name": "El Local — Alertas",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "eda11e36-d182-421d-bda8-8a9d70a7a06a",
+      "name": "Cada día 08:00 (proveedores)"
+    },
+    {
+      "parameters": {
+        "jsCode": "const TZ = 'America/Santiago';\nconst hoy = new Date().toLocaleDateString('es-CL', { weekday: 'long', timeZone: TZ }).toLowerCase();\n\n// Solo proveedores con día confirmado por Juliana (ver flujo_actual_manual.md, 2026-07-29).\n// Confinor (ocasional), Nestlé/KR/SKULD y Dico no tienen día fijo todavía: no se pueden\n// automatizar hasta que Juliana confirme un día para cada uno (no inventar un día).\nconst PROVEEDORES_POR_DIA = {\n  'martes': ['Carozzi', 'Arcor'],\n  'miércoles': ['Carozzi']\n};\n\nconst proveedoresHoy = PROVEEDORES_POR_DIA[hoy] || [];\nconst hayPedidoHoy = proveedoresHoy.length > 0;\nconst mensaje = hayPedidoHoy\n  ? `📦 Hoy (${hoy}) toca pedido a: ${proveedoresHoy.join(', ')}`\n  : '';\n\nreturn [{ json: {\n  dia: hoy,\n  proveedores: proveedoresHoy,\n  hay_pedido_hoy: hayPedidoHoy,\n  mensaje\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "35171230-95e8-4e40-9217-4594b37c0b8f",
+      "name": "Evaluar proveedores de hoy"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ellocal-cond-hay-pedido",
+              "leftValue": "={{ $json.hay_pedido_hoy }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "b5478d0f-584a-41a3-8a4e-17327afd579c",
+      "name": "¿Hay proveedores hoy?"
+    },
+    {
+      "parameters": {
+        "chatId": "8859973217",
+        "text": "={{ $json.mensaje }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "ad71a2c8-1a6f-4f0d-92d1-292300c56e2b",
+      "name": "Avisar pedido de hoy",
+      "webhookId": "44ec2f9f-ee48-44fd-84e0-fa941f27ba88",
+      "credentials": {
+        "telegramApi": {
+          "id": "p9oPIxxgrQGH464M",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        320
+      ],
+      "id": "87a6c3ca-aec1-465f-a1dc-39305494a903",
+      "name": "Cada día 08:00 (pagos)"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1ql4c8li8qItHwXv-LD51y733A23PWrN72LGDrb6uhWc",
+          "mode": "id",
+          "cachedResultName": "El Local - Registro de Compras"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "GASTOS_OBLIGACIONES",
+          "mode": "list",
+          "cachedResultName": "GASTOS_OBLIGACIONES"
+        },
+        "filtersUI": {
+          "values": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "position": [
+        224,
+        320
+      ],
+      "id": "889ef842-e2d2-41b3-883c-df209f7565f4",
+      "name": "Leer GASTOS_OBLIGACIONES",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Yu8qxdJ1j3SE1wW7",
+          "name": "Google Sheets account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const TZ = 'America/Santiago';\n\nfunction fechaLocalISO(date, timeZone) {\n  const parts = new Intl.DateTimeFormat('en-CA', {\n    timeZone,\n    year: 'numeric',\n    month: '2-digit',\n    day: '2-digit'\n  }).formatToParts(date);\n  const byType = Object.fromEntries(parts.map(p => [p.type, p.value]));\n  return `${byType.year}-${byType.month}-${byType.day}`;\n}\n\nfunction normalizarTexto(valor) {\n  return (valor || '')\n    .toString()\n    .trim()\n    .toLowerCase()\n    .normalize('NFD')\n    .replace(/[\\u0300-\\u036f]/g, '');\n}\n\nconst hoyChileStr = fechaLocalISO(new Date(), TZ);\nconst [year, month, day] = hoyChileStr.split('-').map(Number);\nconst manana = new Date(Date.UTC(year, month - 1, day + 1, 12));\n// Formato YYYY-MM-DD, igual al que ya usa la hoja COMPRAS en la columna Fecha (ver fila real\n// del 2026-06-02). Se asume que Juliana carga \"Vencimiento\" en el mismo formato al llenar\n// GASTOS_OBLIGACIONES a mano - declarado explícito, no viene de un spec exacto de ella.\nconst mananaStr = fechaLocalISO(manana, TZ);\n\nconst filas = $input.all().map(i => i.json);\n\nconst pagosManana = filas.filter(f => {\n  const vencimiento = (f['Vencimiento'] || '').toString().trim();\n  const pagado = normalizarTexto(f['Pagado (Si/No)']);\n  return vencimiento === mananaStr && pagado !== 'si';\n});\n\nconst lineas = pagosManana\n  .map(p => `- ${p['Concepto']}: $${p['Monto']} (vence ${p['Vencimiento']})`)\n  .join('\\n');\nconst hayPagosManana = pagosManana.length > 0;\nconst mensaje = hayPagosManana\n  ? `⚠️ Pagos que vencen mañana (${mananaStr}):\\n${lineas}`\n  : '';\n\nreturn [{ json: {\n  fecha_alerta: mananaStr,\n  pagos: pagosManana,\n  hay_pagos_manana: hayPagosManana,\n  mensaje\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        320
+      ],
+      "id": "fcb719eb-2245-4bea-9af8-1c70c9d0ec24",
+      "name": "Filtrar pagos que vencen mañana"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ellocal-cond-hay-pagos",
+              "leftValue": "={{ $json.hay_pagos_manana }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        320
+      ],
+      "id": "b5ab42b3-0110-41a0-9d4e-474ab64ad1a8",
+      "name": "¿Hay pagos que vencen mañana?"
+    },
+    {
+      "parameters": {
+        "chatId": "8859973217",
+        "text": "={{ $json.mensaje }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        320
+      ],
+      "id": "8a07d759-a4e9-48f5-a388-a42c3de8046c",
+      "name": "Avisar pagos próximos",
+      "webhookId": "76e1d891-1ee7-4f76-a984-a049ae36f512",
+      "credentials": {
+        "telegramApi": {
+          "id": "p9oPIxxgrQGH464M",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// La lectura de GASTOS_OBLIGACIONES falló (ver onError en el nodo anterior) - avisar\n// explícito en vez de fallar en silencio (checklist_seguridad_automatizaciones.md, punto 5).\nreturn [{ json: {\n  mensaje: '⚠️ El Local — Alertas: no se pudo leer GASTOS_OBLIGACIONES hoy. Revisar pagos próximos a mano y la ejecución en n8n.'\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        528
+      ],
+      "id": "6fc4b6f2-a2e4-4a7c-bc40-8cae899355ab",
+      "name": "Registrar fallo de lectura"
+    },
+    {
+      "parameters": {
+        "chatId": "8859973217",
+        "text": "={{ $json.mensaje }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        528
+      ],
+      "id": "4d0020a9-55ae-4521-9898-1d526eb3073d",
+      "name": "Avisar fallo de alerta de pagos",
+      "webhookId": "21026e01-7c9d-4f50-ad23-b609b1406bd7",
+      "credentials": {
+        "telegramApi": {
+          "id": "p9oPIxxgrQGH464M",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Cada día 08:00 (proveedores)": {
+      "main": [
+        [
+          {
+            "node": "Evaluar proveedores de hoy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluar proveedores de hoy": {
+      "main": [
+        [
+          {
+            "node": "¿Hay proveedores hoy?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Hay proveedores hoy?": {
+      "main": [
+        [
+          {
+            "node": "Avisar pedido de hoy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cada día 08:00 (pagos)": {
+      "main": [
+        [
+          {
+            "node": "Leer GASTOS_OBLIGACIONES",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer GASTOS_OBLIGACIONES": {
+      "main": [
+        [
+          {
+            "node": "Filtrar pagos que vencen mañana",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar fallo de lectura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar pagos que vencen mañana": {
+      "main": [
+        [
+          {
+            "node": "¿Hay pagos que vencen mañana?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Hay pagos que vencen mañana?": {
+      "main": [
+        [
+          {
+            "node": "Avisar pagos próximos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar fallo de lectura": {
+      "main": [
+        [
+          {
+            "node": "Avisar fallo de alerta de pagos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "pinData": {},
+  "meta": {
+    "id": "TBkX744IWZK9uFt4",
+    "isArchived": true,
+    "createdAt": "2026-08-02T00:33:23.860Z",
+    "updatedAt": "2026-10-10T00:29:05.000Z",
+    "tags": [],
+    "exportedAt": "2026-10-10T01:06:33.109Z",
+    "source": "https://botcontable.duckdns.org",
+    "sha256_nodes_connections": "5ccf43e6ba2f04fd02d266b13aff28e7df60e460c2427298fccde3f05a146540",
+    "redactado": false
+  }
+}
