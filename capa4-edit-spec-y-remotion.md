@@ -765,3 +765,17 @@ Esto se corrigió para `personal_brand_clean` con una pieza nueva, reutilizable:
 El salto es exacto al frame — no hay drift ni offset de un frame, que es el error más común al hacer esto a mano.
 
 **Por qué esto NO se propagó a `PruebaSocialV1` todavía:** el panel inferior de ese template (sección 19) podría llamar a `buildKeptSegments()` exactamente igual (la función ya es reusable, no es específica de `PersonalBrandClean`), pero no se tocó en este pase porque no era parte de lo pedido — ver la nota actualizada en la sección 19. Es el próximo paso obvio si se necesita corte real también en el split-screen.
+
+---
+
+## 21. `overlay.width` — el ancho de los overlays type:"image" ya no es un número fijo adivinado
+
+Dos veces en este proyecto se necesitó cambiar el ancho fijo (en px) de los overlays de imagen: primero en `PruebaSocialV1` (140px → 900px, porque los mockups de UI son tarjetas grandes, no íconos), y después en `PersonalBrandClean`, al analizar un video de referencia real de edición de Evelin (ver `sistema-reels-autopilot.md`): sus overlays de imagen también son tarjetas grandes con texto e íconos (un diagrama "WhatsApp → Automatización → IA", una tarjeta "Agente Personalizado" con sub-íconos), no sticker chicos. Dos repeticiones del mismo problema es la señal de que el ancho fijo por Composition no alcanza — necesita ser un dato del `edit_spec`, no una constante adivinada en cada template.
+
+**Contrato (1.2.0, retrocompatible):** `overlay.width` — opcional, fracción 0-1 del ancho del canvas, mismo criterio que `position.x`/`position.y`. Si no se manda, cada Composition sigue usando su propio default de siempre (140px en `PersonalBrandClean`, 900px en `PruebaSocialV1`) — ningún `edit_spec` existente se rompe.
+
+```json
+{ "id": "flujo-whatsapp-ia", "type": "image", "image_url": "...", "width": 0.68, "start": 4.0, "end": 9.5, "position": { "x": 0.5, "y": 0.22 } }
+```
+
+Ambas copias de `EmphasisOverlay.tsx` (`PersonalBrandClean/` y `PruebaSocialV1/`) leen `overlay.width` si está, y si no, caen a su propio `DEFAULT_IMAGE_OVERLAY_WIDTH_PX` — mismo patrón en las dos, sin compartir código entre templates (sección 19).

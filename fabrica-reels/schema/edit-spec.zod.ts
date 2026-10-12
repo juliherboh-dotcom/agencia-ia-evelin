@@ -77,6 +77,12 @@ const OverlaySchema = z
     type: z.enum(["text", "image", "badge"]),
     text: z.string().max(60).optional(),
     image_url: z.string().url().optional(),
+    // Fracción del ancho del canvas (0-1), igual criterio que position.x/y.
+    // Opcional: si no se manda, cada Composition usa su propio default --
+    // nuevo en 1.2.0, agregado porque los overlays type:"image" reales
+    // (mockups de UI, diagramas) son tarjetas grandes, no íconos chicos;
+    // un solo ancho fijo por template no alcanza para todos los casos.
+    width: z.number().min(0.05).max(0.95).optional(),
     start: z.number().min(0),
     end: z.number().min(0),
     position: PositionSchema,
@@ -123,7 +129,7 @@ const BrandingSchema = z.object({
 
 export const EditSpecSchema = z
   .object({
-    schema_version: z.enum(["1.0.0", "1.1.0"]),
+    schema_version: z.enum(["1.0.0", "1.1.0", "1.2.0"]),
     video_id: z.string().regex(/^VID-\d{4}-\d{2}-\d{2}-\d{3,}$/),
     client_id: z.string().uuid(),
     raw_video_id: z.string().uuid(),

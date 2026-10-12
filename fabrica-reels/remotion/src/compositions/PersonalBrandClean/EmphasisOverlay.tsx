@@ -3,6 +3,13 @@ import { Img, Sequence, spring, useCurrentFrame, useVideoConfig } from "remotion
 import type { Overlay } from "../../../../schema/edit-spec.zod";
 import { secondsToFrames } from "../../utils/time";
 
+// Default cuando el overlay no manda `width`: pensado para un
+// sticker/ícono chico (140px sobre 1080 de ancho). Para mockups grandes
+// (diagramas, tarjetas con texto -- ver sistema-reels-autopilot.md y el
+// análisis del video de referencia de Evelin), el edit_spec debe mandar
+// `width` explícito (fracción 0-1 del canvas).
+const DEFAULT_IMAGE_OVERLAY_WIDTH_PX = 140;
+
 export const EmphasisOverlay: React.FC<{
   overlay: Overlay;
   width: number;
@@ -57,6 +64,7 @@ const OverlayContent: React.FC<{
   }
 
   if (overlay.type === "image" && overlay.image_url) {
+    const imageWidth = overlay.width !== undefined ? overlay.width * width : DEFAULT_IMAGE_OVERLAY_WIDTH_PX;
     return (
       <Img
         src={overlay.image_url}
@@ -64,7 +72,7 @@ const OverlayContent: React.FC<{
           position: "absolute",
           left,
           top,
-          width: 140,
+          width: imageWidth,
           transform: `translate(-50%, -50%) scale(${entrance})`,
         }}
       />

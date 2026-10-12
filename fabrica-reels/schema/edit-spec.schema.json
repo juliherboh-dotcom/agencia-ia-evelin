@@ -11,7 +11,7 @@
     "subtitles", "branding", "meta"
   ],
   "properties": {
-    "schema_version": { "type": "string", "enum": ["1.0.0", "1.1.0"] },
+    "schema_version": { "type": "string", "enum": ["1.0.0", "1.1.0", "1.2.0"] },
     "video_id": {
       "type": "string",
       "pattern": "^VID-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{3,}$",
@@ -179,6 +179,12 @@
         "type": { "type": "string", "enum": ["text", "image", "badge"] },
         "text": { "type": "string", "maxLength": 60 },
         "image_url": { "type": "string", "format": "uri" },
+        "width": {
+          "type": "number",
+          "minimum": 0.05,
+          "maximum": 0.95,
+          "description": "Fracción del ancho del canvas (0-1), igual criterio que position.x/y. Opcional: sin este campo, cada Composition usa su propio default. Nuevo en 1.2.0."
+        },
         "start": { "type": "number", "minimum": 0 },
         "end": { "type": "number", "minimum": 0 },
         "position": { "$ref": "#/$defs/position" }
