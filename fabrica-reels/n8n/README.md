@@ -1,4 +1,13 @@
-# Workflows n8n — Capa 3 a Capa 8
+# Workflows n8n — Capa 2B a Capa 9
+
+## Capa 2B — "Perfil de estilo"
+
+Workflow importable: [`capa2b-style-profile.workflow.json`](./capa2b-style-profile.workflow.json)
+Documentación completa: [`../../capa2b-style-profile.md`](../../capa2b-style-profile.md)
+
+On-demand, no corre en loop fijo como las demás: convierte un lote de 1-20 referencias en un `style_profile` reusable por cliente (fuentes, paleta, ritmo de corte, patrones de tarjetas). Si existe una versión `active`, Capa 3 la incorpora al prompt del Edit Director; si no existe o Supabase no responde, Capa 3 sigue con el prompt genérico sin bloquearse.
+
+**Servicios que necesita corriendo:** el mismo `edit-spec-api` de Capa 3 (`:3002`) — no levanta nada aparte.
 
 ## Capa 3 — "Edit Director"
 
@@ -11,6 +20,15 @@ Detecta `raw_videos.status='assets_ready'`, genera el `edit_spec` con el LLM, lo
 ```bash
 cd fabrica-reels/services/edit-spec-api && npm install && npm start   # :3002
 ```
+
+## Capa 3.5 — "QA visual por corte"
+
+Workflow importable: [`capa3-5-cut-qa.workflow.json`](./capa3-5-cut-qa.workflow.json)
+Documentación completa: [`../../capa3-5-cut-qa.md`](../../capa3-5-cut-qa.md)
+
+Detecta `edit_specs` válidos y `pending`, revisa con Anthropic Vision 4 frames representativos (inicio/33%/66%/fin) de cada corte `keep:true`. Si todos aprueban, deja `cut_qa_status=passed` y el video vuelve a `edit_spec_ready` — Capa 4 exige expresamente ese estado antes de renderizar. Si algo falla, queda `flagged` y Telegram recibe fotos + motivo + botones ("Aprobar igual" / "Pedir regenerar ese corte").
+
+**Servicios que necesita corriendo:** el mismo `edit-spec-api` de Capa 3 (`:3002`), más credencial de Telegram Bot para las alertas de `flagged`.
 
 ## Capa 4 — "Render automático"
 
@@ -57,12 +75,21 @@ Capa 7 (cada 30 min) recolecta snapshots 24h/48h/72h/7d para `publications.statu
 cd fabrica-reels/services/metrics-api && npm install && npm start   # :3004
 ```
 
-## Cómo importar cualquiera de los seis
+## Capa 9 — "Motor de variantes"
+
+Workflow importable: [`capa9-variant-engine.workflow.json`](./capa9-variant-engine.workflow.json)
+Documentación completa: [`../../capa9-variant-engine.md`](../../capa9-variant-engine.md)
+
+Detecta `raw_videos.variant_generation_status='ready'` (ganadores que dejó Capa 8, o pedidos manuales), genera 2-3 re-cortes automáticos del mismo video fuente (Tipo B, cada uno una nueva versión de `edit_specs` ya validada) y 5-7 guiones nuevos para grabar (Tipo A, `scripts.status='pendiente_grabacion'`), manda una alerta con ambos conteos y cierra en `variants_generated` — nunca reprocesa el mismo ganador dos veces.
+
+**Servicios que necesita corriendo:** el mismo `edit-spec-api` de Capa 3 (`:3002`) — no levanta nada aparte.
+
+## Cómo importar cualquiera de las nueve
 
 1. n8n → Workflows → Import from File.
 2. Revisar visualmente los nodos **"Procesar de a uno/a"** (Loop Over
-   Items / Split In Batches, presentes en Capa 3, 4, 6, 7 y 8): sus dos
-   salidas son "done" (índice 0, sin nada conectado, fin del ciclo) y
+   Items / Split In Batches, presentes en Capa 2B, 3, 3.5, 4, 6, 7, 8 y 9):
+   sus dos salidas son "done" (índice 0, sin nada conectado, fin del ciclo) y
    "loop" (índice 1, conecta al resto del flujo). El orden exacto de
    estos índices varía un poco según la versión de n8n — si al importar
    el wiring queda cruzado, es el único lugar donde hay que corregir a mano.
@@ -85,10 +112,18 @@ cd fabrica-reels/services/metrics-api && npm install && npm start   # :3004
    (esta migración renombra `metrics`→`post_metrics` y `benchmarks`→`account_benchmarks`
    si venías de la arquitectura original — revisar que no haya datos que
    dependan del nombre viejo antes de correrla en producción).
-9. Activar los seis. **Si tenías una v1 vieja de Capa 4** (con nodos de
-   Telegram para revisión), desactivala antes de activar Capa 5 — si
-   quedan las dos escuchando el mismo bot, un mismo click se procesa dos
-   veces.
+9. En Capa 2B: correr `fabrica-reels/schema/capa2b-style-profile.migration.sql`.
+   Es opcional activarla — Capa 3 funciona igual sin ningún perfil `active`,
+   solo usa el prompt genérico.
+10. En Capa 3.5: correr `fabrica-reels/schema/capa3-5-cut-qa.migration.sql`.
+    Esta capa es un gate real: Capa 4 exige `cut_qa_status=passed` antes de
+    renderizar, así que si no la activás, ningún `edit_spec` va a pasar a
+    render nunca (queda trabado en `pending`/`flagged`).
+11. En Capa 9: correr `fabrica-reels/schema/capa9-variant-engine.migration.sql`.
+12. Activar las nueve. **Si tenías una v1 vieja de Capa 4** (con nodos de
+    Telegram para revisión), desactivala antes de activar Capa 5 — si
+    quedan las dos escuchando el mismo bot, un mismo click se procesa dos
+    veces.
 
 ## Orden recomendado para levantar todo
 
@@ -105,5 +140,6 @@ cd fabrica-reels/services/publish-api && npm install && npm start     # :3003
 # Terminal 4
 cd fabrica-reels/services/metrics-api && npm install && npm start     # :3004
 
-# Terminal 5: n8n, con las 6 capas importadas y activas
+# Terminal 5: n8n, con las 9 capas importadas y activas
+# (Capa 2B, 3.5 y 9 reusan edit-spec-api -- Terminal 1 -- no levantan nada propio)
 ```
