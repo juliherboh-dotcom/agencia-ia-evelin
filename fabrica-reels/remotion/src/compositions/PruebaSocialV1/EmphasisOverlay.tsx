@@ -3,13 +3,17 @@ import { Img, Sequence, spring, useCurrentFrame, useVideoConfig } from "remotion
 import type { Overlay } from "../../../../schema/edit-spec.zod";
 import { secondsToFrames } from "../../utils/time";
 
-// Copia intencional de compositions/PersonalBrandClean/EmphasisOverlay.tsx,
-// sin cambios de lógica. Los mockups de UI (chat, timeline de edición,
-// notificación) del reel de referencia (sistema-reels-autopilot.md,
-// sección 2) se cargan acá como overlays type:"image" -- son gráficos de
-// motion design pre-renderizados (PNG/Lottie exportado a PNG), no
-// componentes React nuevos por cada mockup. Posicionarlos con
+// Copia intencional de compositions/PersonalBrandClean/EmphasisOverlay.tsx.
+// Única diferencia real: el ancho fijo de los overlays type:"image" sube
+// de 140px (pensado para un sticker/ícono chico en PersonalBrandClean) a
+// IMAGE_OVERLAY_WIDTH -- acá los overlays de imagen son los mockups de UI
+// (chat, timeline de edición, notificación) del reel de referencia
+// (sistema-reels-autopilot.md, sección 2), pensados para verse como
+// tarjetas grandes casi del ancho del panel, no como un ícono. Son
+// gráficos de motion design pre-renderizados (PNG/Lottie exportado a
+// PNG), no componentes React nuevos por cada mockup. Posicionarlos con
 // `position.y` entre ~0.55 y ~0.93 los deja dentro del panel inferior.
+const IMAGE_OVERLAY_WIDTH = 900;
 
 export const EmphasisOverlay: React.FC<{
   overlay: Overlay;
@@ -72,7 +76,7 @@ const OverlayContent: React.FC<{
           position: "absolute",
           left,
           top,
-          width: 140,
+          width: IMAGE_OVERLAY_WIDTH,
           transform: `translate(-50%, -50%) scale(${entrance})`,
         }}
       />
