@@ -358,9 +358,11 @@ Templates (Compositions) mínimas para cubrir las 7 categorías de contenido:
 | `historia_v1` | historia personal | Subtítulos más chicos abajo, transición suave, sin CTA fuerte |
 | `venta_v1` | venta | End card con oferta/precio, watermark permanente, highlight en palabras de urgencia |
 | `hook_fuerte_v1` | polémico, tendencia | Freeze-frame + zoom dramático en el primer segundo con el hook en texto grande |
-| `prueba_social_v1` | prueba social | Caption tipo "quote box", posible layout split-screen antes/después |
+| `prueba_social_v1` ✅ construido | prueba social | Split-screen antes/después: panel superior = video fuente sin tocar, panel inferior = el mismo video con subtítulos y overlays. Ver `fabrica-reels/remotion/src/compositions/PruebaSocialV1/` y `sistema-reels-autopilot.md` (playbook completo, sacado de analizar un reel de referencia real). |
 
 Cada template es un componente React de ~100-150 líneas que recibe el JSON de la sección 11 como `inputProps`. Construir estos 5 templates es **la Capa 4** — no se necesitan más de 5 para cubrir el 100% de las categorías definidas en el análisis (sección 6 del MVP original).
+
+**Nota sobre el orden real de construcción:** el plan original (sección 19 más abajo) decía arrancar por `educativo_v1` e `historia_v1`. En la práctica, el primer template construido fue `personal_brand_clean` (fuera de este registro de 5, agregado ad hoc como referencia) y el segundo `prueba_social_v1` — adelantado respecto al plan porque había un reel de referencia real y completo para validarlo frame a frame. `educativo_v1`, `historia_v1`, `venta_v1` y `hook_fuerte_v1` siguen sin construir.
 
 ### 13. Cómo renderizar variantes
 

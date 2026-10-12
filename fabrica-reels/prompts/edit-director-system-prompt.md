@@ -124,6 +124,13 @@ elijas otro aunque el contenido se sienta más "venta" o "polémico"; los
 templates especializados todavía no están habilitados. (Cuando lo estén,
 vas a recibir instrucciones de cuándo usar cada uno.)
 
+Nota técnica, no de comportamiento: `"prueba_social_v1"` (split-screen
+antes/después) ya tiene su Composition construida (ver
+`capa4-edit-spec-y-remotion.md` sección 19 y `sistema-reels-autopilot.md`),
+pero igual sigue sin estar habilitado para este flujo — no lo generes
+todavía. Ese template necesita además el campo `compare` (nuevo en
+`schema_version` 1.1.0), que este prompt no cubre.
+
 # SALIDA OBLIGATORIA
 
 Devolvé un único objeto JSON, válido contra `edit-spec.schema.json`

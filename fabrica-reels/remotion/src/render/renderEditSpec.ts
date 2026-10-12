@@ -3,6 +3,20 @@ import { bundle } from "@remotion/bundler";
 import { renderMedia, selectComposition } from "@remotion/renderer";
 import type { EditSpec } from "../../../schema/edit-spec.zod";
 
+/**
+ * Convierte un `template_id` (snake_case, ej. "prueba_social_v1") al id de
+ * Composition registrado en Root.tsx (PascalCase, ej. "PruebaSocialV1").
+ * Es la convención real de nombres que ya seguían "personal_brand_clean" →
+ * "PersonalBrandClean" y "prueba_social_v1" → "PruebaSocialV1"; generalizarla
+ * acá evita ir agregando un caso especial por cada template nuevo.
+ */
+function templateIdToCompositionId(templateId: string): string {
+  return templateId
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join("");
+}
+
 let cachedBundleLocation: string | null = null;
 
 async function getBundleLocation(): Promise<string> {
@@ -23,7 +37,7 @@ export async function renderEditSpec(spec: EditSpec, outputLocation: string): Pr
 
   const composition = await selectComposition({
     serveUrl,
-    id: spec.template_id === "personal_brand_clean" ? "PersonalBrandClean" : spec.template_id,
+    id: templateIdToCompositionId(spec.template_id),
     inputProps: spec,
   });
 

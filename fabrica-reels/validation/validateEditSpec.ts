@@ -156,5 +156,15 @@ function runSemanticChecks(spec: EditSpec): EditSpecValidationError[] {
     });
   }
 
+  // 9. prueba_social_v1 es el layout split-screen antes/después: sin
+  // `compare.enabled` no tiene sentido (la Composition PruebaSocialV1
+  // renderiza un AbsoluteFill negro vacío si falta, en vez de reventar).
+  if (spec.template_id === "prueba_social_v1" && !spec.compare?.enabled) {
+    errors.push({
+      path: "compare",
+      message: `El template "prueba_social_v1" requiere "compare.enabled: true" con sus labels (es el layout split-screen antes/después)`,
+    });
+  }
+
   return errors;
 }

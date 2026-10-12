@@ -703,3 +703,41 @@ npm run render:local
 ## Próximo paso natural
 
 Con este contrato cerrado, agregar un template nuevo (`educativo_v1`, `venta_v1`, etc.) es: crear la carpeta de Composition, registrar el `id` en `Root.tsx`, y el `template_id` ya está aceptado por el schema desde el día 1 — no hay que tocar `edit-spec.schema.json` ni `edit-spec.zod.ts` para eso, solo si el template necesita un campo nuevo en el spec (ahí sí se sube `schema_version` a `1.1.0` y se actualizan ambos archivos del contrato juntos).
+
+---
+
+## 19. Segundo template real: `prueba_social_v1` (split-screen antes/después), y qué cambió al agregarlo
+
+`prueba_social_v1` estaba reservado en el registro de templates desde el diseño original (`sistema-fabrica-reels-nexoia.md`, sección 12) como "caption tipo 'quote box', posible layout split-screen antes/después", pero nunca se había construido. Se implementó analizando frame a frame y con transcript completo un reel de referencia público que usa exactamente ese formato — ver [`sistema-reels-autopilot.md`](./sistema-reels-autopilot.md) para el playbook completo (estructura visual, timing de overlays, guion tipo, prompt de edición reconstruido).
+
+**Por qué este template SÍ necesitó un campo nuevo en el contrato** (a diferencia de la nota de la sección anterior, que asume que la mayoría de los templates no lo necesitan): todos los templates existentes asumen UN video con overlays encima. `prueba_social_v1` necesita DOS paneles de video simultáneos (el original sin tocar arriba, el editado abajo) con sus propios labels — eso no es expresable con los campos existentes. Por eso:
+
+- `schema_version` pasó de `const: "1.0.0"` a `enum: ["1.0.0", "1.1.0"]` — retrocompatible: un `edit_spec` viejo en `"1.0.0"` sin el campo `compare` sigue siendo válido para los demás templates, que simplemente lo ignoran.
+- Se agregó `compare` (objeto opcional, nuevo en 1.1.0):
+
+```json
+"compare": {
+  "enabled": true,
+  "top_label": "Original",
+  "top_badge_text": "IMG_6632.MOV · SIN TOCAR",
+  "bottom_label_prefix": "Editado por",
+  "bottom_label_highlight": "Claude Opus 5.5",
+  "bottom_label_accent_color": "#F2A93B"
+}
+```
+
+- Validación semántica nueva (regla 9 en `validateEditSpec.ts`, mismo patrón que la regla 8 de `hook_fuerte_v1`): si `template_id === "prueba_social_v1"`, `compare.enabled` tiene que ser `true`. Sin eso, la Composition renderiza un panel negro vacío en vez de reventar — pero nunca debería llegar a renderizar, porque la validación lo frena antes.
+
+**Decisiones de la Composition** (`fabrica-reels/remotion/src/compositions/PruebaSocialV1/`):
+
+- **Sin imports cruzados con `PersonalBrandClean`.** Cada template vive autocontenido en su propia carpeta (la convención que ya seguía `PersonalBrandClean`) — `SubtitleLayer.tsx`, `EmphasisOverlay.tsx`, `ProgressBar.tsx` y `LogoWatermark.tsx` son copias intencionales, sin cambios de lógica. Esto evita que tocar un template rompa otro, a costa de algo de duplicación — exactamente el trade-off que ya describe la sección 12 del sistema ("cada template, ~100-150 líneas").
+- **Los dos paneles muestran el MISMO `source_video.url`**, sin aplicar `cuts[]` al panel superior (el "original sin tocar" literalmente no tiene cortes) y sin aplicarlos tampoco al inferior — igual que `PersonalBrandClean`, el render actual no empalma `cuts[]` en ninguna Composition todavía (son datos auditables/para analítica, no se usan para recortar el timeline en Remotion hoy). Si eso cambia en el futuro, cambia para los dos templates a la vez.
+- **El `zoom_keyframes` solo se aplica al panel inferior** — el superior, al ser "sin tocar", nunca tiene zoom.
+- **No usa `HookHeadline`** (el componente de texto grande que sí usa `PersonalBrandClean`): en este formato el propio split-screen es el hook, así que el campo `hook` se muestra chico (`HookPill.tsx`), arriba del panel inferior, en vez de ocupar media pantalla.
+- **Los mockups de UI del reel de referencia** (contador, chat con el prompt, timeline de edición, notificación con el CTA) se cargan como `overlays[]` de tipo `"image"` — gráficos de motion design pre-renderizados (PNG o Lottie exportado a PNG) posicionados con `position.y` entre ~0.55 y ~0.93 para caer dentro del panel inferior. No son componentes React nuevos por cada mockup — el mecanismo genérico de overlays ya alcanza, sin tocar el schema.
+
+**Bug que esto destapó y se corrigió de paso:** `renderEditSpec.ts` mapeaba `template_id` → id de Composition con un ternario de un solo caso (`personal_brand_clean` → `"PersonalBrandClean"`, cualquier otro valor se usaba tal cual). Con `prueba_social_v1` (snake_case) registrado como Composition `"PruebaSocialV1"` (PascalCase), ese mapeo habría fallado. Se generalizó a una función `templateIdToCompositionId()` que convierte snake_case → PascalCase para cualquier `template_id`, no solo para los que ya existían.
+
+**Ejemplo real:** [`fabrica-reels/schema/examples/valid-edit-spec-prueba-social.json`](./fabrica-reels/schema/examples/valid-edit-spec-prueba-social.json) (mismo contenido en `remotion/sample-data/` para Remotion Studio) — está construido con los datos reales del reel de referencia (duración 20.8s, transcript completo), no son placeholders inventados. Pasa `validateEditSpec()` end-to-end y `npm run typecheck` en `fabrica-reels/remotion/` corre limpio con la Composition nueva registrada.
+
+**Lo que falta, a propósito:** el Edit Director (`prompts/edit-director-system-prompt.md`) sigue generando ÚNICAMENTE `personal_brand_clean` — ese prompt dice explícitamente "los demás templates del registro existen pero no están habilitados para este flujo todavía", y habilitar `prueba_social_v1` ahí (lógica de selección de template según el contenido, reglas creativas propias para `compare`, etc.) es una decisión de producto aparte, no una consecuencia automática de que la Composition ya exista y funcione.

@@ -94,6 +94,15 @@ const OverlaySchema = z
     path: ["image_url"],
   });
 
+const CompareConfigSchema = z.object({
+  enabled: z.boolean(),
+  top_label: z.string().min(1).max(40),
+  top_badge_text: z.string().max(60).optional(),
+  bottom_label_prefix: z.string().min(1).max(40),
+  bottom_label_highlight: z.string().min(1).max(40),
+  bottom_label_accent_color: hexColor.optional(),
+});
+
 const ZoomKeyframeSchema = z.object({
   t: z.number().min(0),
   scale: z.number().min(1.0).max(1.6),
@@ -114,7 +123,7 @@ const BrandingSchema = z.object({
 
 export const EditSpecSchema = z
   .object({
-    schema_version: z.literal("1.0.0"),
+    schema_version: z.enum(["1.0.0", "1.1.0"]),
     video_id: z.string().regex(/^VID-\d{4}-\d{2}-\d{2}-\d{3,}$/),
     client_id: z.string().uuid(),
     raw_video_id: z.string().uuid(),
@@ -145,6 +154,11 @@ export const EditSpecSchema = z
       lines: z.array(CaptionLineSchema).min(1),
     }),
     overlays: z.array(OverlaySchema).default([]),
+    // Solo lo usa (y lo exige, vía validación semántica) template_id
+    // "prueba_social_v1": layout split-screen antes/después. Campo nuevo
+    // en 1.1.0 -- un edit_spec "1.0.0" sin `compare` sigue siendo válido
+    // para el resto de los templates, que lo ignoran.
+    compare: CompareConfigSchema.optional(),
     zoom_keyframes: z.array(ZoomKeyframeSchema).default([]),
     progress_bar: z
       .object({ enabled: z.boolean(), color: hexColor })
@@ -176,3 +190,4 @@ export type Cut = EditSpec["cuts"][number];
 export type CaptionLine = EditSpec["subtitles"]["lines"][number];
 export type Overlay = EditSpec["overlays"][number];
 export type ZoomKeyframe = EditSpec["zoom_keyframes"][number];
+export type CompareConfig = NonNullable<EditSpec["compare"]>;

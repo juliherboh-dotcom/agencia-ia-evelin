@@ -31,6 +31,7 @@ fabrica-reels/
     capa9-variant-engine.migration.sql      SQL Capa 9: trazabilidad, idempotencia y cola manual
     examples/
       valid-edit-spec.json
+      valid-edit-spec-prueba-social.json   template prueba_social_v1 (split-screen), datos reales de un reel de referencia
       invalid-edit-spec.json
   validation/
     validateEditSpec.ts               Validación estructural (Zod) + semántica (reglas de negocio)
@@ -47,9 +48,12 @@ fabrica-reels/
   remotion/
     src/
       compositions/PersonalBrandClean/   Composition de referencia (template)
+      compositions/PruebaSocialV1/       Template split-screen antes/después (ver capa4-edit-spec-y-remotion.md sección 19)
       render/                            renderEditSpec.ts, renderLocal.ts, renderService.ts
       Root.tsx, index.ts
-    sample-data/example-edit-spec.json
+    sample-data/
+      example-edit-spec.json
+      example-edit-spec-prueba-social.json
   n8n/
     capa2b-style-profile.workflow.json   Analiza referencias y activa un perfil reusable
     capa3-edit-director.workflow.json    Genera el edit_spec con el LLM
