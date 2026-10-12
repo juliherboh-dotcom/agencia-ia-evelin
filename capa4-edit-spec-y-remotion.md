@@ -779,3 +779,25 @@ Dos veces en este proyecto se necesitó cambiar el ancho fijo (en px) de los ove
 ```
 
 Ambas copias de `EmphasisOverlay.tsx` (`PersonalBrandClean/` y `PruebaSocialV1/`) leen `overlay.width` si está, y si no, caen a su propio `DEFAULT_IMAGE_OVERLAY_WIDTH_PX` — mismo patrón en las dos, sin compartir código entre templates (sección 19).
+
+---
+
+## 22. `sfx[]` — efectos de sonido puntuales, pedido explícito por Evelin
+
+A diferencia de `compare` y `overlay.width` (que salieron de analizar un reel/video de referencia), este campo se agregó por pedido directo: Evelin quiere que sus videos editados tengan efectos de sonido puntuales (un whoosh en un corte, un pop al revelar un overlay) además de música de fondo, y el contrato no tenía ninguna forma de expresar eso.
+
+**Contrato (1.3.0, retrocompatible):**
+
+```json
+{ "id": "whoosh-corte-1", "sound_url": "https://cdn.nexo-ia.cl/sfx/whoosh_01.mp3", "t": 6.0, "volume_db": -6 }
+```
+
+`t` es un timestamp puntual en la línea de tiempo FINAL ya editada (como `hook`/`subtitles.lines`/`overlays`/`zoom_keyframes` — nunca la del video fuente). `volume_db` es opcional (default -6dB en el render si no se manda).
+
+**Diferencia a propósito con `music`:** `music.track_id` es una referencia por NOMBRE a una pista (pensada para resolverse contra una librería de tracks del lado del servicio de render) que **hoy ningún render resuelve** — existe en el contrato desde el día 1 pero nunca sonó. Para no repetir ese mismo defecto con `sfx`, se modeló distinto a propósito: `sound_url` es una URL directa (mismo criterio que `overlay.image_url`), así que no depende de que exista una librería/resolución de tracks en ningún otro lado — con la URL alcanza para que el render la reproduzca de verdad.
+
+**Render:** `SfxLayer.tsx` (copia en cada carpeta de Composition, mismo patrón que el resto — sección 19) envuelve cada cue en un `<Sequence>` de 2 segundos de ventana (no hay campo de duración por cue; se apoya en que el clip de sonido es corto y en que `Html5Audio` no suena más allá de su propio largo) con `<Html5Audio src={...} volume={...} />`. Usa `Html5Audio`, no el `Audio` viejo — Remotion lo marca `@deprecated` en sus propios tipos, mismo criterio que `trimBefore`/`trimAfter` en la sección 20. La conversión de `volume_db` a volumen lineal (lo que espera la prop `volume`) vive en `utils/audio.ts`, junto a `utils/cuts.ts` y `utils/time.ts`: lógica de datos pura, compartida entre templates a propósito.
+
+Verificado con `validateEditSpec()`: un cue con `t` dentro de `duration.target_sec` pasa, uno con `t` más allá del final del video se rechaza (regla semántica 10, mismo patrón que `zoom_keyframes`). `npm run typecheck` y los 14 tests existentes siguen pasando.
+
+**Pendiente, a propósito:** no hay librería de assets de sonido todavía (no existen archivos reales en `cdn.nexo-ia.cl/sfx/...`) — eso es un paso de producción/diseño de sonido aparte, no de este contrato. El Edit Director tampoco sabe todavía cuándo/cómo elegir `sfx` (sigue generando solo `personal_brand_clean` sin usar este campo) — igual que con `compare`, habilitarlo ahí es una decisión de producto aparte.

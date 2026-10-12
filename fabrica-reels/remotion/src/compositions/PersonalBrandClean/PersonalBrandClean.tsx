@@ -6,6 +6,7 @@ import { HookHeadline } from "./HookHeadline";
 import { ProgressBar } from "./ProgressBar";
 import { LogoWatermark } from "./LogoWatermark";
 import { EmphasisOverlay } from "./EmphasisOverlay";
+import { SfxLayer } from "./SfxLayer";
 import { secondsToFrames } from "../../utils/time";
 import { buildKeptSegments } from "../../utils/cuts";
 
@@ -80,6 +81,9 @@ export const PersonalBrandClean: React.FC<EditSpec> = (spec) => {
       >
         <HookHeadline hook={spec.hook} accentColor={spec.branding.accent_color} />
       </Sequence>
+
+      {/* Efectos de sonido puntuales (whoosh, pop, ding) */}
+      <SfxLayer cues={spec.sfx} />
 
       {/* Subtítulos animados */}
       <SubtitleLayer lines={spec.subtitles.lines} style={spec.subtitles.style} />

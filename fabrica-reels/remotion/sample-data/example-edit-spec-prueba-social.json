@@ -81,6 +81,7 @@
     "bottom_label_highlight": "Claude Opus 5.5",
     "bottom_label_accent_color": "#F2A93B"
   },
+  "sfx": [],
   "zoom_keyframes": [],
   "progress_bar": { "enabled": true, "color": "#F2A93B" },
   "branding": {

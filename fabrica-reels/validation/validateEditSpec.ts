@@ -166,5 +166,15 @@ function runSemanticChecks(spec: EditSpec): EditSpecValidationError[] {
     });
   }
 
+  // 10. cues de sfx dentro de la duración final (mismo chequeo que zoom_keyframes)
+  spec.sfx.forEach((cue, i) => {
+    if (cue.t > spec.duration.target_sec) {
+      errors.push({
+        path: `sfx[${i}].t`,
+        message: `El efecto de sonido "${cue.id}" cae en ${cue.t}s, después del final del video (${spec.duration.target_sec}s)`,
+      });
+    }
+  });
+
   return errors;
 }

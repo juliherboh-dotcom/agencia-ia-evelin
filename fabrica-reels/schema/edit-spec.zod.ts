@@ -109,6 +109,19 @@ const CompareConfigSchema = z.object({
   bottom_label_accent_color: hexColor.optional(),
 });
 
+const SfxCueSchema = z.object({
+  id: z.string().min(1),
+  // URL directa del clip de sonido (mismo criterio que overlay.image_url y
+  // branding.logo_url) -- a diferencia de music.track_id, que es una
+  // referencia a una pista por nombre que hoy ningún render resuelve.
+  sound_url: z.string().url(),
+  // Timestamp en la línea de tiempo FINAL ya editada (segundos), igual
+  // que hook/subtitles.lines/overlays/zoom_keyframes -- NO la del video
+  // fuente.
+  t: z.number().min(0),
+  volume_db: z.number().min(-40).max(6).optional(),
+});
+
 const ZoomKeyframeSchema = z.object({
   t: z.number().min(0),
   scale: z.number().min(1.0).max(1.6),
@@ -129,7 +142,7 @@ const BrandingSchema = z.object({
 
 export const EditSpecSchema = z
   .object({
-    schema_version: z.enum(["1.0.0", "1.1.0", "1.2.0"]),
+    schema_version: z.enum(["1.0.0", "1.1.0", "1.2.0", "1.3.0"]),
     video_id: z.string().regex(/^VID-\d{4}-\d{2}-\d{2}-\d{3,}$/),
     client_id: z.string().uuid(),
     raw_video_id: z.string().uuid(),
@@ -165,6 +178,10 @@ export const EditSpecSchema = z
     // en 1.1.0 -- un edit_spec "1.0.0" sin `compare` sigue siendo válido
     // para el resto de los templates, que lo ignoran.
     compare: CompareConfigSchema.optional(),
+    // Nuevo en 1.3.0. Son cues puntuales (un whoosh en un corte, un pop
+    // al revelar un overlay), no una pista de fondo -- eso ya existe como
+    // `music`, que es un campo aparte.
+    sfx: z.array(SfxCueSchema).default([]),
     zoom_keyframes: z.array(ZoomKeyframeSchema).default([]),
     progress_bar: z
       .object({ enabled: z.boolean(), color: hexColor })
@@ -197,3 +214,4 @@ export type CaptionLine = EditSpec["subtitles"]["lines"][number];
 export type Overlay = EditSpec["overlays"][number];
 export type ZoomKeyframe = EditSpec["zoom_keyframes"][number];
 export type CompareConfig = NonNullable<EditSpec["compare"]>;
+export type SfxCue = EditSpec["sfx"][number];

@@ -6,6 +6,7 @@ import { CompareTopLabel, CompareBottomLabel } from "./CompareLabels";
 import { HookPill } from "./HookPill";
 import { SubtitleLayer } from "./SubtitleLayer";
 import { EmphasisOverlay } from "./EmphasisOverlay";
+import { SfxLayer } from "./SfxLayer";
 import { ProgressBar } from "./ProgressBar";
 import { LogoWatermark } from "./LogoWatermark";
 import { secondsToFrames } from "../../utils/time";
@@ -107,6 +108,9 @@ export const PruebaSocialV1: React.FC<EditSpec> = (spec) => {
       >
         <HookPill hook={spec.hook} accentColor={accentColor} top={BOTTOM_PANEL_TOP + 16} />
       </Sequence>
+
+      {/* Efectos de sonido puntuales (whoosh, pop, ding) */}
+      <SfxLayer cues={spec.sfx} />
 
       {/* Subtítulos animados, solo visibles sobre el panel inferior */}
       <SubtitleLayer lines={spec.subtitles.lines} style={spec.subtitles.style} />

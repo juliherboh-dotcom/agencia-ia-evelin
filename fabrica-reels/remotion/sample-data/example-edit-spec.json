@@ -54,6 +54,7 @@
       "position": { "x": 0.5, "y": 0.3 }
     }
   ],
+  "sfx": [],
   "zoom_keyframes": [
     { "t": 0, "scale": 1.0, "focus": "center" },
     { "t": 6, "scale": 1.08, "focus": "center" },
