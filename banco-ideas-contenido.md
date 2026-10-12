@@ -618,3 +618,59 @@
 - Qué se probaría: crear en vivo un sitio básico con IA para un negocio chileno y luego mostrar lo que falta: agendamiento, respuesta automática por WhatsApp, seguimiento de consultas.
 - Resultado esperado: pasar del "tener web" al "tener un sistema que atiende y convierte", conectando con la oferta de Nexo.IA.
 - Objeción típica: "si es gratis y automático, ¿para qué pagar a alguien?" → la web es la parte fácil; el valor está en lo que pasa después de que el cliente escribe.
+
+## Semana del 2026-10-12
+
+### 1. Google presenta un "agente universal" Gemini que trabaja dentro de Gmail, Sheets y Calendar
+**Fuente:** https://www.reworked.co/collaboration-productivity/google-debuts-its-all-purpose-gemini-agent-for-work/
+**Qué es:** En el evento Gemini at Work (8 de octubre), Google mostró un agente que recibe un objetivo, planifica los pasos, usa herramientas y devuelve el trabajo terminado, dentro de Gmail, Docs, Sheets y Calendar. Cada agente tiene identidad propia, accesos limitados y registro de actividad; por ahora está en preview para clientes enterprise (la fecha de disponibilidad general viene de una sola fuente, tomar como tentativa).
+**Ángulo para Nexo.IA:** Video "Google ya tiene un 'compañero de trabajo' de IA: ¿lo necesita una pyme chilena o es cosa de grandes?".
+- Contexto del problema: el dueño ve titulares de "agentes que trabajan solos" y no sabe si es para él o si tiene que esperar.
+- Qué se probaría: tomar una tarea real de un negocio (ej. responder consultas de correo y agendar visitas) y mostrar cómo se resolvería hoy con herramientas simples y cómo cambiaría con un agente integrado a Gmail/Calendar.
+- Resultado esperado: una regla clara de qué esperar y qué ya se puede hacer hoy sin esperar al lanzamiento.
+- Objeción típica: "si Google lo va a traer integrado, ¿para qué contratar automatización?" → los agentes genéricos no conocen los procesos, precios ni reglas de tu negocio; alguien tiene que definirlos y supervisarlos.
+
+### 2. Sercotec: cada vez más mipymes chilenas usan chatbots en WhatsApp para pedidos, repartos y atención
+**Fuente:** https://ecosistemastartup.com/henry-azurmendi-sercotec-460-funcionarios-en-ia-para-pymes/
+**Qué es:** El gerente general de Sercotec, Henry Azurmendi, comenta que más pymes usan chatbots para recibir pedidos, gestionar repartos y atender por WhatsApp sin contratar más personal, y que la IA puede ayudar a detectar qué productos se venden más. (Dato del resultado de búsqueda; no pude abrir el artículo completo, conviene revisarlo antes de citar cifras.)
+**Ángulo para Nexo.IA:** Video "Lo que dice Sercotec y lo que realmente pasa cuando pones un bot en el WhatsApp de tu negocio".
+- Contexto del problema: el dueño responde pedidos a toda hora y pierde ventas por contestar tarde.
+- Qué se probaría: mostrar un flujo de pedido por WhatsApp de un negocio chileno (ej. delivery de comida o ferretería) con lo que el bot resuelve solo y lo que deriva a una persona.
+- Resultado esperado: menos tiempo de respuesta y pedidos ordenados en una planilla, con un número concreto de horas ahorradas.
+- Objeción típica: "los clientes chilenos quieren hablar con una persona" → el bot no reemplaza la conversación, filtra lo repetitivo y pasa a humano lo que importa.
+
+### 3. Estudio Entel Digital y CENIA: ~70% de las pymes ya probó IA, pero el uso sigue siendo básico
+**Fuente:** https://www.computerweekly.com/es/cronica/Que-ocurre-con-la-transformacion-digital-en-las-empresas-chilenas
+**Qué es:** Un estudio de Entel Digital y CENIA indica que el 93% de las empresas confía en que la IA traerá beneficios y que cerca del 70% de las pymes ya probó alguna herramienta, aunque muchas veces de forma básica o desigual. Una columna de El Dínamo (abril 2026) coincide: el uso es sobre todo operativo (marketing, ventas, atención) y no transforma procesos. (Dato de búsqueda; el estudio no es de esta semana, úsalo como contexto de otros temas.)
+**Ángulo para Nexo.IA:** Video mito vs. realidad: "Mito: 'ya uso ChatGPT, ya automaticé mi negocio'. Realidad: probar no es automatizar".
+- Contexto del problema: el dueño usa IA para redactar textos y siente que ya está al día, mientras sus procesos siguen igual de manuales.
+- Qué se probaría: comparar un día normal de un negocio usando IA "suelta" (copiar y pegar) con el mismo día con un proceso conectado (cotización o seguimiento que se dispara solo).
+- Resultado esperado: que el dueño identifique en qué etapa está (probar, usar, integrar) y cuál es el siguiente paso.
+- Objeción típica: "ya gasto en una suscripción y me sirve" → no se trata de dejarla, sino de conectar lo que ya hace con el resto del negocio.
+
+### 4. Novedades de la semana para pymes: ChatGPT con audios y Claude para documentos
+**Fuente:** https://lilachbullock.com/ai-news-this-week-for-small-business-11-october-2026
+**Qué es:** El resumen semanal de Lilach Bullock (11 de octubre) lista 13 novedades; entre ellas, subir audios a ChatGPT para sacar seguimientos de llamadas grabadas, y modelos de Claude orientados a trabajo con documentos y tareas repetitivas de menor costo. (Basado en el resumen de búsqueda; no pude abrir la página, la disponibilidad varía por plan.)
+**Ángulo para Nexo.IA:** Video "Grabé una llamada con un cliente y la IA me dejó el seguimiento listo".
+- Contexto del problema: después de una reunión o llamada de ventas se pierden compromisos y el seguimiento se hace tarde o nunca.
+- Qué se probaría: grabar (con permiso) una llamada simulada de cotización, subir el audio y generar resumen, tareas y borrador del correo de seguimiento.
+- Resultado esperado: minutos en vez de media hora por llamada, y ningún compromiso olvidado.
+- Objeción típica: "grabar clientes es invasivo / ¿es legal?" → hablar de avisar y pedir consentimiento, y de qué se guarda y por cuánto tiempo.
+
+### 5. GitHub trending: "HyperFrames" (HeyGen), videos a partir de texto con ayuda de agentes
+**Fuente:** https://github.com/heygen-com/hyperframes
+**Qué es:** Herramienta gratuita y de código abierto (+4.200 estrellas esta semana) que convierte una página web en un video MP4: clips de producto, subtítulos animados, gráficos con cifras, videos explicativos desde un PDF. Hoy requiere instalación técnica, pero se puede operar pidiéndole al agente de IA lo que se quiere en lenguaje normal.
+**Ángulo para Nexo.IA:** Video "Hice un video de producto para un negocio chileno sin editor ni cámara (y qué tan bien quedó)".
+- Contexto del problema: la pyme no publica contenido porque editar video toma tiempo o cuesta caro.
+- Qué se probaría: partir de la web o catálogo de un negocio real y generar 2-3 videos cortos (oferta, producto, preguntas frecuentes), mostrando el resultado sin maquillar.
+- Resultado esperado: mostrar qué calidad se logra, cuánto tardó y qué sigue necesitando revisión humana.
+- Objeción típica: "se va a ver artificial y los clientes lo notan" → mostrar dónde sirve (clips informativos) y dónde sigue siendo mejor grabar a la persona real.
+
+### 6. GitHub trending: "OpenRig" y la tendencia de equipos de agentes con roles (builder + revisor)
+**Fuente:** https://github.com/mvschwarz/openrig
+**Qué es:** Software libre (+2.000 estrellas esta semana) para coordinar varios agentes de IA como equipo, cada uno con un rol, contexto compartido y un líder que reparte tareas. Hoy está pensado para programadores, pero ilustra una idea que sí se traduce al negocio: un agente hace el trabajo y otro lo revisa antes de que llegue al cliente.
+**Ángulo para Nexo.IA:** Video "El truco de los equipos de IA: que una IA haga el trabajo y otra lo revise antes de enviarlo".
+- Contexto del problema: el dueño desconfía de la IA porque a veces se equivoca en cotizaciones o respuestas a clientes.
+- Qué se probaría: armar un flujo simple donde una IA redacta una cotización y una segunda la contrasta contra la lista de precios y reglas del negocio, marcando errores antes de enviarla.
+- Resultado esperado: contar cuántos errores atrapa la segunda revisión en 20 casos de prueba.
+- Objeción típica: "si necesito revisar todo, no ahorro nada" → la revisión automática reduce lo que debe mirar una persona a los casos dudosos.
