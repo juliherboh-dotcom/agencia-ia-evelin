@@ -7,6 +7,7 @@ import { ProgressBar } from "./ProgressBar";
 import { LogoWatermark } from "./LogoWatermark";
 import { EmphasisOverlay } from "./EmphasisOverlay";
 import { secondsToFrames } from "../../utils/time";
+import { buildKeptSegments } from "../../utils/cuts";
 
 /**
  * Composition "PersonalBrandClean" — template de referencia de la Fábrica
@@ -37,11 +38,27 @@ export const PersonalBrandClean: React.FC<EditSpec> = (spec) => {
     });
   }, [frame, fps, spec.zoom_keyframes]);
 
+  // Corte de silencios/muletillas real: cada tramo "keep:true" de cuts[]
+  // se reproduce como su propio <Sequence> en la línea de tiempo FINAL,
+  // recortado del video fuente con trimBefore/trimAfter -- los tramos
+  // "keep:false" simplemente no aparecen. Antes el render ignoraba
+  // cuts[] por completo (reproducía el video fuente entero); ver
+  // ../../utils/cuts.ts para la razón de ser de esto.
+  const segments = useMemo(() => buildKeptSegments(spec.cuts, fps), [spec.cuts, fps]);
+
   return (
     <AbsoluteFill style={{ backgroundColor: "#000000" }}>
-      {/* Video fuente con zoom sutil */}
+      {/* Video fuente, recortado por cuts[], con zoom sutil encima */}
       <AbsoluteFill style={{ transform: `scale(${zoomScale})`, transformOrigin: "center center" }}>
-        <OffthreadVideo src={spec.source_video.url} />
+        {segments.map((segment, i) => (
+          <Sequence key={i} from={segment.outputStartFrame} durationInFrames={segment.durationFrames} layout="none">
+            <OffthreadVideo
+              src={spec.source_video.url}
+              trimBefore={segment.sourceStartFrame}
+              trimAfter={segment.sourceEndFrame}
+            />
+          </Sequence>
+        ))}
       </AbsoluteFill>
 
       {/* Overlays de énfasis puntuales (badges/texto/imagen) */}

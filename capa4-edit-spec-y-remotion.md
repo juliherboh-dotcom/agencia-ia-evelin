@@ -731,7 +731,7 @@ Con este contrato cerrado, agregar un template nuevo (`educativo_v1`, `venta_v1`
 **Decisiones de la Composition** (`fabrica-reels/remotion/src/compositions/PruebaSocialV1/`):
 
 - **Sin imports cruzados con `PersonalBrandClean`.** Cada template vive autocontenido en su propia carpeta (la convención que ya seguía `PersonalBrandClean`) — `SubtitleLayer.tsx`, `EmphasisOverlay.tsx`, `ProgressBar.tsx` y `LogoWatermark.tsx` son copias intencionales, sin cambios de lógica. Esto evita que tocar un template rompa otro, a costa de algo de duplicación — exactamente el trade-off que ya describe la sección 12 del sistema ("cada template, ~100-150 líneas").
-- **Los dos paneles muestran el MISMO `source_video.url`**, sin aplicar `cuts[]` al panel superior (el "original sin tocar" literalmente no tiene cortes) y sin aplicarlos tampoco al inferior — igual que `PersonalBrandClean`, el render actual no empalma `cuts[]` en ninguna Composition todavía (son datos auditables/para analítica, no se usan para recortar el timeline en Remotion hoy). Si eso cambia en el futuro, cambia para los dos templates a la vez.
+- **Los dos paneles muestran el MISMO `source_video.url`, pero ninguno de los dos aplica `cuts[]` todavía** — el panel superior no los aplica a propósito (es el "original sin tocar", literalmente no tiene cortes); el inferior no los aplica porque `PruebaSocialV1` no llama a `buildKeptSegments()` (ver sección 20, más abajo: eso sí se construyó, pero solo se conectó en `PersonalBrandClean`). Si se quiere que el panel inferior de este template también recorte de verdad, hay que repetir ahí el mismo cambio de la sección 20.
 - **El `zoom_keyframes` solo se aplica al panel inferior** — el superior, al ser "sin tocar", nunca tiene zoom.
 - **No usa `HookHeadline`** (el componente de texto grande que sí usa `PersonalBrandClean`): en este formato el propio split-screen es el hook, así que el campo `hook` se muestra chico (`HookPill.tsx`), arriba del panel inferior, en vez de ocupar media pantalla.
 - **Los mockups de UI del reel de referencia** (contador, chat con el prompt, timeline de edición, notificación con el CTA) se cargan como `overlays[]` de tipo `"image"` — gráficos de motion design pre-renderizados (PNG o Lottie exportado a PNG) posicionados con `position.y` entre ~0.55 y ~0.93 para caer dentro del panel inferior. No son componentes React nuevos por cada mockup — el mecanismo genérico de overlays ya alcanza, sin tocar el schema.
@@ -741,3 +741,27 @@ Con este contrato cerrado, agregar un template nuevo (`educativo_v1`, `venta_v1`
 **Ejemplo real:** [`fabrica-reels/schema/examples/valid-edit-spec-prueba-social.json`](./fabrica-reels/schema/examples/valid-edit-spec-prueba-social.json) (mismo contenido en `remotion/sample-data/` para Remotion Studio) — está construido con los datos reales del reel de referencia (duración 20.8s, transcript completo), no son placeholders inventados. Pasa `validateEditSpec()` end-to-end y `npm run typecheck` en `fabrica-reels/remotion/` corre limpio con la Composition nueva registrada.
 
 **Lo que falta, a propósito:** el Edit Director (`prompts/edit-director-system-prompt.md`) sigue generando ÚNICAMENTE `personal_brand_clean` — ese prompt dice explícitamente "los demás templates del registro existen pero no están habilitados para este flujo todavía", y habilitar `prueba_social_v1` ahí (lógica de selección de template según el contenido, reglas creativas propias para `compare`, etc.) es una decisión de producto aparte, no una consecuencia automática de que la Composition ya exista y funcione.
+
+---
+
+## 20. El corte de silencios/muletillas ahora se aplica de verdad (antes solo se validaba)
+
+Hasta acá, en ninguna Composition se usaba `cuts[]` para recortar nada: `PersonalBrandClean` reproducía `spec.source_video.url` entero con `<OffthreadVideo src={...} />`, sin empalmar los tramos `keep:true` ni descartar los `keep:false`. `cuts[]` solo servía para la validación semántica (que no se solapen, que sumen cerca de `duration.target_sec`) — el dato existía, pero el video final NUNCA reflejaba los cortes.
+
+Esto se corrigió para `personal_brand_clean` con una pieza nueva, reutilizable:
+
+**`fabrica-reels/remotion/src/utils/cuts.ts`** — `buildKeptSegments(cuts, fps)`: filtra los cuts con `keep:true`, los ordena, y devuelve una lista de tramos con dos líneas de tiempo cada uno: dónde está ese tramo en el video FUENTE (`sourceStartFrame`/`sourceEndFrame`, para recortar con `trimBefore`/`trimAfter` de `<OffthreadVideo>`) y dónde va en el video FINAL ya editado (`outputStartFrame`/`durationFrames`, para envolverlo en un `<Sequence>`). Vive en `utils/` (no dentro de una carpeta de Composition) a propósito: es lógica de datos pura, sin JSX, y ya había precedente de compartir utilidades así (`utils/time.ts`, usado por todos los templates) — la convención de "cada Composition autocontenida" (sección 19) es sobre componentes React, no sobre esto.
+
+**`PersonalBrandClean.tsx`** ahora arma el video como una serie de `<Sequence>`, uno por tramo conservado, cada uno con su propio `<OffthreadVideo trimBefore={...} trimAfter={...} />`, en vez de un solo video de punta a punta. Importante: usa los props NO deprecados de Remotion — `trimBefore`/`trimAfter`, no `startFrom`/`endAt` (que `@remotion/renderer` marca `@deprecated` en sus propios tipos).
+
+**Verificado con un render real**, no solo por typecheck: un `edit_spec` de prueba con un video fuente de 25s (timecode quemado en el video mismo, generado con `ffmpeg drawtext`) y un corte `{ start: 6.0, end: 8.0, keep: false }` en el medio. Resultado, frame por frame del video YA renderizado:
+
+| Segundo del video FINAL | Timecode visible (video FUENTE) | Esperado |
+|---|---|---|
+| 5.5s | `00:00:05.500` | ✅ todavía en el primer tramo |
+| 6.3s | `00:00:08.300` | ✅ saltó los 2s descartados (6.0-8.0), aterriza en 8.3s |
+| 12.0s | `00:00:14.000` | ✅ 6s después del punto anterior, en la línea de tiempo fuente |
+
+El salto es exacto al frame — no hay drift ni offset de un frame, que es el error más común al hacer esto a mano.
+
+**Por qué esto NO se propagó a `PruebaSocialV1` todavía:** el panel inferior de ese template (sección 19) podría llamar a `buildKeptSegments()` exactamente igual (la función ya es reusable, no es específica de `PersonalBrandClean`), pero no se tocó en este pase porque no era parte de lo pedido — ver la nota actualizada en la sección 19. Es el próximo paso obvio si se necesita corte real también en el split-screen.
