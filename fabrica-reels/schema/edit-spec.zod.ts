@@ -71,10 +71,15 @@ const CaptionLineSchema = z
     path: ["end"],
   });
 
+const ChecklistItemSchema = z.object({
+  text: z.string().min(1).max(40),
+  checked: z.boolean().default(true),
+});
+
 const OverlaySchema = z
   .object({
     id: z.string().min(1),
-    type: z.enum(["text", "image", "badge"]),
+    type: z.enum(["text", "image", "badge", "notification", "checklist"]),
     text: z.string().max(60).optional(),
     image_url: z.string().url().optional(),
     // Fracción del ancho del canvas (0-1), igual criterio que position.x/y.
@@ -83,6 +88,16 @@ const OverlaySchema = z
     // (mockups de UI, diagramas) son tarjetas grandes, no íconos chicos;
     // un solo ancho fijo por template no alcanza para todos los casos.
     width: z.number().min(0.05).max(0.95).optional(),
+    // Campos de type:"notification" -- mockup de notificación de celular
+    // (nuevo en 1.4.0, para representar visualmente lo que se dice, al
+    // estilo del video de referencia de Evelin: mensajes, apps, etc.).
+    notification_icon: z.string().max(4).optional(),
+    notification_title: z.string().min(1).max(40).optional(),
+    notification_subtitle: z.string().min(1).max(60).optional(),
+    // Campos de type:"checklist" -- tarjeta con pasos/checks (nuevo en
+    // 1.4.0, para listar un proceso tal como lo describe el audio).
+    checklist_title: z.string().max(30).optional(),
+    checklist_items: z.array(ChecklistItemSchema).min(1).max(6).optional(),
     start: z.number().min(0),
     end: z.number().min(0),
     position: PositionSchema,
@@ -98,6 +113,14 @@ const OverlaySchema = z
   .refine((v) => v.type !== "image" || !!v.image_url, {
     message: "overlays de tipo 'image' requieren 'image_url'",
     path: ["image_url"],
+  })
+  .refine((v) => v.type !== "notification" || !!v.notification_title, {
+    message: "overlays de tipo 'notification' requieren 'notification_title'",
+    path: ["notification_title"],
+  })
+  .refine((v) => v.type !== "checklist" || !!v.checklist_items, {
+    message: "overlays de tipo 'checklist' requieren 'checklist_items'",
+    path: ["checklist_items"],
   });
 
 const CompareConfigSchema = z.object({
@@ -142,7 +165,7 @@ const BrandingSchema = z.object({
 
 export const EditSpecSchema = z
   .object({
-    schema_version: z.enum(["1.0.0", "1.1.0", "1.2.0", "1.3.0"]),
+    schema_version: z.enum(["1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0"]),
     video_id: z.string().regex(/^VID-\d{4}-\d{2}-\d{2}-\d{3,}$/),
     client_id: z.string().uuid(),
     raw_video_id: z.string().uuid(),

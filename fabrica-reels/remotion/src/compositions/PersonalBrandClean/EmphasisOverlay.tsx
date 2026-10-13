@@ -2,6 +2,8 @@ import React from "react";
 import { Img, Sequence, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import type { Overlay } from "../../../../schema/edit-spec.zod";
 import { secondsToFrames } from "../../utils/time";
+import { NotificationMockup } from "./NotificationMockup";
+import { ChecklistMockup } from "./ChecklistMockup";
 
 // Default cuando el overlay no manda `width`: pensado para un
 // sticker/ícono chico (140px sobre 1080 de ancho). Para mockups grandes
@@ -36,6 +38,10 @@ const OverlayContent: React.FC<{
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const entrance = spring({ frame, fps, config: { damping: 10 }, durationInFrames: 10 });
+  // Bamboleo continuo sutil una vez que ya entró, para que el recurso se
+  // sienta vivo en vez de una pegatina estática (pedido explícito de
+  // Evelin: "podria tener movimiento").
+  const bob = Math.sin(frame / 15) * 5;
 
   const left = overlay.position.x * width;
   const top = overlay.position.y * height;
@@ -47,11 +53,11 @@ const OverlayContent: React.FC<{
           position: "absolute",
           left,
           top,
-          transform: `translate(-50%, -50%) scale(${entrance})`,
+          transform: `translate(-50%, -50%) translateY(${bob}px) scale(${entrance})`,
           backgroundColor: accentColor,
           color: "#111111",
           fontWeight: 800,
-          fontFamily: "Manrope, Arial, sans-serif",
+          fontFamily: "Inter, Arial, sans-serif",
           fontSize: 32,
           padding: "10px 20px",
           borderRadius: 999,
@@ -73,8 +79,33 @@ const OverlayContent: React.FC<{
           left,
           top,
           width: imageWidth,
-          transform: `translate(-50%, -50%) scale(${entrance})`,
+          transform: `translate(-50%, -50%) translateY(${bob}px) scale(${entrance})`,
         }}
+      />
+    );
+  }
+
+  if (overlay.type === "notification" && overlay.notification_title) {
+    return (
+      <NotificationMockup
+        icon={overlay.notification_icon}
+        title={overlay.notification_title}
+        subtitle={overlay.notification_subtitle}
+        width={overlay.width}
+        canvasWidth={width}
+        accentColor={accentColor}
+      />
+    );
+  }
+
+  if (overlay.type === "checklist" && overlay.checklist_items) {
+    return (
+      <ChecklistMockup
+        title={overlay.checklist_title}
+        items={overlay.checklist_items}
+        width={overlay.width}
+        canvasWidth={width}
+        accentColor={accentColor}
       />
     );
   }
