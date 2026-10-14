@@ -5,6 +5,7 @@ import { secondsToFrames } from "../../utils/time";
 import { NotificationMockup } from "./NotificationMockup";
 import { ChecklistMockup } from "./ChecklistMockup";
 import { BigTitleCard } from "./BigTitleCard";
+import { StatNumberCard } from "./StatNumberCard";
 
 // Default cuando el overlay no manda `width`: pensado para un
 // sticker/ícono chico (140px sobre 1080 de ancho). Para mockups grandes
@@ -113,6 +114,10 @@ const OverlayContent: React.FC<{
 
   if (overlay.type === "big_title" && overlay.title_line1) {
     return <BigTitleCard line1={overlay.title_line1} line2={overlay.title_line2} accentColor={accentColor} />;
+  }
+
+  if (overlay.type === "stat_number" && overlay.stat_number) {
+    return <StatNumberCard value={overlay.stat_number} caption={overlay.stat_caption} accentColor={accentColor} />;
   }
 
   // type === "badge" u otro caso sin contenido: no renderiza nada (placeholder

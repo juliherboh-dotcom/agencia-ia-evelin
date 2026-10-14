@@ -182,7 +182,7 @@
       "required": ["id", "type", "start", "end", "position"],
       "properties": {
         "id": { "type": "string" },
-        "type": { "type": "string", "enum": ["text", "image", "badge", "notification", "checklist", "big_title"] },
+        "type": { "type": "string", "enum": ["text", "image", "badge", "notification", "checklist", "big_title", "stat_number"] },
         "text": { "type": "string", "maxLength": 60 },
         "image_url": { "type": "string", "format": "uri" },
         "width": {
@@ -211,6 +211,8 @@
         },
         "title_line1": { "type": "string", "minLength": 1, "maxLength": 20 },
         "title_line2": { "type": "string", "minLength": 1, "maxLength": 20 },
+        "stat_number": { "type": "string", "minLength": 1, "maxLength": 10 },
+        "stat_caption": { "type": "string", "maxLength": 30 },
         "start": { "type": "number", "minimum": 0 },
         "end": { "type": "number", "minimum": 0 },
         "position": { "$ref": "#/$defs/position" }

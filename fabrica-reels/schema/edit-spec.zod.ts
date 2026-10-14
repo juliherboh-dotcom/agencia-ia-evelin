@@ -79,7 +79,7 @@ const ChecklistItemSchema = z.object({
 const OverlaySchema = z
   .object({
     id: z.string().min(1),
-    type: z.enum(["text", "image", "badge", "notification", "checklist", "big_title"]),
+    type: z.enum(["text", "image", "badge", "notification", "checklist", "big_title", "stat_number"]),
     text: z.string().max(60).optional(),
     image_url: z.string().url().optional(),
     // Fracción del ancho del canvas (0-1), igual criterio que position.x/y.
@@ -104,6 +104,12 @@ const OverlaySchema = z
     // del video directamente (no es un pill con fondo como type:"text").
     title_line1: z.string().min(1).max(20).optional(),
     title_line2: z.string().min(1).max(20).optional(),
+    // Campos de type:"stat_number" -- numero/porcentaje grande flotante con
+    // un caption chico debajo (nuevo en 1.4.0), al estilo "100%" del video
+    // de referencia -- un dato o cifra ilustrativa, no necesariamente una
+    // metrica real medida.
+    stat_number: z.string().min(1).max(10).optional(),
+    stat_caption: z.string().max(30).optional(),
     start: z.number().min(0),
     end: z.number().min(0),
     position: PositionSchema,
@@ -131,6 +137,10 @@ const OverlaySchema = z
   .refine((v) => v.type !== "big_title" || !!v.title_line1, {
     message: "overlays de tipo 'big_title' requieren 'title_line1'",
     path: ["title_line1"],
+  })
+  .refine((v) => v.type !== "stat_number" || !!v.stat_number, {
+    message: "overlays de tipo 'stat_number' requieren 'stat_number'",
+    path: ["stat_number"],
   });
 
 const CompareConfigSchema = z.object({
