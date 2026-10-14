@@ -79,7 +79,7 @@ const ChecklistItemSchema = z.object({
 const OverlaySchema = z
   .object({
     id: z.string().min(1),
-    type: z.enum(["text", "image", "badge", "notification", "checklist"]),
+    type: z.enum(["text", "image", "badge", "notification", "checklist", "big_title"]),
     text: z.string().max(60).optional(),
     image_url: z.string().url().optional(),
     // Fracción del ancho del canvas (0-1), igual criterio que position.x/y.
@@ -98,6 +98,12 @@ const OverlaySchema = z
     // 1.4.0, para listar un proceso tal como lo describe el audio).
     checklist_title: z.string().max(30).optional(),
     checklist_items: z.array(ChecklistItemSchema).min(1).max(6).optional(),
+    // Campos de type:"big_title" -- texto grande bicolor sin tarjeta de
+    // fondo (nuevo en 1.4.0), al estilo de los reels de referencia: una
+    // palabra o frase corta en blanco y otra en el color de marca, encima
+    // del video directamente (no es un pill con fondo como type:"text").
+    title_line1: z.string().min(1).max(20).optional(),
+    title_line2: z.string().min(1).max(20).optional(),
     start: z.number().min(0),
     end: z.number().min(0),
     position: PositionSchema,
@@ -121,6 +127,10 @@ const OverlaySchema = z
   .refine((v) => v.type !== "checklist" || !!v.checklist_items, {
     message: "overlays de tipo 'checklist' requieren 'checklist_items'",
     path: ["checklist_items"],
+  })
+  .refine((v) => v.type !== "big_title" || !!v.title_line1, {
+    message: "overlays de tipo 'big_title' requieren 'title_line1'",
+    path: ["title_line1"],
   });
 
 const CompareConfigSchema = z.object({

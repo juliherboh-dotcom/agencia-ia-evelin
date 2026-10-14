@@ -4,7 +4,6 @@ import type { EditSpec } from "../../../../schema/edit-spec.zod";
 import { SubtitleLayer } from "./SubtitleLayer";
 import { HookHeadline } from "./HookHeadline";
 import { ProgressBar } from "./ProgressBar";
-import { LogoWatermark } from "./LogoWatermark";
 import { EmphasisOverlay } from "./EmphasisOverlay";
 import { SfxLayer } from "./SfxLayer";
 import { secondsToFrames } from "../../utils/time";
@@ -90,9 +89,6 @@ export const PersonalBrandClean: React.FC<EditSpec> = (spec) => {
 
       {/* Barra de progreso */}
       {spec.progress_bar.enabled && <ProgressBar color={spec.progress_bar.color} />}
-
-      {/* Logo pequeño de marca */}
-      <LogoWatermark logoUrl={spec.branding.logo_url} position={spec.branding.watermark_position} />
     </AbsoluteFill>
   );
 };
