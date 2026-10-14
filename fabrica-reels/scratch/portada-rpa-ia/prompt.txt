@@ -1,0 +1,14 @@
+Use case: identity-preserve
+Asset type: vertical Instagram Reels cover, 1080x1920.
+Primary request: Create a premium cover for Juliana's video about combining RPA with AI to remove the repetitive copy-paste work between systems (invoices, approvals).
+Input image: Image 1 is the only identity source and edit target. Preserve her exact real, recognizable face, eyes, smile, nose ring, earrings, skin texture, hairstyle, necklace, arm and tattoo. Use the original photographic detail directly; do not synthesize a different face.
+Scene/backdrop: remove the bedroom and place her against a clean dark wine/burgundy editorial background with subtle dusty-pink glow. In the upper-right area, show a clear end-to-end workflow: invoice/document node -> copy-paste arrows -> glowing AI/automation sparkle node -> approval checkmark. The automation node is what completes the flow. No tiny text inside graphics.
+Image quality: exceptionally sharp, clean high-resolution portrait; natural skin pores; crisp eyes, eyelashes and individual hair strands; clean cutout edges; realistic lighting. Keep graphical effects away from her face. No painterly grain, waxy skin, oversharpening halos or recursive-generation texture.
+Subject: Juliana occupies about 50-58% of the canvas, eyes fully open, direct eye contact, natural attractive closed-mouth smile, confident and satisfied, posing rather than speaking.
+Style/medium: photorealistic high-end editorial social-media cover, feminine, modern, credible and consistent with her approved wine/pink visual system.
+Composition/framing: keep face and all text inside the central Instagram profile-grid safe zone. Supporting workflow graphics above or beside her head. Headline in the middle-lower area, around 53-71% of canvas height. Leave at least 420 px clean burgundy breathing room under the final line so the title never gets cropped.
+Color palette: wine #6E1F35, dusty pink #C797AC, pale pink #F2DCE4, warm white #FFF8F6, subtle green completion accents.
+Text (verbatim, exactly, no other words): "SE ACABÓ EL" and "COPIAR Y PEGAR".
+Typography: very bold condensed uppercase similar to Anton or Archivo Black. First block pale pink, second block warm white with strongest emphasis. Maximum three compact lines total. Preserve accents exactly.
+Constraints: maximum identity fidelity; original photographic sharpness; no text over face; eyes open; looking at camera; natural smile; headline safely elevated; no cropped letters; no bottom-aligned text; no subtitles; no CapCut UI; no Nexo IA logo; no external logos; no black bars; no watermark; no extra words; no duplicated limbs.
+Avoid: blurry face, smudged hair, AI-looking skin, clutter, tiny typography, open mouth, excessive magenta light on skin, misspellings.
