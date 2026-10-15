@@ -26,7 +26,7 @@ export const EmphasisOverlay: React.FC<{
 
   return (
     <Sequence from={from} durationInFrames={duration} layout="none">
-      <OverlayContent overlay={overlay} width={width} height={height} accentColor={accentColor} />
+      <OverlayContent overlay={overlay} width={width} height={height} accentColor={accentColor} durationInFrames={duration} />
     </Sequence>
   );
 };
@@ -36,7 +36,8 @@ const OverlayContent: React.FC<{
   width: number;
   height: number;
   accentColor: string;
-}> = ({ overlay, width, height, accentColor }) => {
+  durationInFrames: number;
+}> = ({ overlay, width, height, accentColor, durationInFrames }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const entrance = spring({ frame, fps, config: { damping: 10 }, durationInFrames: 10 });
@@ -95,7 +96,10 @@ const OverlayContent: React.FC<{
         subtitle={overlay.notification_subtitle}
         width={overlay.width}
         canvasWidth={width}
+        canvasHeight={height}
         accentColor={accentColor}
+        position={overlay.position}
+        durationInFrames={durationInFrames}
       />
     );
   }
@@ -107,17 +111,40 @@ const OverlayContent: React.FC<{
         items={overlay.checklist_items}
         width={overlay.width}
         canvasWidth={width}
+        canvasHeight={height}
         accentColor={accentColor}
+        position={overlay.position}
+        durationInFrames={durationInFrames}
       />
     );
   }
 
   if (overlay.type === "big_title" && overlay.title_line1) {
-    return <BigTitleCard line1={overlay.title_line1} line2={overlay.title_line2} accentColor={accentColor} />;
+    return (
+      <BigTitleCard
+        line1={overlay.title_line1}
+        line2={overlay.title_line2}
+        accentColor={accentColor}
+        position={overlay.position}
+        canvasWidth={width}
+        canvasHeight={height}
+        durationInFrames={durationInFrames}
+      />
+    );
   }
 
   if (overlay.type === "stat_number" && overlay.stat_number) {
-    return <StatNumberCard value={overlay.stat_number} caption={overlay.stat_caption} accentColor={accentColor} />;
+    return (
+      <StatNumberCard
+        value={overlay.stat_number}
+        caption={overlay.stat_caption}
+        accentColor={accentColor}
+        position={overlay.position}
+        canvasWidth={width}
+        canvasHeight={height}
+        durationInFrames={durationInFrames}
+      />
+    );
   }
 
   // type === "badge" u otro caso sin contenido: no renderiza nada (placeholder

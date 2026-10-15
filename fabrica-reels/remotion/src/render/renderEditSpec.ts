@@ -47,5 +47,10 @@ export async function renderEditSpec(spec: EditSpec, outputLocation: string): Pr
     codec: "h264",
     outputLocation,
     inputProps: spec,
+    // El video fuente ya viene convertido a SDR/bt709 (ver scripts/tonemap-hdr.sh --
+    // los iPhone graban HDR/HLG en bt2020 por defecto, y sin esto el output final
+    // queda mal etiquetado (bt470bg) y se ve "lavado"/con más exposición que el
+    // original -- el bug real reportado por Evelin, no una percepción suya.
+    colorSpace: "bt709",
   });
 }

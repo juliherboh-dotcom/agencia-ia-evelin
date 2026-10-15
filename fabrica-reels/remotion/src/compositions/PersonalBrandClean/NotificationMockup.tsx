@@ -9,8 +9,11 @@ export const NotificationMockup: React.FC<{
   subtitle?: string;
   width?: number;
   canvasWidth: number;
+  canvasHeight: number;
   accentColor: string;
-}> = ({ icon, title, subtitle, width, canvasWidth, accentColor }) => {
+  position: { x: number; y: number };
+  durationInFrames?: number;
+}> = ({ icon, title, subtitle, width, canvasWidth, canvasHeight, accentColor, position, durationInFrames }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -20,19 +23,26 @@ export const NotificationMockup: React.FC<{
   // de un elemento real sobre la toma (pedido explícito: "podria tener
   // movimiento").
   const bob = Math.sin(frame / 14) * 6;
+  const wobble = Math.sin(frame / 20) * 1.4;
   const translateY = (1 - enter) * -90 + bob;
+  const exit =
+    durationInFrames !== undefined
+      ? Math.min(1, Math.max(0, (durationInFrames - frame) / 8))
+      : 1;
 
   const cardWidth = (width ?? 0.58) * canvasWidth;
+  const left = position.x * canvasWidth;
+  const top = position.y * canvasHeight;
 
   return (
     <div
       style={{
         position: "absolute",
-        left: "50%",
-        top: "8%",
+        left,
+        top,
         width: cardWidth,
-        transform: `translate(-50%, ${translateY}px) scale(${0.9 + enter * 0.1})`,
-        opacity: enter,
+        transform: `translate(-50%, -50%) translate(0, ${translateY}px) rotate(${wobble}deg) scale(${(0.9 + enter * 0.1) * exit})`,
+        opacity: enter * exit,
         display: "flex",
         alignItems: "center",
         gap: 14,

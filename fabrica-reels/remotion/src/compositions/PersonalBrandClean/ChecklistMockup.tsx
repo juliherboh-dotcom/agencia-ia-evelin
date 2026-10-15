@@ -8,26 +8,37 @@ export const ChecklistMockup: React.FC<{
   items: { text: string; checked?: boolean }[];
   width?: number;
   canvasWidth: number;
+  canvasHeight: number;
   accentColor: string;
-}> = ({ title, items, width, canvasWidth, accentColor }) => {
+  position: { x: number; y: number };
+  durationInFrames?: number;
+}> = ({ title, items, width, canvasWidth, canvasHeight, accentColor, position, durationInFrames }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const enter = spring({ frame, fps, config: { damping: 14, stiffness: 160 }, durationInFrames: 12 });
+  const fromLeft = position.x < 0.5;
+  const enter = spring({ frame, fps, config: { damping: 11, stiffness: 160 }, durationInFrames: 12 });
   const bob = Math.sin(frame / 16) * 5;
-  const translateX = (1 - enter) * 60 + bob;
+  const wobble = Math.sin(frame / 23) * 1.3;
+  const translateX = (1 - enter) * (fromLeft ? -60 : 60) + bob;
+  const exit =
+    durationInFrames !== undefined
+      ? Math.min(1, Math.max(0, (durationInFrames - frame) / 8))
+      : 1;
 
   const cardWidth = (width ?? DEFAULT_WIDTH_FRACTION) * canvasWidth;
+  const left = position.x * canvasWidth;
+  const top = position.y * canvasHeight;
 
   return (
     <div
       style={{
         position: "absolute",
-        right: 24,
-        top: "20%",
+        left,
+        top,
         width: cardWidth,
-        transform: `translateX(${translateX}px) scale(${0.92 + enter * 0.08})`,
-        opacity: enter,
+        transform: `translate(-50%, -50%) translateX(${translateX}px) rotate(${wobble}deg) scale(${(0.92 + enter * 0.08) * exit})`,
+        opacity: enter * exit,
         background: "rgba(20,8,10,0.88)",
         border: `1px solid ${accentColor}66`,
         borderRadius: 20,
