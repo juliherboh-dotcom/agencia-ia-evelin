@@ -674,3 +674,61 @@
 - Qué se probaría: armar un flujo simple donde una IA redacta una cotización y una segunda la contrasta contra la lista de precios y reglas del negocio, marcando errores antes de enviarla.
 - Resultado esperado: contar cuántos errores atrapa la segunda revisión en 20 casos de prueba.
 - Objeción típica: "si necesito revisar todo, no ahorro nada" → la revisión automática reduce lo que debe mirar una persona a los casos dudosos.
+
+## Semana del 2026-10-19
+
+> Nota: esta semana no pude abrir las páginas completas (solo resultados de búsqueda); los datos están tomados de los resúmenes y conviene verificarlos antes de grabar.
+
+### 1. Chile firma el plan para capacitar a 150 mil pymes en IA durante 2027
+**Fuente:** https://g5noticias.cl/2026/10/15/ministerio-de-economia-firma-alianza-para-impulsar-la-capacitacion-a-150-mil-pymes-en-ia-y-tecnologias-digitales/ (también https://ecosistemastartup.com/?p=118416)
+**Qué es:** El 15 de octubre, en la Semana de la Pyme, el Ministerio de Economía firmó con Pacto Pyme, Desafío Latam y Abastible (con Google, Amazon y Hazlo con IA) una meta de becas para 150.000 mipymes en 2027: IA aplicada, automatización, marketing digital, datos y ciberseguridad. Casi todo el detalle viene de un solo medio; falta confirmar con el comunicado oficial.
+**Ángulo para Nexo.IA:** Video "Hay 150 mil becas de IA para pymes: ¿sirve capacitarse o conviene contratar a alguien que lo implemente?".
+- Contexto del problema: el dueño oye "capacítate en IA", pero no tiene tiempo y no sabe qué parte de su negocio automatizar primero.
+- Qué se probaría: tomar un curso gratuito (por ejemplo Hazlo con IA, en hazloconia.cl) y medir qué se aprende y qué quedaría sin implementar.
+- Resultado esperado: una guía de qué aprender uno mismo y qué conviene delegar o implementar con apoyo.
+- Objeción típica: "si es gratis, ¿para qué pagar una agencia?" → la capacitación da base, pero aplicar el proceso al negocio concreto es otro trabajo.
+
+### 2. OpenAI lanza "Dots": agentes de ChatGPT que trabajan siempre activos
+**Fuente:** https://aiagentstore.ai/ai-agent-news/topic/human-ai-synergy/2026-10-06
+**Qué es:** Según un resumen semanal, OpenAI empezó a desplegar a clientes de pago "Dots", agentes de ChatGPT que quedan encendidos y trabajan dentro de flujos de empresa, sin esperar a que alguien les escriba. Dato de segunda mano; no encontré el anuncio oficial.
+**Ángulo para Nexo.IA:** Video "La IA que trabaja sola mientras duermes: qué sí y qué no le dejaría hacer a un agente siempre activo".
+- Contexto del problema: se vende la idea del "empleado de IA 24/7", pero el dueño no sabe qué tareas podría dejar sin supervisión.
+- Qué se probaría: definir tres tareas para un agente siempre activo (revisar correos de proveedores, avisar de pagos atrasados, preparar resumen diario) y marcar cuáles requieren aprobación humana.
+- Resultado esperado: una regla simple de qué se automatiza solo y qué pasa por una persona.
+- Objeción típica: "¿y si se equivoca mientras no miro?" → empezar con tareas de bajo riesgo y límites claros (que avise, no que ejecute).
+
+### 3. Los agentes que funcionan son angostos y supervisados, no "bots para todo"
+**Fuente:** https://blog.mean.ceo/?p=11051
+**Qué es:** Un artículo de octubre sobre agentes en startups sostiene que los montajes que rinden son los que hacen una tarea acotada y tienen supervisión, no los asistentes generales. Es opinión de un blog, útil como tendencia y no como dato duro.
+**Ángulo para Nexo.IA:** Mito vs realidad: "No necesitas un robot que haga todo; necesitas uno que haga bien UNA cosa".
+- Contexto del problema: el dueño quiere "una IA para todo el negocio" y termina sin implementar nada.
+- Qué se probaría: elegir la tarea más repetitiva de un negocio chileno (confirmar citas, cotizar, cobrar facturas) y armar solo eso.
+- Resultado esperado: mostrar horas ahorradas en esa única tarea antes de pensar en la siguiente.
+- Objeción típica: "una sola tarea me parece poco" → una tarea bien hecha paga la inversión y abre camino a las demás.
+
+### 4. Banco Central: la automatización y la IA se asocian a menos empleo formal
+**Fuente:** https://ecosistemastartup.com/bc-chile-automatizacion-recorta-21-el-empleo-formal/
+**Qué es:** El IPoM de septiembre de 2026 vincula la exposición a automatización/IA con ~21% menos probabilidad de mantener empleo formal entre 2022 y 2025 (≈27% en menores de 30). El propio Banco aclara que son asociaciones estadísticas, no causalidad demostrada. Además, según OCDE (PIAAC), 55% de los empleos en Chile son tareas cortas y repetitivas, frente a 14% del promedio de los demás países.
+**Ángulo para Nexo.IA:** Video "¿La IA me va a quitar a mis trabajadores? Lo que dice el Banco Central y cómo hablarlo con tu equipo".
+- Contexto del problema: dueños y equipos temen que automatizar signifique despedir, y eso frena la adopción.
+- Qué se probaría: mapear las tareas repetitivas de un cargo (por ejemplo administrativo de una pyme) y qué haría esa persona con el tiempo liberado.
+- Resultado esperado: un mensaje claro para el equipo: automatizar lo repetitivo para atender mejor y vender más.
+- Objeción típica: "es hablar bonito, al final se recortan puestos" → ser honesto: depende de cómo se implemente, y mostrar casos donde la dotación no bajó.
+
+### 5. Multa de la FTC por "inventar capacidades de IA": cuidado con prometer más de la cuenta
+**Fuente:** https://aiagentstore.ai/ai-agent-news/daily/2026-10-04 (resumen diario del 4 de octubre; ver índice en https://aiagentstore.ai/ai-agent-news/2026-october)
+**Qué es:** La FTC de EE. UU. cerró acuerdos y una multa de US$930.000 contra Cox Media Group y socios por exagerar lo que su IA podía hacer. Es EE. UU., pero muestra que la publicidad engañosa con IA ya se sanciona. Resumen de segunda mano.
+**Ángulo para Nexo.IA:** Video "Cómo reconocer a un vendedor de IA que te promete humo (y las 5 preguntas para hacerle)".
+- Contexto del problema: hay mucha oferta de "agentes mágicos" y el dueño no tiene cómo distinguir lo real.
+- Qué se probaría: armar una lista de preguntas (¿en qué caso real funciona?, ¿qué datos usa?, ¿qué pasa cuando se equivoca?, ¿cuánto cuesta al mes?) y aplicarla a una propuesta típica.
+- Resultado esperado: el público sale con un filtro simple, y la marca se posiciona como la agencia que no exagera.
+- Objeción típica: "todas dicen lo mismo" → las preguntas concretas separan a quien implementó de quien solo vende.
+
+### 6. Radar Digital Empresarial 2026: la madurez digital y el uso de IA de las empresas chilenas
+**Fuente:** https://ecosistemastartup.com/summit-pais-digital-ia-para-cerrar-la-brecha-pyme-en-chile/
+**Qué es:** Según las notas de la semana, el Summit para el Futuro de la Productividad (8 de octubre, Santiago) iba a lanzar el Radar Digital Empresarial 2026 sobre madurez digital y uso de IA. No pude confirmar las cifras publicadas; conviene buscar el informe antes de citarlo.
+**Ángulo para Nexo.IA:** Video "Hicimos el test de madurez digital a una pyme chilena: ¿en qué nivel estás?".
+- Contexto del problema: el dueño no sabe si está atrasado o adelantado respecto de otras pymes.
+- Qué se probaría: aplicar un mini diagnóstico (¿cotizas a mano?, ¿tus datos están en Excel suelto?, ¿respondes WhatsApp a mano?) a un negocio real y ubicarlo en un nivel.
+- Resultado esperado: un puntaje y el siguiente paso concreto, que lleve a pedir un diagnóstico con Nexo.IA.
+- Objeción típica: "mi negocio es chico, esto es para empresas grandes" → mostrar que los primeros pasos son baratos y parten por ordenar lo que ya existe.
