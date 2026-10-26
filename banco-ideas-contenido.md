@@ -732,3 +732,61 @@
 - Qué se probaría: aplicar un mini diagnóstico (¿cotizas a mano?, ¿tus datos están en Excel suelto?, ¿respondes WhatsApp a mano?) a un negocio real y ubicarlo en un nivel.
 - Resultado esperado: un puntaje y el siguiente paso concreto, que lleve a pedir un diagnóstico con Nexo.IA.
 - Objeción típica: "mi negocio es chico, esto es para empresas grandes" → mostrar que los primeros pasos son baratos y parten por ordenar lo que ya existe.
+
+## Semana del 2026-10-26
+
+_Nota de la corrida: la búsqueda web dio pocas noticias fechadas de esta semana; varios hallazgos vienen de GitHub trending semanal y de notas de las últimas 2-3 semanas. Datos marcados como "por verificar" conviene confirmarlos antes de citarlos en cámara._
+
+### 1. WhatsApp cambia sus precios: se cobran mensajes de servicio y el agente de IA va por tokens
+**Fuente:** https://www.businessdailyafrica.com/bd/markets/market-news/meta-sets-whatsapp-messaging-charges-5573670 (cobro por mensajes) y https://www.businesstoday.in/technology/artificial-intelligence/story/whatsapp-introduces-token-based-pricing-for-ai-agents-from-august-1-540699-2026-07-03 (precio por tokens)
+**Qué es:** Desde el 1 de octubre de 2026 Meta cobra por mensaje los "utility messages" enviados dentro de la ventana de 24 horas de atención. El Meta Business Agent se cobra por tokens (≈US$2 por millón; estimaciones de 4-5 centavos por mensaje complejo) y a pymes se les incluiría en planes de WhatsApp Business Premium. Los detalles para Chile están por verificar.
+**Ángulo para Nexo.IA:** Video "¿Cuánto me va a costar atender por WhatsApp con IA? Hicimos las cuentas".
+- Contexto del problema: el dueño quiere un bot en WhatsApp pero teme costos escondidos que no entiende.
+- Qué se probaría: tomar una pyme que recibe 300 consultas al mes y calcular costo con bot vs. costo de la persona que hoy responde.
+- Resultado esperado: una cuenta simple (costo mensual estimado vs. horas liberadas) que ayude a decidir.
+- Objeción típica: "me van a cobrar por todo" → mostrar que el costo por mensaje es bajo frente a una venta perdida por responder tarde, y cómo poner topes.
+
+### 2. Estudio Endeavor/IAméricas: 7 de cada 10 pymes tienen baja madurez en gobernanza de IA
+**Fuente:** https://www.df.cl/df-lab/innovacion-y-startups/la-mayoria-de-las-pyme-y-startups-de-chile-y-la-region-gobiernan-su-ia-de
+**Qué es:** Estudio sobre 418 organizaciones (300 chilenas): la mayoría de las pymes usa IA sin reglas claras sobre qué datos entran, quién revisa y qué pasa si se equivoca. (Solo vi el titular y el resumen en buscador; cifras por verificar en la nota.)
+**Ángulo para Nexo.IA:** Mito vs. realidad: "Usar ChatGPT en tu pyme sin reglas es un riesgo: la política de IA de una página".
+- Contexto del problema: el equipo ya pega datos de clientes en herramientas de IA sin que el dueño lo sepa.
+- Qué se probaría: redactar una política de una página (qué datos no se suben, quién revisa, qué herramienta se usa) y aplicarla a un caso.
+- Resultado esperado: una plantilla descargable que sirva de gancho para captar leads.
+- Objeción típica: "somos 5 personas, eso es burocracia" → una página y tres reglas bastan, y evita el error caro.
+
+### 3. GitHub trending: "knowledge-work-plugins" de Anthropic (~33 mil estrellas)
+**Fuente:** https://github.com/anthropics/knowledge-work-plugins
+**Qué es:** Paquetes listos para que Claude actúe como asistente de ventas, atención al cliente, marketing, finanzas o legal, conectándose a herramientas como HubSpot o Slack. Hoy requiere algo de configuración técnica, pero muestra hacia dónde va el trabajo de oficina.
+**Ángulo para Nexo.IA:** Video "Un asistente de ventas con IA que prepara tus reuniones: qué se puede hacer hoy sin ser programador".
+- Contexto del problema: el vendedor de una pyme llega a la reunión sin haber revisado nada del cliente.
+- Qué se probaría: usar un asistente de preparación de reunión (historial del cliente + noticias + preguntas sugeridas) con un caso real.
+- Resultado esperado: una ficha de una página en minutos, y comparar con el tiempo que tomaba antes.
+- Objeción típica: "eso es para empresas grandes con CRM" → mostrar la versión mínima con un Excel o Google Sheets.
+
+### 4. GitHub trending: "claude-seo", auditoría de sitio web con IA (~2,5 mil estrellas esta semana)
+**Fuente:** https://github.com/AgriciDaniel/claude-seo
+**Qué es:** Herramienta gratuita que audita un sitio (SEO técnico, contenido, SEO local, y qué tan "legible" es el sitio para buscadores de IA) y entrega un plan priorizado en PDF/Excel. Requiere Claude Code, así que es para quien arma el servicio, no para el dueño directo.
+**Ángulo para Nexo.IA:** Caso real: "Auditamos el sitio de una pyme chilena con IA: esto fue lo que encontramos".
+- Contexto del problema: muchas pymes tienen web o Google Business Profile abandonado y no aparecen cuando el cliente pregunta a ChatGPT o Google.
+- Qué se probaría: auditar el sitio de un negocio local (con su permiso) y priorizar las 5 correcciones de mayor impacto.
+- Resultado esperado: informe antes/después y una lista simple de acciones para el dueño.
+- Objeción típica: "mis clientes me llegan por recomendación" → mostrar cuántos ya buscan en Google o en IA antes de contactar.
+
+### 5. GitHub trending: "Graphify", convertir PDFs, planillas y documentos en una base consultable
+**Fuente:** https://github.com/Graphify-Labs/graphify
+**Qué es:** Lee código, PDFs, Word, Excel, imágenes y audios y arma un mapa consultable de cómo se conectan. Es herramienta técnica (se usa desde un asistente de código), pero la idea de "preguntarle a tus documentos" sí es traducible a una pyme.
+**Ángulo para Nexo.IA:** Video "Pregúntale a tus contratos y cotizaciones: un buscador interno para tu pyme".
+- Contexto del problema: la información vive en correos, PDFs y planillas; cuando alguien se va, se pierde.
+- Qué se probaría: cargar 20 cotizaciones y contratos de un negocio y hacer preguntas como "¿a quién le cobramos menos de lo normal?".
+- Resultado esperado: respuestas con la fuente citada en segundos, mostrando el ahorro de búsqueda manual.
+- Objeción típica: "mis datos son confidenciales" → explicar opciones locales/privadas y la regla de qué sí se sube (conecta con el hallazgo 2).
+
+### 6. Seguimiento: becas de IA para 150 mil pymes (Semana de la Pyme, 22 de octubre)
+**Fuente:** https://www.biobiochile.cl/noticias/servicios/beneficios/2026/10/22/abastible-formo-parte-de-la-semana-de-la-pyme-impulsan-formacion-en-ia-para-150-mil-negocios-en-2027.shtml
+**Qué es:** Continuación de la noticia de la semana pasada: la alianza del Ministerio de Economía con Pacto Pyme, Desafío Latam y Abastible, con apoyo de Google y Amazon, para formar pymes en IA y automatización durante 2027. Cursos y fechas de postulación por verificar.
+**Ángulo para Nexo.IA:** Video "Hay becas de IA para pymes: qué conviene aprender tú y qué conviene delegar".
+- Contexto del problema: el dueño no tiene tiempo para cursos y no sabe si capacitarse o contratar a alguien.
+- Qué se probaría: separar tareas en "aprender yo" (usar IA para redactar, cotizar) y "delegar" (integraciones, WhatsApp, facturación).
+- Resultado esperado: una regla simple de decisión y un llamado a diagnóstico con Nexo.IA para lo delegable.
+- Objeción típica: "con el curso gratis lo hago yo" → sí, lo básico; el tiempo del dueño vale más en vender que en configurar.
