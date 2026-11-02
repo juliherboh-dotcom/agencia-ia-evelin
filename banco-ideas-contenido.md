@@ -790,3 +790,52 @@ _Nota de la corrida: la búsqueda web dio pocas noticias fechadas de esta semana
 - Qué se probaría: separar tareas en "aprender yo" (usar IA para redactar, cotizar) y "delegar" (integraciones, WhatsApp, facturación).
 - Resultado esperado: una regla simple de decisión y un llamado a diagnóstico con Nexo.IA para lo delegable.
 - Objeción típica: "con el curso gratis lo hago yo" → sí, lo básico; el tiempo del dueño vale más en vender que en configurar.
+
+## Semana del 2026-11-02
+
+_Nota de la corrida: semana con poca noticia fechada y verificable (varios sitios como TLDR, Hacker News y TechCrunch no estaban accesibles desde el entorno, y las búsquedas devolvieron sobre todo material de las últimas semanas). Se incluyen 5 hallazgos en vez de 8 para no rellenar; lo marcado "por verificar" conviene confirmarlo antes de citarlo en cámara._
+
+### 1. Muse de Meta: un agente que prepara el trabajo pero "no publica, no envía ni gasta sin tu aprobación" (seguimiento)
+**Fuente:** https://helpnetsecurity.com/2026/09/29/meta-muse-for-small-business
+**Qué es:** Muse for Small Business conecta con Shopify, Stripe, QuickBooks, Canva, Notion y otras (la lista varía según el medio), lee analíticas de Instagram/Facebook y propone acciones. Meta dice que nada se publica ni se paga sin aprobación del dueño. Por ahora está disponible solo en EE.UU. y Canadá; Chile por verificar.
+**Ángulo para Nexo.IA:** Video "¿Dejarías que una IA gaste tu plata? La regla de la aprobación humana".
+- Contexto del problema: el dueño quiere automatizar pero le da miedo que la IA mande un mensaje equivocado o gaste en publicidad sin control.
+- Qué se probaría: armar un flujo con un punto de aprobación (la IA redacta la respuesta o cotización, el dueño da OK con un clic en WhatsApp o correo).
+- Resultado esperado: mostrar cuánto tiempo se ahorra igual aunque haya aprobación, y qué tareas sí pueden ir sin revisión.
+- Objeción típica: "si tengo que revisar todo, para qué la quiero" → separar tareas de bajo riesgo (agendar, recordatorios) de las de alto riesgo (pagos, reclamos).
+
+### 2. Brecha entre "usar IA" e "implementarla": mucha pyme la usa, muy pocas la tienen en sus procesos
+**Fuente:** https://ecosistemastartup.com/?p=91852 (cifras de un artículo comercial sobre pymes de España; sirve como referencia, no como dato chileno)
+**Qué es:** Se cita que ~76% de las pymes usa IA cada semana pero solo ~8% la tiene integrada en procesos. Los casos de uso con más retorno que menciona son documentales: pasar datos de PDF a Excel, clasificar facturas y conciliar cuentas bancarias. Metodología no clara, por verificar.
+**Ángulo para Nexo.IA:** Video "Usar ChatGPT no es automatizar: la diferencia entre jugar con IA y ahorrar horas".
+- Contexto del problema: el dueño ya pregunta cosas a ChatGPT, pero cada semana repite las mismas tareas a mano.
+- Qué se probaría: tomar una tarea repetitiva (ingresar facturas de proveedores a una planilla) y pasarla de "copiar y pegar en ChatGPT" a un flujo que corre solo.
+- Resultado esperado: comparar minutos por semana antes y después, y mostrar el paso concreto que cambió.
+- Objeción típica: "yo ya uso IA" → sí, pero si cada vez hay que acordarse y repetirlo, no es un proceso, es un hábito.
+
+### 3. GitHub trending: "claude-mem", asistentes de IA que recuerdan lo que hicieron antes
+**Fuente:** https://github.com/thedotmack/claude-mem
+**Qué es:** Guarda lo que un agente hizo en una sesión y se lo devuelve como contexto en la siguiente. Es herramienta para desarrolladores (aparece en el trending semanal), pero la idea de fondo, una IA con memoria, es traducible.
+**Ángulo para Nexo.IA:** Mito vs realidad: "Tu asistente de IA no se acuerda de tu negocio (y por eso te responde genérico)".
+- Contexto del problema: cada vez que el dueño abre ChatGPT parte de cero y tiene que explicar de nuevo su negocio, sus precios y su tono.
+- Qué se probaría: preparar una "ficha del negocio" (servicios, precios, preguntas frecuentes, tono) y compararla con respuestas sin ficha.
+- Resultado esperado: dos respuestas lado a lado a un mismo cliente, una genérica y una con contexto.
+- Objeción típica: "me da miedo dejar mis datos en la IA" → qué poner en la ficha y qué dejar fuera (conecta con el estudio de gobernanza de la semana del 26 de octubre).
+
+### 4. GitHub trending: "anthropics/skills", recetas reutilizables para que la IA haga tareas siempre igual
+**Fuente:** https://github.com/anthropics/skills
+**Qué es:** Repositorio público de "skills": instrucciones empaquetadas para que un asistente repita una tarea con el mismo formato y criterio (por ejemplo, generar un documento o planilla con un estándar). Es técnico de instalar, pero el concepto "receta por tarea" sí lo entiende un dueño. Qué skills sirven para negocios, por verificar.
+**Ángulo para Nexo.IA:** Video "La receta que hace que la IA te entregue siempre la cotización igual".
+- Contexto del problema: cada vez que la IA redacta una cotización o propuesta sale distinta y hay que corregirla.
+- Qué se probaría: definir una receta (estructura, tono, datos obligatorios) y generar 5 cotizaciones de distintos clientes con ella.
+- Resultado esperado: cotizaciones consistentes en menos tiempo, con menos correcciones.
+- Objeción típica: "eso es para programadores" → mostrar que el cliente nunca toca código; la receta la deja armada Nexo.IA.
+
+### 5. Becas de IA en Chile: Google 2026 ya cerró; ¿qué estudiar y qué delegar? (contexto)
+**Fuente:** https://www.theclinic.cl/2026/05/28/como-conseguir-15-mil-nuevas-becas-google-en-chile-ia/
+**Qué es:** Google abrió 15 mil becas para certificados de carrera con Talento Digital para Chile (postulación del 28/05 al 10/06 de 2026, ya cerrada). Se suma al plan de capacitar a 150 mil pymes en 2027 ya cubierto en semanas anteriores. Si existe una próxima convocatoria, por verificar en talentodigitalparachile.cl.
+**Ángulo para Nexo.IA:** Video "Hay cursos gratis de IA, pero ¿le alcanza el tiempo a un dueño de pyme?".
+- Contexto del problema: los cursos gratuitos existen, pero el dueño trabaja 10 horas diarias y no termina ninguno.
+- Qué se probaría: estimar las horas de un certificado y compararlas con las horas semanales que hoy se van en tareas repetitivas.
+- Resultado esperado: una regla simple: aprender lo básico para conversar con la IA y delegar la configuración.
+- Objeción típica: "para qué pagar si hay cursos gratis" → el curso enseña la herramienta, no deja tu proceso funcionando.
