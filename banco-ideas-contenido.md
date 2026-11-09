@@ -839,3 +839,52 @@ _Nota de la corrida: semana con poca noticia fechada y verificable (varios sitio
 - Qué se probaría: estimar las horas de un certificado y compararlas con las horas semanales que hoy se van en tareas repetitivas.
 - Resultado esperado: una regla simple: aprender lo básico para conversar con la IA y delegar la configuración.
 - Objeción típica: "para qué pagar si hay cursos gratis" → el curso enseña la herramienta, no deja tu proceso funcionando.
+
+## Semana del 2026-11-09
+
+> Nota de la corrida: esta semana la búsqueda web devolvió pocas noticias con fecha de noviembre. Los hallazgos de GitHub trending sí son de esta semana; los demás están marcados como contexto/seguimiento.
+
+### 1. GitHub trending: "agent-browser" (Vercel Labs, ~48 mil estrellas), una IA que navega páginas web por ti
+**Fuente:** https://github.com/vercel-labs/agent-browser
+**Qué es:** Herramienta abierta que permite a un asistente de IA abrir un navegador, leer una página, hacer clic, llenar formularios y descargar archivos, y mantener la sesión iniciada. Es de línea de comandos (técnica), pero lo que hace es traducible: la IA hace los trámites web repetitivos.
+**Ángulo para Nexo.IA:** Video "La IA que entra al portal del proveedor y descarga las facturas por ti".
+- Contexto del problema: el dueño o su administrativa pierde horas cada semana entrando a portales (proveedores, banco, SII, marketplaces) para copiar datos o bajar documentos.
+- Qué se probaría: elegir un trámite web repetitivo y medir cuánto toma a mano frente a un flujo donde la IA navega y entrega el resultado en una planilla.
+- Resultado esperado: tiempo antes/después y qué pasos siguen necesitando una persona (claves, aprobaciones).
+- Objeción típica: "¿y si se equivoca o le doy mis claves?" → empezar con tareas de solo lectura y sin dar acceso a pagos.
+
+### 2. GitHub trending: "agent-desktop" (Vercel Labs, ~20 mil estrellas), una IA que usa los programas del computador
+**Fuente:** https://github.com/vercel-labs/agent-desktop
+**Qué es:** Permite que un agente use aplicaciones de escritorio (Windows, macOS, Linux): leer lo que hay en pantalla, hacer clic, escribir y copiar datos. Es para desarrolladores, pero apunta a un problema real de pymes: sistemas antiguos sin integración.
+**Ángulo para Nexo.IA:** Mito vs realidad: "Tu sistema viejo sin API no es excusa para no automatizar".
+- Contexto del problema: muchas pymes tienen un programa de gestión o contabilidad antiguo que no se conecta con nada y todo se pasa a mano.
+- Qué se probaría: mostrar una tarea de traspaso de datos entre dos programas y cómo un agente la haría (y dónde sería frágil).
+- Resultado esperado: una guía simple de cuándo conviene una integración "limpia" y cuándo un agente que use la pantalla.
+- Objeción típica: "suena riesgoso" → es verdad, es tecnología joven; por eso se prueba en tareas de bajo riesgo y con revisión humana.
+
+### 3. Seguimiento: "claude-mem" y "anthropics/skills" siguen en el trending semanal
+**Fuente:** https://github.com/thedotmack/claude-mem y https://github.com/anthropics/skills (ambos aparecen en https://github.com/trending?since=weekly)
+**Qué es:** Siguen entre los repos más vistos de la semana (memoria para asistentes y recetas reutilizables para tareas). Ya se cubrieron la semana del 2 de noviembre; que sigan arriba confirma que "memoria + recetas" es una tendencia sostenida.
+**Ángulo para Nexo.IA:** Video de cierre de serie: "Memoria + receta: los dos ingredientes de una IA que sí sirve en tu negocio".
+- Contexto del problema: la IA responde distinto cada vez y no recuerda el negocio.
+- Qué se probaría: la misma consulta de un cliente con y sin "ficha del negocio" ni receta, comparada lado a lado.
+- Resultado esperado: una checklist de 5 datos que todo dueño debería tener escritos para su IA.
+- Objeción típica: "¿para qué si ya la uso?" → mostrar la diferencia entre respuesta genérica y respuesta con contexto.
+
+### 4. Contexto: "Claude for Small Business" (Anthropic, lanzado el 13 de mayo de 2026), el equivalente gringo de lo que hace Nexo.IA
+**Fuente:** https://www.axios.com/2026/05/13/anthropic-claude-small-business-smb (y cobertura en https://techinformed.com/anthropic-brings-claude-workflows-to-small-businesses/)
+**Qué es:** Paquete de 15 flujos de trabajo listos y conectores (QuickBooks, PayPal, HubSpot, Canva, DocuSign, Google Workspace, Microsoft 365) para pymes. Según la cobertura, está en inglés y pensado para EE. UU.; no es novedad de esta semana, pero sirve de contexto. Detalles de precio y permisos vienen de medios secundarios, por verificar.
+**Ángulo para Nexo.IA:** Video "Las grandes de la IA ya se están fijando en las pymes: ¿qué significa para una pyme chilena?".
+- Contexto del problema: el dueño ve que "la IA para pymes" llega desde afuera y no sabe si le sirve con su contabilidad, su WhatsApp y el SII.
+- Qué se probaría: revisar qué de esos 15 flujos tiene sentido en Chile (cotizaciones, cobranza, atención) y qué no (integraciones locales, idioma).
+- Resultado esperado: lista de 3 flujos que sí se pueden replicar hoy en una pyme chilena.
+- Objeción típica: "entonces ya no necesito a nadie que lo configure" → las herramientas existen, pero conectarlas a tu realidad local (facturación, WhatsApp, idioma) sigue siendo el trabajo.
+
+### 5. Contexto: mucha adopción, poca integración (Emol, mayo 2026)
+**Fuente:** https://www.emol.com/noticias/Economia/2026/05/26/1201049/empresas-inteligencia-artificial-chile.html
+**Qué es:** Según una búsqueda de esta semana que cita esta nota, la adopción de IA en Chile es alta pero solo cerca de 2 de cada 10 empresas la tienen integrada en sus flujos de trabajo (cifra a verificar leyendo la nota completa). Refuerza el hallazgo de la semana pasada sobre la brecha entre usar e implementar.
+**Ángulo para Nexo.IA:** Post/carrusel "Usar IA ≠ tener IA trabajando en tu negocio: test de 5 preguntas".
+- Contexto del problema: el dueño siente que "ya hace IA" porque usa ChatGPT, pero sus procesos siguen igual.
+- Qué se probaría: un autodiagnóstico de 5 preguntas (¿corre sin que yo lo pida? ¿está conectado a mis datos? ¿alguien lo revisa?, etc.).
+- Resultado esperado: el seguidor se ubica en un nivel y sabe cuál es el siguiente paso.
+- Objeción típica: "no tengo tiempo para implementar" → empezar por un solo proceso, el más repetitivo.
