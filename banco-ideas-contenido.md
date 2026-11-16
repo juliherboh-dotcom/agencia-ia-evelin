@@ -888,3 +888,70 @@ _Nota de la corrida: semana con poca noticia fechada y verificable (varios sitio
 - Qué se probaría: un autodiagnóstico de 5 preguntas (¿corre sin que yo lo pida? ¿está conectado a mis datos? ¿alguien lo revisa?, etc.).
 - Resultado esperado: el seguidor se ubica en un nivel y sabe cuál es el siguiente paso.
 - Objeción típica: "no tengo tiempo para implementar" → empezar por un solo proceso, el más repetitivo.
+
+## Semana del 2026-11-16
+
+> Nota de la corrida: los hallazgos 1 a 5 tienen fecha de esta semana (7 al 16 de noviembre). Varias páginas no se pudieron abrir directamente desde el entorno de la corrida, así que los detalles vienen de los resultados de búsqueda y conviene revisar la fuente antes de grabar (sobre todo fechas, precios y disponibilidad en Chile).
+
+### 1. Pacto Pyme abre 500 becas gratuitas de IA para pymes de todo Chile (postulación hasta el 22 de noviembre)
+**Fuente:** https://www.biobiochile.cl/noticias/servicios/toma-nota/2026/11/10/tienes-una-pyme-revisa-como-acceder-a-una-de-500-becas-gratuitas-para-cursos-de-capacitacion-en-ia.shtml (también en https://www.radioagricultura.cl/noticias/nacional/pymes-podran-acceder-a-500-becas-gratuitas-para-capacitarse-en-inteligencia-artificial_20261111/)
+**Qué es:** Publicado el 10 de noviembre: 500 becas para emprendedores y trabajadores de pymes, con prioridad para regiones, mujeres, jóvenes y personas mayores. Son tres cursos online sin requisitos previos (IA para marketing y ventas, IA aplicada al trabajo con Claude, automatización de procesos), dictados por Desafío Latam; parten la última semana de noviembre. El link de postulación varía según la nota (pactopyme.cl/regiones o pactopyme.cl/becas-wom): verificar en el sitio oficial.
+**Ángulo para Nexo.IA:** Video urgente (sirve solo hasta el 22): "Te quedan días para postular a una beca gratis de IA para tu pyme: cuál de los 3 cursos elegir según tu negocio".
+- Contexto del problema: el dueño quiere aprender IA pero no sabe por dónde partir ni quiere pagar un curso que después no aplica.
+- Qué se probaría: recorrer el formulario en pantalla y recomendar un curso según el tipo de negocio (venta al público → marketing y ventas; oficina con mucho papeleo → automatización).
+- Resultado esperado: el seguidor postula en el momento y sabe qué proceso propio llevar al curso como "tarea".
+- Objeción típica: "no tengo tiempo para estudiar" → son cursos online y en parte a ritmo propio; con un solo proceso automatizado se recuperan esas horas.
+
+### 2. OpenAI lanza "Business Hub": ahora puedes reclamar la ficha de tu negocio dentro de ChatGPT
+**Fuente:** https://www.brightlocal.com/learn/chatgpt-business-hub/ (también https://itbrief.asia/story/openai-launches-chatgpt-business-hub-for-companies)
+**Qué es:** Lanzado en beta el 10 de noviembre. Es un panel gratuito (por ahora) donde un negocio reclama y verifica su perfil, mantiene sus datos al día y ve cuántas veces ChatGPT lo menciona; lo comparan con la ficha de Google Business Profile. Se anuncia como global, pero hay reportes de solicitudes fuera de EE. UU. que quedaron en lista de espera, y los "Business Agents" (asistente con tu marca) son solo para EE. UU. por ahora.
+**Ángulo para Nexo.IA:** Video de prueba real: "Le pregunté a ChatGPT por mi negocio y esto respondió. Así se reclama la ficha".
+- Contexto del problema: cada vez más clientes le preguntan a ChatGPT "dónde compro X en Santiago" en vez de buscar en Google, y el dueño no sabe qué dice la IA de su negocio.
+- Qué se probaría: preguntarle a ChatGPT por 3 pymes chilenas reales, mostrar los errores (horario, dirección, servicios) e intentar reclamar la ficha desde Chile.
+- Resultado esperado: una checklist de qué tener ordenado antes (sitio web con datos claros, teléfono, dominio propio) y el resultado honesto del intento, aunque sea "lista de espera".
+- Objeción típica: "mis clientes no usan ChatGPT" → la ficha de Google tampoco parecía importante hace 10 años; reclamarla es gratis y toma minutos.
+
+### 3. Worker.ai sale al mercado con un "sistema operativo" gratis para pymes y coaching de ventas con IA
+**Fuente:** https://technical.ly/entrepreneurship/why-raleigh-startup-worker-ai-is-making-small-business-ops-free/ (sitio: https://worker.ai/)
+**Qué es:** Lanzada el 12 de noviembre en EE. UU. La base es gratis para toda la empresa (reunión semanal, indicadores, metas, tareas y problemas) y el plan es cobrar después por "trabajadores de IA" especializados. Compró DeltaGen, que da coaching en vivo durante llamadas de venta y convierte compromisos hablados en tareas con responsable. El acceso es por grupos, con configuración hecha por la empresa.
+**Ángulo para Nexo.IA:** Mito vs realidad: "La IA no arregla una pyme desordenada: primero el orden, después el agente".
+- Contexto del problema: muchas pymes quieren un agente de IA pero no tienen reunión semanal, indicadores ni responsables claros; no hay proceso que automatizar.
+- Qué se probaría: armar en una planilla el mismo esqueleto (5 indicadores, tareas con dueño, lista de problemas) y mostrar qué parte podría tomar una IA después.
+- Resultado esperado: una plantilla descargable de "tablero semanal" como paso previo a cualquier automatización.
+- Objeción típica: "si es gratis, ¿para qué pagarle a alguien?" → la herramienta es gratis, lo que cuesta es adaptarla al negocio y sostener el hábito; además está en inglés y pensada para EE. UU.
+
+### 4. Google lleva resúmenes de correo y "Ayúdame a escribir" de Gemini a todas las cuentas de Workspace, y suma "Skills"
+**Fuente:** https://phandroid.com/2026/11/13/369416/ (resúmenes y redacción en Gmail) y https://blog.rudrakasturi.com/google-gemini-skills-workspace-gmail-november-2026-updates/ (Skills)
+**Qué es:** Desde el 10 de noviembre, según la cobertura, los resúmenes de hilos y la redacción básica con IA en Gmail llegan a todas las cuentas de Workspace, incluidos los planes de empresa más básicos. En paralelo se despliegan "Skills": instrucciones reutilizables para que Gemini haga una tarea siempre de la misma forma en Gmail, Docs y Drive. Son fuentes secundarias; confirmar en el blog oficial de Workspace qué incluye cada plan.
+**Ángulo para Nexo.IA:** Tutorial corto: "Si tu pyme paga Google Workspace, ya tienes IA en el correo: 3 usos en 5 minutos".
+- Contexto del problema: el dueño paga el correo corporativo hace años y contrata otra herramienta de IA aparte sin saber lo que ya tiene incluido.
+- Qué se probaría: resumir un hilo largo con un proveedor, redactar la respuesta a un reclamo y guardar una "receta" para responder cotizaciones.
+- Resultado esperado: minutos ahorrados por correo y una receta lista para copiar.
+- Objeción típica: "la IA escribe como robot" → por eso la receta lleva el tono y los datos del negocio; se revisa antes de enviar.
+
+### 5. Estados Unidos: se disparan los negocios nuevos sin empleados, y las pymes que adoptan IA terminan con más gente, no menos
+**Fuente:** https://www.cnbc.com/2026/11/07/americas-new-no-employee-small-business-owners-start-hot-in-ai-era.html (datos de Gusto también en https://www.axios.com/2026/09/10/ai-hiring-small-business)
+**Qué es:** Nota del 7 de noviembre: en rubros muy expuestos a la IA, las solicitudes para abrir negocios sin planes de contratar subieron cerca de 27% entre inicios de 2024 e inicios de 2026. A la vez, datos de Gusto muestran que las pymes que adoptaron IA tenían alrededor de 7% más empleados al año (10% en las de menos de 10 personas). Ojo: es una encuesta a clientes de Gusto y muestra correlación, no causa.
+**Ángulo para Nexo.IA:** Post de opinión con datos: "¿La IA me va a dejar sin equipo? Lo que dicen los números (y lo que no dicen)".
+- Contexto del problema: el dueño teme que automatizar signifique despedir, y su equipo teme lo mismo; eso frena cualquier proyecto.
+- Qué se probaría: contrastar este dato con el del Banco Central chileno (semana del 19 de octubre, que asociaba automatización con menos empleo formal) y explicar por qué pueden ser ciertos los dos.
+- Resultado esperado: un mensaje claro para conversar con el equipo: se automatizan tareas, no personas, y las horas liberadas van a vender y atender.
+- Objeción típica: "eso es Estados Unidos" → cierto, y es correlación; por eso se presenta como señal y no como promesa.
+
+### 6. Seis lecciones de fundadores sobre poner un agente de IA a atender clientes
+**Fuente:** https://pctechmag.com/2026/11/can-ai-agents-run-customer-service-for-small-businesses-6-lessons-from-founders-building-them/ (complemento: https://dev.to/saurabh_bhayana/ai-agents-for-small-business-what-they-actually-do-in-2026-and-where-they-fail-42a7)
+**Qué es:** Artículo publicado hoy con aprendizajes de quienes construyen agentes de atención para pymes; entre ellos, que es mejor un agente que reconoce lo que no sabe que uno que aparenta saber, y qué preguntar al proveedor sobre privacidad de datos. El complemento explica que los errores chicos se acumulan en tareas largas, por lo que funcionan mejor tareas cortas con revisión humana. No se pudo abrir el artículo completo: leerlo antes de citar las seis lecciones.
+**Ángulo para Nexo.IA:** Carrusel "5 preguntas que hacerle a quien te quiera vender un bot de WhatsApp" (incluida Nexo.IA).
+- Contexto del problema: al dueño le ofrecen bots todas las semanas y no tiene cómo distinguir uno serio de uno que le va a inventar precios a sus clientes.
+- Qué se probaría: hacerle a un bot de demostración preguntas trampa (un producto que no existe, un descuento no autorizado, un reclamo) y mostrar qué responde.
+- Resultado esperado: las 5 preguntas (¿qué hace cuando no sabe?, ¿cuándo deriva a una persona?, ¿dónde quedan mis datos?, ¿quién revisa?, ¿cómo lo apago?).
+- Objeción típica: "prefiero que conteste una persona" → de acuerdo en lo delicado; el bot toma lo repetitivo (horario, stock, estado del pedido) y deriva el resto.
+
+### 7. GitHub trending: "plannotator" (~12 mil estrellas), aprobar el plan de la IA antes de que actúe
+**Fuente:** https://github.com/backnotprop/plannotator (en https://github.com/trending?since=weekly)
+**Qué es:** Herramienta para programadores: cuando el agente propone un plan, se abre en el navegador para que una persona lo comente, lo apruebe o lo rechace, y se puede compartir con un colega para que opine. El trending de esta semana fue casi todo técnico; se rescata este repo por la idea de fondo, que sí aplica a una pyme: la IA propone, una persona aprueba.
+**Ángulo para Nexo.IA:** Video explicativo: "El botón de 'aprobar': cómo usar IA sin perder el control de tu negocio".
+- Contexto del problema: el mayor freno del dueño no es el precio, es el miedo a que la IA mande una cotización mal hecha o responda algo indebido.
+- Qué se probaría: un flujo donde la IA prepara la cotización o la respuesta y el dueño la aprueba con un clic desde el celular antes de que salga.
+- Resultado esperado: comparar tiempo de "hacerlo todo a mano" con "solo revisar y aprobar", y definir qué tareas pueden ir sin aprobación.
+- Objeción típica: "si igual tengo que revisar, no ahorro nada" → revisar toma segundos y redactar toma minutos; con el tiempo se sueltan las tareas de bajo riesgo.
