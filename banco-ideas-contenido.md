@@ -955,3 +955,61 @@ _Nota de la corrida: semana con poca noticia fechada y verificable (varios sitio
 - Qué se probaría: un flujo donde la IA prepara la cotización o la respuesta y el dueño la aprueba con un clic desde el celular antes de que salga.
 - Resultado esperado: comparar tiempo de "hacerlo todo a mano" con "solo revisar y aprobar", y definir qué tareas pueden ir sin aprobación.
 - Objeción típica: "si igual tengo que revisar, no ahorro nada" → revisar toma segundos y redactar toma minutos; con el tiempo se sueltan las tareas de bajo riesgo.
+
+## Semana del 2026-11-23
+
+> Nota de la corrida: los hallazgos tienen fecha entre el 15 y el 23 de noviembre. Casi ninguna página se pudo abrir directamente desde el entorno de la corrida (solo GitHub), así que los detalles vienen de los resultados de búsqueda: revisar la fuente antes de grabar, sobre todo cifras, fechas y disponibilidad en Chile. No se encontraron hilos de Reddit ni de Hacker News de esta semana que valiera la pena incluir.
+
+### 1. Black Friday (27 al 30 de noviembre): el evento suma un agente de IA y los chilenos ya usan la IA para cotizar y comparar precios
+**Fuente:** https://www.debosaber.cl/black-friday-2026-pymes-ia-comparar-precios/ (fechas y agente de IA: https://www.ccs.cl/2026/10/21/black-friday-2026-se-realizara-del-27-al-30-de-noviembre-con-ofertas-online-y-presenciales/)
+**Qué es:** El Black Friday de la CCS parte este viernes con más de 400 empresas, tiendas físicas georreferenciadas y un agente de IA para consultar ofertas. Según una encuesta Cadem (1.000 casos, agosto de 2026) citada en la nota, cotizar y comparar precios es el uso de la IA que más mencionan los consumidores, un 78% ha usado alguna vez ChatGPT, Gemini o Copilot, y un 48% dice que la IA le hizo conocer una marca, producto o canal nuevo.
+**Ángulo para Nexo.IA:** Video de prueba real para publicar antes del viernes: "Le pedí a ChatGPT que me recomendara dónde comprar X en Chile: ¿aparece tu pyme?".
+- Contexto del problema: el cliente ya no parte en Google ni en la vitrina; le pregunta a una IA qué comprar y dónde, y la pyme no sabe si aparece ni con qué precio.
+- Qué se probaría: hacer 3 búsquedas de compra reales (un regalo, un servicio, un producto de nicho) en ChatGPT y Gemini, y ver qué pymes chilenas aparecen y por qué (sitio con precios visibles, ficha de Google al día, reseñas).
+- Resultado esperado: una checklist de 4 cosas para "ser encontrable por la IA" que se pueden arreglar en una tarde.
+- Objeción típica: "yo vendo por Instagram, no necesito sitio web" → la IA casi no lee Instagram; si el precio y el stock no están en una página abierta, para la IA el negocio no existe.
+
+### 2. Advertencia para Black Friday: un agente de IA puede venderle al cliente un producto que ya no queda
+**Fuente:** https://g5noticias.cl/?p=936303 (caso de pedido cancelado en CyberDay: https://www.diarioestrategia.cl/texto-diario/mostrar/6094611/compraste-ciberday-cancelaron-pedido-ia-no-soluciona-nada-quien-hace-cargo)
+**Qué es:** Joaquín Trecic, de la empresa chilena Novelty8, advierte que automatizar la venta con el inventario desactualizado es "automatizar una promesa que la empresa no puede cumplir": el bot convence, cobra y después no hay stock. Recomienda que el sistema reserve la unidad y actualice el stock antes de confirmar, y definir quién puede detener al agente y cómo. Es la opinión de un proveedor, no un caso documentado con nombre de tienda.
+**Ángulo para Nexo.IA:** Mito vs realidad: "El bot no es el problema, es tu planilla de stock".
+- Contexto del problema: la pyme instala un bot de ventas en WhatsApp para una fecha de alta demanda, pero el stock vive en una planilla que alguien actualiza en la noche.
+- Qué se probaría: simular en una demo dos clientes pidiendo la última unidad al mismo tiempo, primero con el bot "suelto" y después con el bot conectado a la planilla y reservando.
+- Resultado esperado: mostrar la diferencia entre "vendí dos veces lo mismo" y "el segundo cliente recibe una alternativa", más una regla simple: si el bot no puede ver el stock, no confirma, deriva.
+- Objeción típica: "conectar el stock es caro y complicado" → para la mayoría basta una planilla compartida bien llevada; lo caro es devolver plata y perder al cliente en la semana de más ventas.
+
+### 3. "Crear agentes de IA": la prensa chilena lo presenta como el nuevo oficio que buscan las pymes
+**Fuente:** https://portalinnova.cl/crear-agentes-de-inteligencia-artificial-el-nuevo-oficio-que-ya-buscan-las-pymes-chilenas/ (versión con precios: https://ecosistemastartup.com/agentes-de-ia-para-pymes-el-oficio-que-cobra-us1-000/)
+**Qué es:** Nota que circuló en varios medios entre el 15 y el 17 de noviembre: un trabajo nuevo, que no exige título de ingeniero, consistente en armar programas que atienden clientes, envían cotizaciones o agendan horas. Cita el estudio Sonda Tech Trends (nueve de cada diez empresas chilenas usan IA, pero solo un 13% tiene una estrategia en ejecución) y un análisis del Banco Central (los avisos de empleo que piden habilidades de IA pasaron de 1,32% a 3,85% entre 2017 y 2024). Parece originada en un comunicado; los precios que circulan (US$200 a US$1.000 por un agente de WhatsApp) vienen de empresas que venden el servicio.
+**Ángulo para Nexo.IA:** Video de posicionamiento, hablando desde el oficio: "Soy una de esas personas que arma agentes de IA para pymes. Esto es lo que hago en la primera semana (y no es programar)".
+- Contexto del problema: al dueño le llega la oferta de "un agente" por redes y no sabe qué está comprando, cuánto debería costar ni cómo distinguir a alguien serio.
+- Qué se probaría: mostrar el proceso real con un cliente: levantar el proceso, elegir una sola tarea, armarla, probarla con casos difíciles y dejar a una persona revisando.
+- Resultado esperado: que el público entienda qué incluye un precio razonable (diagnóstico, armado, pruebas, mantención) y qué preguntas hacer antes de contratar.
+- Objeción típica: "si no hay que ser ingeniero, lo hago yo con un tutorial" → se puede, y está bien para una tarea simple; lo que se paga es el criterio para elegir qué automatizar y que alguien responda cuando falla.
+
+### 4. OpenAI lanza "ChatGPT for Accounting": un plugin gratuito de contabilidad con conexiones a QuickBooks y Xero
+**Fuente:** https://openai.com/business/solutions/accounting/ (ayuda oficial: https://help.openai.com/en/articles/20001709-using-chatgpt-for-accounting-work; cobertura: https://www.aninews.in/news/business/openai-launches-accounting-plugin-for-chatgpt-targets-bookkeeping-and-financial-reporting-tasks20261119123610/)
+**Qué es:** Lanzado el 18 de noviembre. Un plugin que guía a ChatGPT en tareas rutinarias (procesar facturas, conciliación bancaria, informes de cierre de mes, apoyo a auditoría), más ocho conexiones con software contable como QuickBooks Online, Xero, NetSuite y FreshBooks; donde no hay conexión, puede operar el programa directamente en pantalla. Se instala desde la app de escritorio, en planes Business sin aprobación del administrador, y OpenAI insiste en que una persona revise antes de aprobar asientos o informes. Ninguna de las conexiones anunciadas es de software contable chileno.
+**Ángulo para Nexo.IA:** Prueba con expectativas claras: "¿Sirve el nuevo ChatGPT contable para una pyme chilena? Lo probé con una cartola y facturas reales".
+- Contexto del problema: el dueño junta boletas, facturas y cartolas a fin de mes para mandárselas al contador, y pierde horas cuadrando pagos con ventas.
+- Qué se probaría: pasarle una cartola bancaria y una planilla de facturas emitidas (con datos anonimizados) y pedirle la conciliación y un resumen del mes; anotar dónde se equivoca con IVA, boletas y formatos chilenos.
+- Resultado esperado: una respuesta honesta de qué funciona hoy sin conexión local (conciliar, ordenar, detectar pagos faltantes) y qué no (nada que toque el SII ni reemplace al contador).
+- Objeción típica: "no le voy a pasar mis datos financieros a una IA" → es una preocupación válida: usar un plan de empresa (donde, según OpenAI, los datos no se usan para entrenar), anonimizar lo sensible y partir con un mes de prueba.
+
+### 5. La ley de protección de datos personales (21.719) se posterga a octubre de 2027, pero todavía no es oficial
+**Fuente:** https://www.thenextsecurity.cl/insights/congreso-despacha-postergacion-ley-21719-octubre-2027/ (Senado: https://www.senado.cl/comunicaciones/noticias/segundo-tramite-proyecto-que-posterga-entrada-en-vigencia-de-ley-de; contexto: https://www.carey.cl/gobierno-ingresa-proyecto-de-ley-que-posterga-en-un-ano-entrada-en-vigor-de-la-ley-sobre-proteccion-de-datos-personales)
+**Qué es:** La ley debía empezar a regir el 1 de diciembre de 2026. Según la cobertura, el Congreso despachó el 17 de noviembre el proyecto que mueve esa fecha al 15 de octubre de 2027 y amplía el consejo de la Agencia de Protección de Datos de tres a cinco integrantes. Al 18 de noviembre no estaba publicado en el Diario Oficial, y mientras no se publique rige la fecha original: confirmar el estado antes de grabar.
+**Ángulo para Nexo.IA:** Video explicativo con calma: "Te dieron un año más para ordenar los datos de tus clientes. Úsalo antes de ponerles un bot encima".
+- Contexto del problema: la pyme guarda teléfonos, correos y compras de clientes en WhatsApp, planillas y cuadernos, y ahora quiere conectar eso a una IA sin saber qué tiene ni dónde.
+- Qué se probaría: hacer en pantalla el inventario de datos de un negocio tipo (qué datos, dónde están, quién los ve, para qué se usan) y marcar cuáles tocaría un agente de atención.
+- Resultado esperado: una plantilla de una página con ese inventario y tres reglas básicas para cualquier automatización (pedir solo lo necesario, avisar que atiende una IA, saber cómo borrar los datos de un cliente).
+- Objeción típica: "eso es para empresas grandes" → la ley no distingue por tamaño al hablar de datos de clientes; y aclarar siempre que esto es orientación general, no asesoría legal.
+
+### 6. GitHub trending: "last30days-skill" (~73 mil estrellas), una IA que revisa qué dijo la gente sobre un tema en los últimos 30 días
+**Fuente:** https://github.com/mvanhorn/last30days-skill (en https://github.com/trending?since=weekly)
+**Qué es:** Herramienta gratuita y de código abierto: se le da un tema y busca en paralelo en Reddit, YouTube, X, TikTok, Hacker News y otras fuentes lo publicado en el último mes, ordena los resultados por interacción real (votos, likes, vistas) y entrega un resumen con citas. Hoy requiere instalación técnica y varias fuentes piden claves propias. El resto del trending semanal fue para programadores (plannotator sigue en la lista); se rescata este repo por el uso de fondo.
+**Ángulo para Nexo.IA:** Caso de uso traducido: "Antes de lanzar un producto, pregúntale a la IA qué está reclamando la gente este mes".
+- Contexto del problema: la pyme decide qué vender o qué publicar por intuición, porque no tiene tiempo ni presupuesto para un estudio de mercado.
+- Qué se probaría: investigar un rubro concreto (por ejemplo, "comida para mascotas en Chile") y sacar las 5 quejas y las 5 preguntas más repetidas del último mes; comparar con hacer lo mismo a mano.
+- Resultado esperado: una lista de temas para contenido y de objeciones para responder en la venta, lograda en minutos en vez de una tarde de scroll.
+- Objeción típica: "en Chile no se habla tanto en Reddit" → cierto, por eso se muestra también con YouTube y TikTok, y se dice claramente que es una señal y no una encuesta.
